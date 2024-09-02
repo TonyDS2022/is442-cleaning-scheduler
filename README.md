@@ -36,3 +36,16 @@ The following guides illustrate how to use some features concretely:
         brew install maven
       ```
 - (optional, recommended) [Intellij IDEA Ultimate](https://www.jetbrains.com/community/education/#students/)
+- PostgreSQL
+  - Windows:
+    - Download and run the [PostgreSQL installer from EDB](https://www.enterprisedb.com/software-downloads-postgres)
+  - MacOS:
+    - Download and install [Postgres App](https://postgresapp.com/)
+    - Follow the instructions on the Postgres App website to initialize a new local server
+
+  After you have successfully initialized a PostgreSQL server on your local environment, connect to it by running `psql` on your shell, and run the following:
+  ```psql
+    CREATE DATABASE is442_proj;
+    GRANT ALL PRIVILEGES ON DATABASE "is442_proj" TO current_user;
+    GRANT ALL PRIVILEGES ON DATABASE "is442_proj" TO postgres;
+  ```
