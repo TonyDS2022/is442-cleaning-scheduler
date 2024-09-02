@@ -22,7 +22,7 @@ public class Location {
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "student_sequence"
+            generator = "location_sequence"
     )
     @JsonIgnore
     private Long id;
