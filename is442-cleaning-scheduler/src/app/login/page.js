@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
@@ -33,7 +34,13 @@ export default function Login() {
 
         // Only show alert if there are no validation errors
         if (!isInvalid && !isEmpty) {
-            alert('Login successful');
+            axios.get('/api/v0.1/locations')
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         }
     };
 
@@ -75,7 +82,7 @@ export default function Login() {
                             value={email}
                             onChange={emailInput}
                         />
-                        {invalid && ( 
+                        {invalid && (
                             <Message severity="error" text="Email is invalid" />
                         )}
                     </div>
