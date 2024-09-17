@@ -25,7 +25,7 @@ public class Location {
             generator = "location_sequence"
     )
     @JsonIgnore
-    private Long id;
+    private Long locationId;
 
     @NonNull
     private String address;

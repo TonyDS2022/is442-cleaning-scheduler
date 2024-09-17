@@ -3,6 +3,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.location;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 
@@ -10,7 +11,8 @@ import java.util.List;
 public class LocationConfig {
 
     @Bean
-    CommandLineRunner commandLineRunner(LocationRepository repository) {
+    @Order(1)
+    CommandLineRunner locationCommandLineRunner(LocationRepository repository) {
         return args -> {
             // Disclaimer: These are DEFINITELY random addresses and NOT past residential
             // addresses of the author.
