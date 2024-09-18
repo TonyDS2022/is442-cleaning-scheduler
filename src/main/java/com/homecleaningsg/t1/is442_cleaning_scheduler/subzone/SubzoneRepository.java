@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubzoneRepository extends JpaRepository<Subzone, Long> {
+    public Subzone findSubzoneBySubzoneName(String subzoneName);
 }

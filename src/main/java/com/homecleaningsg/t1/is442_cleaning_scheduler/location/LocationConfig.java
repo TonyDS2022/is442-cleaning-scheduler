@@ -1,5 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.location;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.Subzone;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,15 +13,17 @@ import java.util.List;
 public class LocationConfig {
 
     @Bean
-    @Order(1)
-    CommandLineRunner locationCommandLineRunner(LocationRepository repository) {
+    @Order(2)
+    CommandLineRunner locationCommandLineRunner(LocationRepository locationRepository, SubzoneRepository subzoneRepository) {
         return args -> {
             // Disclaimer: These are DEFINITELY random addresses and NOT past residential
             // addresses of the author.
-            Location loc1 = new Location("649823", "88 Corporation Road");
-            Location loc2 = new Location("438181", "61 Kampong Arang Road");
+            Subzone subzone1 = subzoneRepository.findSubzoneBySubzoneName("TAMAN JURONG");
+            Subzone subzone2 = subzoneRepository.findSubzoneBySubzoneName("TANJONG RHU");
+            Location loc1 = new Location("649823", "88 Corporation Road", subzone1);
+            Location loc2 = new Location("438181", "61 Kampong Arang Road", subzone2);
 
-            repository.saveAll(List.of(loc1, loc2));
+            locationRepository.saveAll(List.of(loc1, loc2));
         };
     }
 }

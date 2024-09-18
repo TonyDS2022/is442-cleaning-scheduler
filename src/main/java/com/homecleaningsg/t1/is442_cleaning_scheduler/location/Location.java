@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.location;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.Subzone;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,15 +38,8 @@ public class Location {
     @JsonIgnore
     private Double Longitude;
 
-    @JsonIgnore
-    private Long regionId;
-    private String regionName;
-
-    @JsonIgnore
-    private Long planningAreaId;
-    private String planningAreaName;
-
-    @JsonIgnore
-    private Long subzoneId;
-    private String subzoneName;
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "subzoneId", referencedColumnName = "subzoneId")
+    private Subzone subzone;
 }

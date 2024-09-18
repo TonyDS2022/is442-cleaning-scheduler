@@ -24,7 +24,7 @@ import java.util.Map;
 public class SubzoneConfig {
 
     @Bean
-    @Order(3)
+    @Order(1)
     CommandLineRunner subzoneCommandLineRunner(SubzoneRepository subzoneRepository) {
 
         return args -> {
@@ -112,6 +112,7 @@ public class SubzoneConfig {
 
                 if (subzoneName != null && planningAreaName != null && regionName != null && subzoneGeometry != null) {
                     Subzone subzone = new Subzone(subzoneName, planningAreaName, regionName, subzoneGeometry);
+                    subzoneRepository.save(subzone);
                 }
             }
         };

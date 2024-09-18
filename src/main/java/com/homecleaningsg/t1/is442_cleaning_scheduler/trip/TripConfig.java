@@ -11,7 +11,7 @@ import org.springframework.core.annotation.Order;
 public class TripConfig {
 
     @Bean
-    @Order(2)
+    @Order(3)
     CommandLineRunner tripCommandLineRunner(TripRepository tripRepository, LocationRepository locationRepository) {
         return args -> {
             Location origin = locationRepository.findById(1L) //
