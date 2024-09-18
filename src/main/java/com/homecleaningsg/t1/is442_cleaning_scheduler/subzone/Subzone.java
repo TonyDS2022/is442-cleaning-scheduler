@@ -3,7 +3,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.subzone;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.locationtech.jts.geom.Polygon;
+import org.hibernate.annotations.Type;
+import org.locationtech.jts.geom.Geometry;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,5 +39,5 @@ public class Subzone {
     private String regionName;
 
     @NonNull
-    private Polygon subzonePolygon;
+    private Geometry subzoneGeometry;
 }

@@ -48,4 +48,5 @@ The following guides illustrate how to use some features concretely:
     CREATE DATABASE is442_proj;
     GRANT ALL PRIVILEGES ON DATABASE "is442_proj" TO current_user;
     GRANT ALL PRIVILEGES ON DATABASE "is442_proj" TO postgres;
+    CREATE EXTENSION postgis;
   ```
