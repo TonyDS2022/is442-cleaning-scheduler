@@ -55,6 +55,10 @@ jobs:
           PGPASSWORD: postgres
       - name: Build with Maven
         run: mvn clean install
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/is442_proj
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
       - name: Test Compilation
         run: mvn test
         env:
