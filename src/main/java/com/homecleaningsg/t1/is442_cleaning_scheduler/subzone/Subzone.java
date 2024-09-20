@@ -39,5 +39,6 @@ public class Subzone {
 
     @NonNull
     @JsonIgnore
+    @Column(columnDefinition = "geometry")
     private Geometry subzoneGeometry;
 }

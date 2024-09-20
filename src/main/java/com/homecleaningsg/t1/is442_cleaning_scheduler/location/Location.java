@@ -38,7 +38,7 @@ public class Location {
     @JsonIgnore
     private Double Longitude;
 
-    @NonNull
+    //@NonNull
     @ManyToOne
     @JoinColumn(name = "subzoneId", referencedColumnName = "subzoneId")
     private Subzone subzone;

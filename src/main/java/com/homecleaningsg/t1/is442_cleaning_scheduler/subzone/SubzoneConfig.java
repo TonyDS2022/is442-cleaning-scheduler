@@ -90,6 +90,7 @@ public class SubzoneConfig {
 
                     LinearRing linearRing = geometryFactory.createLinearRing(jtsCoordinates);
                     subzoneGeometry = geometryFactory.createPolygon(linearRing);
+                    subzoneGeometry.setSRID(4326);
 
                 } else if (subzoneGeometryDto instanceof org.geojson.MultiPolygon) {
                     // Convert GeoJSON MultiPolygon to JTS MultiPolygon
@@ -108,6 +109,7 @@ public class SubzoneConfig {
 
                     // Convert the list of JTS Polygons to a JTS MultiPolygon
                     subzoneGeometry = geometryFactory.createMultiPolygon(jtsPolygons.toArray(new org.locationtech.jts.geom.Polygon[0]));
+                    subzoneGeometry.setSRID(4326);
                 }
 
                 if (subzoneName != null && planningAreaName != null && regionName != null && subzoneGeometry != null) {
