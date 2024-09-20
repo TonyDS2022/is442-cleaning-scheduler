@@ -54,5 +54,5 @@ jobs:
         run: mvn test
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/is442_proj
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: postgres
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
