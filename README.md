@@ -50,3 +50,6 @@ The following guides illustrate how to use some features concretely:
     GRANT ALL PRIVILEGES ON DATABASE "is442_proj" TO postgres;
     CREATE EXTENSION postgis;
   ```
+
+### Push policy and CI Actions
+Please test compile the application with `mvn test` before pushing to the repository.
