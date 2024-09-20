@@ -48,6 +48,11 @@ jobs:
             echo "Waiting for PostgreSQL to be ready..."
             sleep 1
           done
+      - name: Verify Database Connection
+        run: |
+          psql -h localhost -U postgres -d is442_proj -c '\l'
+        env:
+          PGPASSWORD: postgres
       - name: Build with Maven
         run: mvn clean install
       - name: Test Compilation
