@@ -37,7 +37,7 @@ public class Location {
     @JsonIgnore
     private Double latitude;
     @JsonIgnore
-    private Double Longitude;
+    private Double longitude;
 
     //@NonNull
     @ManyToOne
@@ -46,9 +46,9 @@ public class Location {
 
     public void setSubzone(SubzoneRepository subzoneRepository) {
         //check that latitude and longitude are not null
-        if (latitude != null && Longitude != null) {
+        if (latitude != null && longitude != null) {
             //get the subzone from the latitude and longitude
-            subzone = subzoneRepository.findSubzoneByLatLong(latitude, Longitude);
+            subzone = subzoneRepository.findSubzoneByLatLong(latitude, longitude);
         }
     }
 }
