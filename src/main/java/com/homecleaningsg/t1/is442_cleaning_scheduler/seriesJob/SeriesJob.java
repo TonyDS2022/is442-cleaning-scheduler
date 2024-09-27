@@ -1,4 +1,4 @@
-package com.homecleaningsg.t1.is442_cleaning_scheduler.package_job;
+package com.homecleaningsg.t1.is442_cleaning_scheduler.seriesJob;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 @Entity
-@Table(name = "package_job")
-public class PackageJob {
+@Table(name = "SeriesJob")
+public class SeriesJob {
     @Id
     @SequenceGenerator(
             name = "job_sequence",
@@ -25,8 +25,8 @@ public class PackageJob {
             generator = "job_sequence"
     )
 
-    @Column(name = "package_id")
-    private int packageId;
+    @Column(name = "series_id")
+    private int seriesId;
 
     @Column(name = "job_id")
     private int jobId;
@@ -63,6 +63,7 @@ public class PackageJob {
     }
 
     public enum Rating {
+        BAD,
         POOR,
         AVERAGE,
         GOOD,

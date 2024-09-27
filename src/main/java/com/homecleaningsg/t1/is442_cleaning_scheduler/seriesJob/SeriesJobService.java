@@ -1,5 +1,5 @@
 // PackageJobService.java
-package com.homecleaningsg.t1.is442_cleaning_scheduler.package_job;
+package com.homecleaningsg.t1.is442_cleaning_scheduler.seriesJob;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,16 +7,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class PackageJobService {
+public class SeriesJobService {
 
-    private final PackageJobRepository packageJobRepository;
+    private final SeriesJobRepository packageJobRepository;
 
     @Autowired
-    public PackageJobService(PackageJobRepository packageJobRepository) {
+    public SeriesJobService(SeriesJobRepository packageJobRepository) {
         this.packageJobRepository = packageJobRepository;
     }
 
-    public List<PackageJob> getPackageJobs() {
+    public List<SeriesJob> getPackageJobs() {
         return packageJobRepository.findAll();
     }
 }
