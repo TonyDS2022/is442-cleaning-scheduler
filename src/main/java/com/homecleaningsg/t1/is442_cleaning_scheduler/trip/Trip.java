@@ -42,11 +42,6 @@ public class Trip {
 
     private double euclideanDistanceKm;
 
-    public Trip(Location origin, Location destination) {
-        this.origin = origin;
-        this.destination = destination;
-    }
-
     public void setEuclideanDistanceKm() {
         this.euclideanDistanceKm = origin.getEuclideanDistanceKmFrom(destination);
     }
