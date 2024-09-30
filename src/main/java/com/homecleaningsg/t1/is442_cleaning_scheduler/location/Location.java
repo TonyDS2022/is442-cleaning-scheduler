@@ -34,9 +34,7 @@ public class Location {
     @NonNull
     private String postalCode;
 
-    @JsonIgnore
     private Double latitude;
-    @JsonIgnore
     private Double longitude;
 
     //@NonNull
