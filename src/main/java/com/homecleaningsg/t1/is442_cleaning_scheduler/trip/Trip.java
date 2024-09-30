@@ -7,7 +7,6 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @EqualsAndHashCode
 @Getter
 @Setter
@@ -38,6 +37,17 @@ public class Trip {
     @JoinColumn(name = "destinationId", referencedColumnName = "locationId")
     private Location destination;
 
-    @NonNull
-    private double tripDuration;
+    private double tripDurationSeconds;
+    private double tripDistanceMeters;
+
+    private double euclideanDistanceKm;
+
+    public Trip(Location origin, Location destination) {
+        this.origin = origin;
+        this.destination = destination;
+    }
+
+    public void setEuclideanDistanceKm() {
+        this.euclideanDistanceKm = origin.getEuclideanDistanceKmFrom(destination);
+    }
 }

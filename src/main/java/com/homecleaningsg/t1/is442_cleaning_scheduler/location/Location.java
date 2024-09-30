@@ -49,4 +49,26 @@ public class Location {
             subzone = subzoneRepository.findSubzoneByLatLong(latitude, longitude);
         }
     }
+
+    public double getEuclideanDistanceKmFrom(Location another) {
+        double EARTH_RADIUS_KM = 6371.0;
+        //check that latitude and longitude are not null
+        if (latitude != null && longitude != null && another.latitude != null && another.longitude != null) {
+            // convert latitude and longitude to radians
+            double lat1 = Math.toRadians(latitude);
+            double lon1 = Math.toRadians(longitude);
+            double lat2 = Math.toRadians(another.latitude);
+            double lon2 = Math.toRadians(another.longitude);
+
+            // convert lat/lon to Cartesian coordinates
+            double x1 = EARTH_RADIUS_KM * Math.cos(lat1) * Math.cos(lon1);
+            double y1 = EARTH_RADIUS_KM * Math.cos(lat1) * Math.sin(lon1);
+            double x2 = EARTH_RADIUS_KM * Math.cos(lat2) * Math.cos(lon2);
+            double y2 = EARTH_RADIUS_KM * Math.cos(lat2) * Math.sin(lon2);
+
+            // Calculate the Euclidean distance
+            return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+        }
+        return -1;
+    }
 }

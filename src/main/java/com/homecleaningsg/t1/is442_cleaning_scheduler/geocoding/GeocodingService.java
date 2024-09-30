@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.geocoding;
 
 
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -23,6 +24,9 @@ public class GeocodingService {
                         .queryParam("getAddrDetails", "Y")
                         .build())
                 .retrieve()
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
+                    return Mono.error(new RuntimeException("Server error" + clientResponse.statusCode()));
+                })
                 .bodyToMono(GeocodingResponse.class);
     }
 
