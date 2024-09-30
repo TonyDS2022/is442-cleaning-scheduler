@@ -26,7 +26,7 @@ public class GeocodingService {
                 .bodyToMono(GeocodingResponse.class);
     }
 
-    public Mono<GeocodingResult> getCoordinates(String postalCode) {
+    public Mono<GeocodingResponse.GeocodingResult> getCoordinates(String postalCode) {
         return getGeocoding(postalCode)
                 .flatMap(response -> {
                     if (response.getFound() > 0) {
