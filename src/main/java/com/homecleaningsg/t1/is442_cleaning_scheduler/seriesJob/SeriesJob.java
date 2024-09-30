@@ -1,5 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.seriesJob;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.series.Series;
 import jakarta.persistence.*;
 import lombok.*;
 import java.sql.Timestamp;
@@ -12,22 +14,16 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 @Entity
+@IdClass(SeriesJobId.class)
 @Table(name = "SeriesJob")
 public class SeriesJob {
     @Id
-    @SequenceGenerator(
-            name = "job_sequence",
-            sequenceName = "job_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "job_sequence"
-    )
+    @ManyToOne
+    @JoinColumn(name = "series_id", nullable = false)
+    @JsonBackReference
+    private Series series;
 
-    @Column(name = "series_id")
-    private int seriesId;
-
+    @Id
     @Column(name = "job_id")
     private int jobId;
 
@@ -55,7 +51,6 @@ public class SeriesJob {
     @Column(name = "job_feedback")
     private String jobFeedback;
 
-    // Enum classes for jobStatus and rating
     public enum JobStatus {
         NOT_STARTED,
         WORKING,
@@ -68,5 +63,14 @@ public class SeriesJob {
         AVERAGE,
         GOOD,
         EXCELLENT
+    }
+
+    public SeriesJob(Series series, int jobId, Timestamp jobStart, Timestamp jobEnd, String jobDescription, JobStatus jobStatus) {
+        this.series = series;
+        this.jobId = jobId;
+        this.jobStart = jobStart;
+        this.jobEnd = jobEnd;
+        this.jobDescription = jobDescription;
+        this.jobStatus = jobStatus;
     }
 }
