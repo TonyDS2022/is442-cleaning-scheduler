@@ -22,8 +22,8 @@ public class AdminController {
     }
 
 
-    @GetMapping("/{id}")
-    public Admin getAdminById(@PathVariable("id") long id) {
-        return adminService.getAdminById(id);
+    @GetMapping("/{username}")
+    public Admin getAdminByUsername(@PathVariable("username") String username) {
+        return adminService.getAdminByUsername(username);
     }
 }

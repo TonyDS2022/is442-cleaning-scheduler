@@ -21,8 +21,8 @@ public class WorkerController {
     }
 
 
-    @GetMapping("/{id}")
-    public Worker getWorkerById(@PathVariable("id") long id) {
-        return workerService.getWorkerById(id);
+    @GetMapping("/{username}")
+    public Worker getWorkerByUsername(@PathVariable("username") String username) {
+        return workerService.getWorkerByUsername(username);
     }
 }

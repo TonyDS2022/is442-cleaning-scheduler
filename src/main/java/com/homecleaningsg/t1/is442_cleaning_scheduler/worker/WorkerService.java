@@ -7,18 +7,18 @@ import java.util.List;
 
 @Service
 public class WorkerService {
-    private final WorkerRepository WorkerRepository;
+    private final WorkerRepository workerRepository;
 
     @Autowired
     public WorkerService(WorkerRepository workerRepository) {
-        this.WorkerRepository = workerRepository;
+        this.workerRepository = workerRepository;
     }
 
     public List<Worker> getAllWorkers() {
-        return WorkerRepository.findAll();
+        return workerRepository.findAll();
     }
 
-    public Worker getWorkerById(long id) {
-        return WorkerRepository.findById(id).orElse(null);
+    public Worker getWorkerByUsername(String username) {
+        return workerRepository.findByUsername(username).orElse(null);
     }
 }

@@ -19,8 +19,8 @@ public class AdminService {
         return adminRepository.findAll();
     }
 
-    public Admin getAdminById(long id) {
-        return adminRepository.findById(id).orElse(null);
+    public Admin getAdminByUsername(String username) {
+        return adminRepository.findByUsername(username).orElse(null);
     }
 
 
