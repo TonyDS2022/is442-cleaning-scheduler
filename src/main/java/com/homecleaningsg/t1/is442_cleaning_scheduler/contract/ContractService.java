@@ -20,8 +20,8 @@ public class ContractService {
         return contractRepository.findAll();
     }
 
-    public Optional<Float> getHourlyRateByContractId(int contractId) {
+    public Optional<Float> getRateByContractId(int contractId) {
         Optional<Contract> contract = contractRepository.findById(contractId);
-        return contract.map(Contract::getHourlyRate);
+        return contract.map(Contract::getRate);
     }
 }

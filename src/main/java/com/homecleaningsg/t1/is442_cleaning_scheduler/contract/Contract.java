@@ -29,8 +29,6 @@ public class Contract {
     )
     private int contractId;
 
-    // 1 contract may have multiple cleaningSessions
-    // cascade applies all changes from Contract to associated cleaningSessions
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<CleaningSession> cleaningSessionId;
@@ -67,11 +65,11 @@ public class Contract {
     @Column(name = "frequency")
     private String frequency;
 
-    @Column(name = "sessionDuration")
-    private int sessionDuration;
+    @Column(name = "sessionDurationMinutes")
+    private int sessionDurationMinutes;
 
-    // Derived field: hourlyRate
-    public float getHourlyRate() {
-        return price / sessionDuration;
+    // Derived field: getRate = price / sessionDurationMinutes
+    public float getRate() {
+        return price / sessionDurationMinutes;
     }
 }

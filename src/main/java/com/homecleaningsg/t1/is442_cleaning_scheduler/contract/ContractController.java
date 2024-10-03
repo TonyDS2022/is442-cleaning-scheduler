@@ -25,8 +25,8 @@ public class ContractController {
         return contractService.getContract();
     }
 
-    @GetMapping("/{contractId}/hourlyRate")
-    public Optional<Float> getHourlyRateByContractId(@PathVariable int contractId) {
-        return contractService.getHourlyRateByContractId(contractId);
+    @GetMapping("/{contractId}/rate")
+    public Optional<Float> getRateByContractId(@PathVariable int contractId) {
+        return contractService.getRateByContractId(contractId);
     }
 }
