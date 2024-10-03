@@ -1,6 +1,5 @@
-package com.homecleaningsg.t1.is442_cleaning_scheduler.account;
+package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +12,7 @@ import lombok.*;
 @ToString
 @Entity
 @Table
-public class Account {
+public class Admin {
     @Id
     @SequenceGenerator(
             name = "account_sequence",
@@ -24,22 +23,14 @@ public class Account {
             strategy = GenerationType.SEQUENCE,
             generator = "account_sequence"
     )
-    private Long accountId;
+    private Long adminId;
 
     @NonNull
     private String username;
 
     @NonNull
-    private String email;
-
-    @JsonIgnore
-    @NonNull
     private String password;
 
     @NonNull
-    private String phone;
-
-    @NonNull
-    private String name;
-
+    private boolean isRootAdmin;
 }
