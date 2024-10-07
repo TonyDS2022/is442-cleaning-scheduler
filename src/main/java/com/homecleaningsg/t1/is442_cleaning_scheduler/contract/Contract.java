@@ -72,4 +72,9 @@ public class Contract {
     public float getRate() {
         return price / sessionDurationMinutes;
     }
+
+    // temp for retrieving all contracts by cleaningSessionIds
+    @Getter
+    @OneToMany(mappedBy = "contract")
+    private List<CleaningSession> cleaningSessions;
 }
