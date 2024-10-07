@@ -10,6 +10,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CleaningSessionId implements Serializable {
-    private int contract; // This should match the type of the primary key in Contract
-    private int sessionId;
+    private int contract; // should match the type of the primary key in Contract
+    private int cleaningSessionId;
 }
+//The CleaningSessionId class is necessary because the CleaningSession entity uses a composite key consisting of contract and cleaningSessionId. The CleaningSessionId class represents this composite key.

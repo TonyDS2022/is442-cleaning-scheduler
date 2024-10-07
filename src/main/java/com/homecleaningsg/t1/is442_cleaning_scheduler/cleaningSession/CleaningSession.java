@@ -2,10 +2,13 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicket;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,21 +25,26 @@ public class CleaningSession {
     @Id
     @ManyToOne
     @JoinColumn(name = "contractId", nullable = false)
-    @JsonBackReference
+    @JsonBackReference // prevent infinite recursion
     private Contract contract;
 
     // use sequence generator for sessionId
     @Id
     @SequenceGenerator(
-            name = "session_sequence",
-            sequenceName = "session_sequence",
+            name = "cleaning_session_sequence",
+            sequenceName = "cleaning_session_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "session_sequence"
+            generator = "cleaning_session_sequence"
     )
-    private int sessionId;
+    private int cleaningSessionId;
+
+    // refers to cleaningSessionId col to establish relationship with SessionTicket START
+    @OneToMany(mappedBy = "cleaningSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference // prevent infinite recursion
+    private List<SessionTicket> sessionTickets;
 
     @NonNull
     @Column(name = "sessionStart")

@@ -1,7 +1,11 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicket;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -45,4 +49,8 @@ public class Worker {
 
     @NonNull
     private String workingHours;
+
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference // to prevent infinite recursion
+    private List<SessionTicket> sessionTickets;
 }

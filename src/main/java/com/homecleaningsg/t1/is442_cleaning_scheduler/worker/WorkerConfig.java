@@ -4,12 +4,14 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 
 @Configuration
 public class WorkerConfig {
     @Bean
+    @Order(1) // This bean will run first before CleaningSessionConfig  @Order(2)
     CommandLineRunner workerCommandLineRunner(WorkerRepository workerRepository) {
         return args -> {
             Worker ad1 = new Worker("Karthiga","karthiga","kar1243","karthigamagesh17@gmail.com", "99999999", "Hello, I am a sincere cleaner specialised in wooden floors", "8am-5pm");

@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface CleaningSessionRepository extends JpaRepository<CleaningSession, CleaningSessionId> {
     List<CleaningSession> findByContract_ContractId(int contractId);
-    Optional<CleaningSession> findByContract_ContractIdAndSessionId(int contractId, int sessionId);
+    Optional<CleaningSession> findByContract_ContractIdAndCleaningSessionId(int contractId, int cleaningSessionId);
 }

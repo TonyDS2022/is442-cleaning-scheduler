@@ -24,7 +24,7 @@ public class CleaningSessionService {
         return cleaningSessionRepository.findByContract_ContractId(contractId);
     }
 
-    public Optional<CleaningSession> getCleaningSessionByContractIdAndSessionId(int contractId, int sessionId) {
-        return cleaningSessionRepository.findByContract_ContractIdAndSessionId(contractId, sessionId);
+    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(int contractId, int cleaningSessionId) {
+        return cleaningSessionRepository.findByContract_ContractIdAndCleaningSessionId(contractId, cleaningSessionId);
     }
 }

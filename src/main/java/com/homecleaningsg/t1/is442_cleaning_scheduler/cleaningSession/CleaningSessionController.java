@@ -27,8 +27,8 @@ public class CleaningSessionController {
         return cleaningSessionService.getCleaningSessionsByContractId(contractId);
     }
 
-    @GetMapping("/{contractId}/{sessionId}")
-    public Optional<CleaningSession> getCleaningSessionByContractIdAndSessionId(@PathVariable int contractId, @PathVariable int sessionId) {
-        return cleaningSessionService.getCleaningSessionByContractIdAndSessionId(contractId, sessionId);
+    @GetMapping("/{contractId}/{cleaningSessionId}")
+    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(@PathVariable int contractId, @PathVariable int cleaningSessionId) {
+        return cleaningSessionService.getCleaningSessionByContractIdAndCleaningSessionId(contractId, cleaningSessionId);
     }
 }
