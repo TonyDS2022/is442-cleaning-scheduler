@@ -17,11 +17,13 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 // TODO: Move dev-specific configurations eventually to test
 @Configuration
+@ComponentScan(basePackages = "com.homecleaningsg.t1.is442_cleaning_scheduler")
 public class DevelopmentConfig {
 
     @Bean
@@ -53,7 +55,7 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn({"contractConfig", "workerConfig"})
+    @DependsOn({"workerConfig", "contractConfig"})
     public CleaningSessionConfig cleaningSessionConfig(CleaningSessionRepository cleaningSessionRepository, ContractRepository contractRepository, WorkerRepository workerRepository) {
         return new CleaningSessionConfig(cleaningSessionRepository, contractRepository, workerRepository);
     }

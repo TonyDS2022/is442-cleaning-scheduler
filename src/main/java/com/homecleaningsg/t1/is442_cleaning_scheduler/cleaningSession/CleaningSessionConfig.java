@@ -284,8 +284,8 @@ public class CleaningSessionConfig implements CommandLineRunner {
         }
 
         // Fetch Worker instances
-        Worker worker1 = workerRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
-        Worker worker2 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 2 not found"));
+        Worker worker1 = workerRepository.findByName("Karthiga");
+        Worker worker2 = workerRepository.findByName("John");
 
         // Attempt to retrieve the CleaningSession at index 1
         CleaningSessionId cleaningSessionId1 = new CleaningSessionId(contract.getContractId(), 1); // Create an instance of CleaningSessionId
