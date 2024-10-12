@@ -65,6 +65,8 @@ jobs:
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
           GOOGLE_OD_API_KEY: dummy_key
+          GCS_BUCKET_NAME: dummy_bucket
+          GCD_PROJECT_ID: dummy_id
       - name: Test Compilation
         run: mvn test
         env:
@@ -72,3 +74,5 @@ jobs:
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
           GOOGLE_OD_API_KEY: dummy_key
+          GCS_BUCKET_NAME: dummy_bucket
+          GCD_PROJECT_ID: dummy_id
