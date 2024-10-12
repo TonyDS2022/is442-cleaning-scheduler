@@ -1,37 +1,28 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.location;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.Subzone;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Configuration
-public class LocationConfig {
+@Component
+public class LocationConfig implements CommandLineRunner {
 
-    @Bean
-    @Order(2)
-    CommandLineRunner locationCommandLineRunner(LocationRepository locationRepository, SubzoneRepository subzoneRepository) {
-        return args -> {
-            // Disclaimer: These are DEFINITELY random addresses and NOT past residential
-            // addresses of the author.
-            //Subzone subzone1 = subzoneRepository.findSubzoneBySubzoneName("TAMAN JURONG");
-            //Subzone subzone2 = subzoneRepository.findSubzoneBySubzoneName("TANJONG RHU");
-            Location loc1 = new Location("649823", "88 Corporation Road");
-            Location loc2 = new Location("438181", "61 Kampong Arang Road");
+    private final LocationRepository locationRepository;
+    private final LocationService locationService;
 
-            loc1.setLatitude(1.3428337164417088);
-            loc1.setLongitude(103.71649893878133);
-            loc1.setSubzone(subzoneRepository);
+    public LocationConfig(LocationRepository locationRepository, LocationService locationService) {
+        this.locationRepository = locationRepository;
+        this.locationService = locationService;
+    }
 
-            loc2.setLatitude(1.299823341971301);
-            loc2.setLongitude(103.88234245412214);
-            loc2.setSubzone(subzoneRepository);
+    @Override
+    public void run(String... args) throws Exception {
+        Location loc1 = new Location("649823", "88 Corporation Road");
+        Location loc2 = new Location("438181", "61 Kampong Arang Road");
 
-            locationRepository.saveAll(List.of(loc1, loc2));
-        };
+        locationRepository.saveAll(List.of(loc1, loc2));
+
+        locationService.updateLocationLatLong().subscribe();
     }
 }

@@ -64,9 +64,11 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/is442_proj
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
+          GOOGLE_OD_API_KEY: dummy_key
       - name: Test Compilation
         run: mvn test
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/is442_proj
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
+          GOOGLE_OD_API_KEY: dummy_key
