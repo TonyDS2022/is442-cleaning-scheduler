@@ -13,12 +13,11 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
 @Service
 @RequiredArgsConstructor
+public class GoogleImageService {
 
-public abstract class GoogleImageService {
+    private final Storage storageService;
 
-    private final Storage storage = StorageOptions.getDefaultInstance().getService();
-
-    @Value("${cloud.gcp.bucket-name}")
+    @Value("${GCS_BUCKET_NAME}")
     private String bucketName;
 
     public String uploadImage(MultipartFile file) throws IOException {
@@ -32,7 +31,7 @@ public abstract class GoogleImageService {
 
         // Try to upload the file
         try {
-            Blob blob = storage.create(blobInfo, file.getBytes());
+            Blob blob = storageService.create(blobInfo, file.getBytes());
             return blob.getBlobId().getName();  // Return the unique BlobId if successful
         } catch (StorageException e) {
             throw new IOException("Failed to connect to Google Cloud Storage", e);
@@ -44,7 +43,7 @@ public abstract class GoogleImageService {
             throw new IllegalArgumentException("BlobId cannot be null or empty");
         }
 
-        Blob blob = storage.get(BlobId.of(bucketName, blobId));
+        Blob blob = storageService.get(BlobId.of(bucketName, blobId));
 
         if (blob == null || !blob.exists()) {
             throw new IllegalStateException("No file found in Google Cloud Storage for BlobId: " + blobId);

@@ -10,20 +10,21 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class MedicalRecordService extends GoogleImageService {
+public class MedicalRecordService {
 
     private final MedicalRecordRepository medicalRecordRepository;
-
+    private final GoogleImageService googleImageService;
 
     @Autowired
-    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository) {
+    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository, GoogleImageService googleImageService) {
         this.medicalRecordRepository = medicalRecordRepository;
+        this.googleImageService = googleImageService;
     }
 
     // Save image metadata (mcId is auto-generated)
     public String saveImageMetadata(MultipartFile file, LocalDate mcStartDate, LocalDate mcEndDate) throws IOException {
         // Upload image to Google Cloud Storage and get the unique BlobId
-        String uniqueBlobId = uploadImage(file);
+        String uniqueBlobId = googleImageService.uploadImage(file);
 
         // Store the original filename
         String originalFilename = file.getOriginalFilename();
@@ -64,7 +65,7 @@ public class MedicalRecordService extends GoogleImageService {
                 .orElseThrow(() -> new IllegalStateException("Medical records not found for mcId: " + mcId));
 
         // Use the inherited downloadImage method from GoogleImageService to get the image content
-        return downloadImage(medicalRecord.getBlobId());
+        return googleImageService.downloadImage(medicalRecord.getBlobId());
     }
 
     // Method to retrieve all medical images from the database
