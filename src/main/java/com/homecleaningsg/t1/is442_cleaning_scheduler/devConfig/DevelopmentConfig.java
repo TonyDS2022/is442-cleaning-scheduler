@@ -61,6 +61,7 @@ public class DevelopmentConfig {
     }
 
     @Bean
+    @DependsOn({"workerConfig", "contractConfig", "cleaningSessionConfig"})
     public SessionTicketConfig sessionTicketConfig() {
         return new SessionTicketConfig();
     }
