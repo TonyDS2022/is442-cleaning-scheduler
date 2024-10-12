@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Configuration
 public class MedicalRecordConfig {
@@ -29,22 +29,22 @@ public class MedicalRecordConfig {
             MedicalRecord medicalRecord1 = MedicalRecord.builder()
                     .mcId(mcId1)
                     .blobId("fake-blob-123")
-                    .mcStartDate(LocalDate.now())
-                    .mcEndDate(LocalDate.now().plusDays(7))
+                    .mcStartDate(OffsetDateTime.now())
+                    .mcEndDate(OffsetDateTime.now().plusDays(7))
                     .build();
 
             MedicalRecord medicalRecord2 = MedicalRecord.builder()
                     .mcId(mcId2)
                     .blobId("fake-blob-456")
-                    .mcStartDate(LocalDate.now().minusDays(10))
-                    .mcEndDate(LocalDate.now().minusDays(3))
+                    .mcStartDate(OffsetDateTime.now().minusDays(10))
+                    .mcEndDate(OffsetDateTime.now().minusDays(3))
                     .build();
 
             MedicalRecord medicalRecord3 = MedicalRecord.builder()
                     .mcId(mcId3)
                     .blobId("fake-blob-789")
-                    .mcStartDate(LocalDate.now().plusDays(5))
-                    .mcEndDate(LocalDate.now().plusDays(12))
+                    .mcStartDate(OffsetDateTime.now().plusDays(5))
+                    .mcEndDate(OffsetDateTime.now().plusDays(12))
                     .build();
 
             // Save the test data to the repository (and hence to the database)

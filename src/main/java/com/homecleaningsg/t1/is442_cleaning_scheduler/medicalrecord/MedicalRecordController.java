@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestController
@@ -35,8 +35,8 @@ public class MedicalRecordController {
 
 
         // Convert the string dates to LocalDate
-        LocalDate clean_mcStartDate = LocalDate.parse(mcStartDate);
-        LocalDate clean_mcEndDate = LocalDate.parse(mcEndDate);
+        OffsetDateTime clean_mcStartDate = OffsetDateTime.parse(mcStartDate);
+        OffsetDateTime clean_mcEndDate = OffsetDateTime.parse(mcEndDate);
 
         // Call the service to save the image metadata and get the generated mcId
         String mcId = medicalRecordService.saveImageMetadata(file, clean_mcStartDate, clean_mcEndDate);

@@ -1,7 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import lombok.*;
 
 @Entity
@@ -16,8 +16,8 @@ public class MedicalRecord {
     private String mcId;
     private String blobId;
     private String filename;
-    private LocalDate mcStartDate;
-    private LocalDate mcEndDate;
+    private OffsetDateTime mcStartDate;
+    private OffsetDateTime mcEndDate;
 
 
 }

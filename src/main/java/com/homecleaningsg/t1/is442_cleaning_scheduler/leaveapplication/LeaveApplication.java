@@ -1,7 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+
+import java.time.OffsetDateTime;
 
 import lombok.*;
 
@@ -24,12 +25,15 @@ public class LeaveApplication {
     )
     private Long applicationId;
     @NonNull
-    private Long acctId;
+    private Long workerId;
     @NonNull
     private String leaveType;
     private String fileName;
     @NonNull
-    private LocalDateTime startShiftDate;
+    private OffsetDateTime affectedShiftStart;
     @NonNull
-    private LocalDateTime endShiftDate;
+    private OffsetDateTime affectedShiftEnd;
+    @NonNull
+    private OffsetDateTime applicationSubmitted;
+    private boolean isApproved;
 }

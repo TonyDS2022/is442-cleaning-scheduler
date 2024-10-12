@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -22,7 +22,7 @@ public class MedicalRecordService {
     }
 
     // Save image metadata (mcId is auto-generated)
-    public String saveImageMetadata(MultipartFile file, LocalDate mcStartDate, LocalDate mcEndDate) throws IOException {
+    public String saveImageMetadata(MultipartFile file, OffsetDateTime mcStartDate, OffsetDateTime mcEndDate) throws IOException {
         // Upload image to Google Cloud Storage and get the unique BlobId
         String uniqueBlobId = googleImageService.uploadImage(file);
 
