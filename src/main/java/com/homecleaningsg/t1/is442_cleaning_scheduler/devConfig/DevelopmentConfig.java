@@ -9,6 +9,9 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepositor
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordConfig;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicketConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
@@ -69,5 +72,10 @@ public class DevelopmentConfig {
     @Bean
     public AdminConfig adminConfig(AdminRepository adminRepository) {
         return new AdminConfig(adminRepository);
+    }
+
+    @Bean
+    public MedicalRecordConfig medicalRecordConfig(MedicalRecordRepository medicalRecordRepository, MedicalRecordService medicalRecordService) {
+        return new MedicalRecordConfig(medicalRecordRepository, medicalRecordService);
     }
 }
