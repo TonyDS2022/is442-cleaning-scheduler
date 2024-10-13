@@ -1,9 +1,12 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.enumHandler.ApplicationStatus;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.enumHandler.ApplicationStatusConverter;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.OffsetDateTime;
+
+
 
 @Entity
 @Table
@@ -26,6 +29,8 @@ public class LeaveApplication {
     @NonNull
     private Long workerId;
     @NonNull
+    private Long adminId;
+    @NonNull
     private String leaveType;
     private String fileName;
     @NonNull
@@ -34,5 +39,7 @@ public class LeaveApplication {
     private OffsetDateTime affectedShiftEnd;
     @NonNull
     private OffsetDateTime applicationSubmitted;
-    private boolean isApproved;
+    @Convert(converter = ApplicationStatusConverter.class)
+    @NonNull
+    private ApplicationStatus applicationStatus;
 }
