@@ -2,12 +2,9 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.core.annotation.Order;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -15,18 +12,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Order(2) // Ensure that this CommandLineRunner runs after the ContractConfig CommandLineRunner
 public class CleaningSessionConfig implements CommandLineRunner {
 
     private final ContractRepository contractRepository;
     private final CleaningSessionRepository cleaningSessionRepository;
-    private final ShiftRepository shiftRepository;
-    private final WorkerRepository workerRepository;
 
-    public CleaningSessionConfig(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, ShiftRepository shiftRepository, WorkerRepository workerRepository) {
+    public CleaningSessionConfig(ContractRepository contractRepository,
+                                 CleaningSessionRepository cleaningSessionRepository) {
         this.contractRepository = contractRepository;
         this.cleaningSessionRepository = cleaningSessionRepository;
-        this.shiftRepository = shiftRepository;
-        this.workerRepository = workerRepository;
     }
 
     @Override
@@ -34,10 +29,6 @@ public class CleaningSessionConfig implements CommandLineRunner {
         // Set contract variable
         Contract contract = contractRepository.findById(1).orElseThrow(() -> new IllegalStateException("Contract not found"));
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
-
-        // Fetch Worker instances
-        Worker worker1 = workerRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
-        Worker worker2 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 2 not found"));
 
         // Attempt to retrieve the CleaningSession at index 1
         CleaningSession session1 = new CleaningSession(

@@ -3,6 +3,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -10,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Component
+@Order(1) // This is to ensure that this CommandLineRunner runs first
 public class ContractConfig implements CommandLineRunner {
 
     private final ContractRepository contractRepository;

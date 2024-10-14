@@ -60,8 +60,9 @@ public class DevelopmentConfig {
 
     @Bean
     @DependsOn({"workerConfig", "contractConfig"})
-    public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, ShiftRepository shiftRepository, WorkerRepository workerRepository) {
-        return new CleaningSessionConfig(contractRepository, cleaningSessionRepository, shiftRepository, workerRepository);
+    public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository,
+                                                       CleaningSessionRepository cleaningSessionRepository) {
+        return new CleaningSessionConfig(contractRepository, cleaningSessionRepository);
     }
 
     @Bean
