@@ -35,13 +35,4 @@ public class ContractController {
     public Optional<Float> getRateByContractId(@PathVariable int contractId) {
         return contractService.getRateByContractId(contractId);
     }
-
-    // temp for retrieving all contracts by cleaningSessionIds
-    @PostMapping("/byCleaningSessionIds")
-    // public List<Contract> getContractsByCleaningSessionIds(@RequestBody List<Integer> cleaningSessionIds) {
-    //     return contractService.getContractsByCleaningSessionIds(cleaningSessionIds);
-    // }
-    public List<Contract> getContractsByCleaningSessionIds(@RequestBody CleaningSessionIdsRequest request) {
-        return contractService.getContractsByCleaningSessionIds(request.getCleaningSessionIds());
-    }
 }

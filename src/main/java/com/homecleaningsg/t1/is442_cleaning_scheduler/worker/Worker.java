@@ -49,8 +49,4 @@ public class Worker {
 
     @NonNull
     private String workingHours;
-
-    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference // to prevent infinite recursion
-    private List<Shift> shifts;
 }

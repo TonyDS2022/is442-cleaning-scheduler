@@ -53,15 +53,16 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn("workerConfig")
-    public ContractConfig contractConfig(ContractRepository contractRepository) {
-        return new ContractConfig(contractRepository);
+    @DependsOn({"workerConfig", "locationConfig"})
+    public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository) {
+        return new ContractConfig(contractRepository, locationRepository);
     }
 
     @Bean
     @DependsOn({"workerConfig", "contractConfig"})
-    public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, ShiftRepository shiftRepository, WorkerRepository workerRepository) {
-        return new CleaningSessionConfig(contractRepository, cleaningSessionRepository, shiftRepository, workerRepository);
+    public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository,
+                                                       CleaningSessionRepository cleaningSessionRepository) {
+        return new CleaningSessionConfig(contractRepository, cleaningSessionRepository);
     }
 
     @Bean

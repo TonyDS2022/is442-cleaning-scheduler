@@ -1,7 +1,9 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,27 +33,33 @@ public class Shift {
     )
     private int shiftId;
 
+    @ManyToOne(cascade = CascadeType.DETACH)
+    private Location location;
+
+    private String sessionDescription;
+
     // refers to workerId col to establish relationship
-    @NonNull
     @ManyToOne
-    @JoinColumn(name = "workerId", nullable = false)
-    @JsonManagedReference // works with @JsonBackReference in Worker to prevent infinite recursion
+    @JoinColumn(name = "workerId")
     private Worker worker;
 
     // refers to cleaningSession to establish relationship
     @NonNull
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "contractId", referencedColumnName = "contractId"),
-            @JoinColumn(name = "cleaningSessionId", referencedColumnName = "cleaningSessionId")
-    })
+    @JsonBackReference
     private CleaningSession cleaningSession;
 
     @NonNull
+    @Column(name = "sessionStart")
+    private Timestamp sessionStart;
+
+    @NonNull
+    @Column(name = "sessionEnd")
+    private Timestamp sessionEnd;
+
     @Column(name = "actualStart")
     private Timestamp actualStart;
 
-    @NonNull
     @Column(name = "actualEnd")
     private Timestamp actualEnd;
 
@@ -66,6 +74,8 @@ public class Shift {
         FINISHED
     }
 
+    private boolean workerHasPendingLeave;
+
     @Lob
     @Column(name = "startAcknowledge")
     private byte[] startAcknowledge;
@@ -73,4 +83,13 @@ public class Shift {
     @Lob
     @Column(name = "endAcknowledge")
     private byte[] endAcknowledge;
+
+    public Shift(CleaningSession cleaningSession) {
+        this.cleaningSession = cleaningSession;
+        this.location = cleaningSession.getLocation();
+        this.sessionDescription = cleaningSession.getSessionDescription();
+        this.sessionStart = cleaningSession.getSessionStart();
+        this.sessionEnd = cleaningSession.getSessionEnd();
+        this.workingStatus = WorkingStatus.NOT_STARTED;
+    }
 }

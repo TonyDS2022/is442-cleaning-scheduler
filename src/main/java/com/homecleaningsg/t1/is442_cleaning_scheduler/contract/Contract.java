@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
 import java.sql.Timestamp;
@@ -29,8 +30,8 @@ public class Contract {
     )
     private int contractId;
 
-    @Column(name = "geolocationId")
-    private int geolocationId;
+    @ManyToOne
+    private Location location;
 
     @Column(name = "acctId")
     private int acctId;
@@ -52,8 +53,8 @@ public class Contract {
     @Column(name = "price")
     private float price;
 
-    @Column(name = "workersAssigned")
-    private int workersAssigned;
+    @Column(name = "workersBudgeted")
+    private int workersBudgeted;
 
     @Column(name = "rooms")
     private int rooms;
