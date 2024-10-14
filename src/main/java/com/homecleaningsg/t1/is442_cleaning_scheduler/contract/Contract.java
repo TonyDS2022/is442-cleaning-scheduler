@@ -52,8 +52,8 @@ public class Contract {
     @Column(name = "price")
     private float price;
 
-    @Column(name = "workersAssigned")
-    private int workersAssigned;
+    @Column(name = "workersBudgeted")
+    private int workersBudgeted;
 
     @Column(name = "rooms")
     private int rooms;
