@@ -1,4 +1,4 @@
-package com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket;
+package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
@@ -16,20 +16,20 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 @Entity
-@Table(name = "SessionTicket")
-public class SessionTicket {
+@Table(name = "Shift")
+public class Shift {
     // reuse sequence generator of sessionId
     @Id
     @SequenceGenerator(
-            name = "session_ticket_sequence",
-            sequenceName = "session_ticket_sequence",
+            name = "shift_sequence",
+            sequenceName = "shift_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "session_ticket_sequence"
+            generator = "shift_sequence"
     )
-    private int sessionTicketId;
+    private int shiftId;
 
     // refers to workerId col to establish relationship
     @NonNull

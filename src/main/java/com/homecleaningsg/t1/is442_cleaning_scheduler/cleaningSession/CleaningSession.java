@@ -2,8 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicket;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,10 +40,10 @@ public class CleaningSession {
     )
     private int cleaningSessionId;
 
-    // refers to cleaningSessionId col to establish relationship with SessionTicket START
+    // refers to cleaningSessionId col to establish relationship with Shift START
     @OneToMany(mappedBy = "cleaningSession", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference // prevent infinite recursion
-    private List<SessionTicket> sessionTickets;
+    private List<Shift> shifts;
 
     @NonNull
     @Column(name = "sessionStart")

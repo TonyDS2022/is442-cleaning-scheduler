@@ -1,7 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicket;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -52,5 +52,5 @@ public class Worker {
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference // to prevent infinite recursion
-    private List<SessionTicket> sessionTickets;
+    private List<Shift> shifts;
 }
