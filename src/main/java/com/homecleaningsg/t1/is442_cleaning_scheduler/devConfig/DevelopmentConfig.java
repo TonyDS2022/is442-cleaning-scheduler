@@ -13,6 +13,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecor
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
 // import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicketConfig;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripConfig;
@@ -57,17 +58,11 @@ public class DevelopmentConfig {
         return new ContractConfig(contractRepository);
     }
 
-    // @Bean
-    // @DependsOn({"workerConfig", "contractConfig"})
-    // public CleaningSessionConfig cleaningSessionConfig(CleaningSessionRepository cleaningSessionRepository, ContractRepository contractRepository, WorkerRepository workerRepository) {
-    //     return new CleaningSessionConfig(cleaningSessionRepository, contractRepository, workerRepository);
-    // }
-
-    // @Bean
-    // @DependsOn({"workerConfig", "contractConfig", "cleaningSessionConfig"})
-    // public SessionTicketConfig sessionTicketConfig() {
-    //     return new SessionTicketConfig();
-    // }
+    @Bean
+    @DependsOn({"workerConfig", "contractConfig"})
+    public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, ShiftRepository shiftRepository, WorkerRepository workerRepository) {
+        return new CleaningSessionConfig(contractRepository, cleaningSessionRepository, shiftRepository, workerRepository);
+    }
 
     @Bean
     public AdminConfig adminConfig(AdminRepository adminRepository) {

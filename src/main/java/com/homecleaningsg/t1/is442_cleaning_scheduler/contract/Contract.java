@@ -29,10 +29,6 @@ public class Contract {
     )
     private int contractId;
 
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<CleaningSession> cleaningSessionId;
-
     @Column(name = "geolocationId")
     private int geolocationId;
 
