@@ -29,8 +29,8 @@ public class Contract {
     )
     private int contractId;
 
-    @Column(name = "geolocationId")
-    private int geolocationId;
+    @ManyToOne
+    private Location location;
 
     @Column(name = "acctId")
     private int acctId;
