@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,15 +18,9 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@IdClass(CleaningSessionId.class)
 @Table(name = "CleaningSession")
 public class CleaningSession {
     // refers to Contract contractId col to establish relationship
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "contractId", nullable = false)
-    @JsonBackReference // prevent infinite recursion
-    private Contract contract;
 
     // use sequence generator for sessionId
     @Id
@@ -42,8 +37,13 @@ public class CleaningSession {
 
     // refers to cleaningSessionId col to establish relationship with Shift START
     @OneToMany(mappedBy = "cleaningSession", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference // prevent infinite recursion
     private List<Shift> shifts;
+
+    @ManyToOne
+    private Location location;
+
+    @Column(name = "workersBudgeted")
+    private int workersBudgeted;
 
     @NonNull
     @Column(name = "sessionStart")
@@ -80,12 +80,28 @@ public class CleaningSession {
         EXCELLENT
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "planningStage")
+    private PlanningStage planningStage;
+
+    public enum PlanningStage {
+        GREEN, /* if workersBudgeted == no. shifts that has a worker assigned */
+        EMBER, /* if workersBudgeted == no. shifts that has a worker assinged but one or more of them has pending leave application */
+        RED, /* if workersBudgeted < no. shifts that has a worker assigned */
+    }
+
     @Column(name = "sessionFeedback")
     private String sessionFeedback;
+
+    @ManyToOne
+    @JoinColumn(name = "contractId", nullable = false)
+    @JsonBackReference // prevent infinite recursion
+    private Contract contract;
 
     // New constructor
     public CleaningSession(Contract contract, Timestamp sessionStart, Timestamp sessionEnd, String sessionDescription, sessionStatus sessionStatus) {
         this.contract = contract;
+        this.location = contract.getLocation();
         this.sessionStart = sessionStart;
         this.sessionEnd = sessionEnd;
         this.sessionDescription = sessionDescription;

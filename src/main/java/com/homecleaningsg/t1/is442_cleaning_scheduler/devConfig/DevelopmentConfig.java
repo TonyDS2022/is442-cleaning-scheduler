@@ -53,9 +53,9 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn("workerConfig")
-    public ContractConfig contractConfig(ContractRepository contractRepository) {
-        return new ContractConfig(contractRepository);
+    @DependsOn({"workerConfig", "locationConfig"})
+    public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository) {
+        return new ContractConfig(contractRepository, locationRepository);
     }
 
     @Bean

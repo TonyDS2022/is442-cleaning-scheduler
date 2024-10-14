@@ -14,15 +14,16 @@ public class LocationConfig implements CommandLineRunner {
     public LocationConfig(LocationRepository locationRepository, LocationService locationService) {
         this.locationRepository = locationRepository;
         this.locationService = locationService;
+        Location loc1 = new Location("649823", "88 Corporation Road");
+        Location loc2 = new Location("438181", "61 Kampong Arang Road");
+
+        this.locationRepository.saveAll(List.of(loc1, loc2));
+
+        this.locationService.updateLocationLatLong().subscribe();
     }
 
     @Override
     public void run(String... args) throws Exception {
-        Location loc1 = new Location("649823", "88 Corporation Road");
-        Location loc2 = new Location("438181", "61 Kampong Arang Road");
 
-        locationRepository.saveAll(List.of(loc1, loc2));
-
-        locationService.updateLocationLatLong().subscribe();
     }
 }
