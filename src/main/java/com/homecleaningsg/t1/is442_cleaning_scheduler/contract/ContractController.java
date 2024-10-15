@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 // temp for retrieving all contracts by cleaningSessionIds
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionIdsRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
