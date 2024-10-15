@@ -24,7 +24,7 @@ public class ContractService {
         return contractRepository.findAll();
     }
 
-    public Optional<Float> getRateByContractId(int contractId) {
+    public Optional<Float> getRateByContractId(Long contractId) {
         Optional<Contract> contract = contractRepository.findById(contractId);
         return contract.map(Contract::getRate);
     }
@@ -36,7 +36,7 @@ public class ContractService {
     //                     .anyMatch(session -> cleaningSessionIds.contains(session.getCleaningSessionId())))
     //             .collect(Collectors.toList());
     // }
-    public List<Contract> getContractsByCleaningSessionIds(List<Integer> cleaningSessionIds) {
+    public List<Contract> getContractsByCleaningSessionIds(List<Long> cleaningSessionIds) {
         return contractRepository.findAll().stream()
                 .filter(contract -> contract.getCleaningSessions().stream()
                         .anyMatch(session -> cleaningSessionIds.contains(session.getCleaningSessionId())))

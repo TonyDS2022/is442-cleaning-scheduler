@@ -28,13 +28,13 @@ public class Contract {
             strategy = GenerationType.SEQUENCE,
             generator = "contract_sequence"
     )
-    private int contractId;
+    private Long contractId;
 
     @ManyToOne
     private Location location;
 
-    @Column(name = "acctId")
-    private int acctId;
+    @Column(name = "clientId")
+    private Long clientId;
 
     @NonNull
     @Column(name = "contractStart")

@@ -112,8 +112,6 @@ public class ShiftConfig implements CommandLineRunner {
      Worker worker1 = workerRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
      Worker worker2 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 2 not found"));
 
-     SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
-
      Shift shift1 = new Shift(session1);
      shift1.setWorker(worker1);
 

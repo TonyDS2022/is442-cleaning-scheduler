@@ -7,7 +7,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
@@ -16,21 +17,18 @@ public class ContractConfig implements CommandLineRunner {
 
     private final ContractRepository contractRepository;
     private final LocationRepository locationRepository;
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
 
     public ContractConfig(ContractRepository contractRepository, LocationRepository locationRepository) {
         this.contractRepository = contractRepository;
         this.locationRepository = locationRepository;
-    }
 
-    @Override
-    public void run(String... args) throws Exception {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
-        Location loc1 = locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location 1 not found"));
-        Location loc2 = locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location 2 not found"));
+        Location loc1 = this.locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location 1 not found"));
+        Location loc2 = this.locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location 2 not found"));
 
         Contract contract1 = new Contract();
-        contract1.setContractStart(new Timestamp(dateFormat.parse("01 Oct 2024").getTime()));
-        contract1.setContractEnd(new Timestamp(dateFormat.parse("01 Jan 2025").getTime()));
+        contract1.setContractStart(Timestamp.valueOf(LocalDateTime.parse("01 Oct 2024 00:00:00", this.dateTimeFormatter)));
+        contract1.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("01 Jan 2025 00:00:00", this.dateTimeFormatter)));
         contract1.setContractComment("Contract 1");
         contract1.setLocation(loc1);
         contract1.setOngoing(true);
@@ -56,6 +54,10 @@ public class ContractConfig implements CommandLineRunner {
         System.out.println("Contract 1 Rate: " + contract1.getRate());
         System.out.println("Contract 2 Rate: " + contract2.getRate());
 
-        contractRepository.saveAll(List.of(contract1, contract2));
+        this.contractRepository.saveAll(List.of(contract1, contract2));
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
     }
 }

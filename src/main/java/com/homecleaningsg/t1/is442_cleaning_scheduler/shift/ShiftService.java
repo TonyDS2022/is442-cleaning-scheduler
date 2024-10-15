@@ -20,7 +20,7 @@ public class ShiftService {
         return shiftRepository.findAll();
     }
 
-    public Optional<Shift> getShiftById(int id) {
+    public Optional<Shift> getShiftById(Long id) {
         return shiftRepository.findById(id);
     }
 
@@ -28,14 +28,14 @@ public class ShiftService {
         shiftRepository.save(shift);
     }
 
-    public void updateShift(int id, Shift shift) {
+    public void updateShift(Long id, Shift shift) {
         if (shiftRepository.existsById(id)) {
             shift.setShiftId(id);
             shiftRepository.save(shift);
         }
     }
 
-    public void deleteShift(int id) {
+    public void deleteShift(Long id) {
         shiftRepository.deleteById(id);
     }
 

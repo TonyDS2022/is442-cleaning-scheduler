@@ -33,7 +33,7 @@ public class CleaningSession {
             strategy = GenerationType.SEQUENCE,
             generator = "cleaning_session_sequence"
     )
-    private int cleaningSessionId;
+    private Long cleaningSessionId;
 
     // refers to cleaningSessionId col to establish relationship with Shift START
     @OneToMany(mappedBy = "cleaningSession", cascade = CascadeType.ALL, orphanRemoval = true)

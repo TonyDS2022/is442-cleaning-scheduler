@@ -26,7 +26,7 @@ public class ContractController {
     }
 
     @GetMapping("/{contractId}/rate")
-    public Optional<Float> getRateByContractId(@PathVariable int contractId) {
+    public Optional<Float> getRateByContractId(@PathVariable Long contractId) {
         return contractService.getRateByContractId(contractId);
     }
 }

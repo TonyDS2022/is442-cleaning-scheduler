@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ShiftRepository extends JpaRepository<Shift, Integer> {
+public interface ShiftRepository extends JpaRepository<Shift, Long> {
     List<Shift> findByWorkerWorkerId(Long workerId);
 }

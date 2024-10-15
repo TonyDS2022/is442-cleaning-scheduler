@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface CleaningSessionRepository extends JpaRepository<CleaningSession, Integer> {
-    List<CleaningSession> findByContract_ContractId(int contractId);
-    Optional<CleaningSession> findByContract_ContractIdAndCleaningSessionId(int contractId, int cleaningSessionId);
+    List<CleaningSession> findByContract_ContractId(Long contractId);
+    Optional<CleaningSession> findByContract_ContractIdAndCleaningSessionId(Long contractId, Long cleaningSessionId);
 }

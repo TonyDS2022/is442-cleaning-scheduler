@@ -6,7 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
@@ -14,24 +15,20 @@ public class CleaningSessionConfig implements CommandLineRunner {
 
     private final ContractRepository contractRepository;
     private final CleaningSessionRepository cleaningSessionRepository;
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
 
     public CleaningSessionConfig(ContractRepository contractRepository,
                                  CleaningSessionRepository cleaningSessionRepository) {
         this.contractRepository = contractRepository;
         this.cleaningSessionRepository = cleaningSessionRepository;
-    }
 
-    @Override
-    public void run(String... args) throws Exception {
-        // Set contract variable
-        Contract contract = contractRepository.findById(1).orElseThrow(() -> new IllegalStateException("Contract not found"));
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+        Contract contract = this.contractRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Contract not found"));
 
         // Attempt to retrieve the CleaningSession at index 1
         CleaningSession session1 = new CleaningSession(
             contract,
-            new Timestamp(dateFormat.parse("05 Oct 2024").getTime()),
-            new Timestamp(dateFormat.parse("05 Oct 2024").getTime()),
+            Timestamp.valueOf(LocalDateTime.parse("05 Oct 2024 00:00:00", this.dateTimeFormatter)),
+            Timestamp.valueOf(LocalDateTime.parse("05 Oct 2024 00:00:00", this.dateTimeFormatter)),
             "Session 1",
             CleaningSession.sessionStatus.WORKING
         );
@@ -39,14 +36,19 @@ public class CleaningSessionConfig implements CommandLineRunner {
         session1.setSessionFeedback("Feedback 1");
 
         CleaningSession session2 = new CleaningSession(
-                contract,
-                new Timestamp(dateFormat.parse("12 Oct 2024").getTime()),
-                new Timestamp(dateFormat.parse("12 Oct 2024").getTime()),
-                "Session 2",
-                CleaningSession.sessionStatus.NOT_STARTED
+            contract,
+            Timestamp.valueOf(LocalDateTime.parse("12 Oct 2024 00:00:00", this.dateTimeFormatter)),
+            Timestamp.valueOf(LocalDateTime.parse("12 Oct 2024 00:00:00", this.dateTimeFormatter)),
+            "Session 2",
+            CleaningSession.sessionStatus.NOT_STARTED
         );
 
-        cleaningSessionRepository.saveAll(List.of(session1, session2));
+        this.cleaningSessionRepository.saveAll(List.of(session1, session2));
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        // Set contract variable
 
         // TODO: Atomize the following code into a separate CommandLineRunner
 //        // Create Shift instances and set the Worker and CleaningSession objects

@@ -30,7 +30,7 @@ public class Shift {
             strategy = GenerationType.SEQUENCE,
             generator = "shift_sequence"
     )
-    private int shiftId;
+    private Long shiftId;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     private Location location;
