@@ -12,8 +12,6 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
-// import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicketConfig;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripConfig;

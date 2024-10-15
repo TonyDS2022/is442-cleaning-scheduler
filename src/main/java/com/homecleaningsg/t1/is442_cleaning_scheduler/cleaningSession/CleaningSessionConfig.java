@@ -4,15 +4,12 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.core.annotation.Order;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Optional;
 
 @Component
-@Order(2) // Ensure that this CommandLineRunner runs after the ContractConfig CommandLineRunner
 public class CleaningSessionConfig implements CommandLineRunner {
 
     private final ContractRepository contractRepository;

@@ -1,7 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;

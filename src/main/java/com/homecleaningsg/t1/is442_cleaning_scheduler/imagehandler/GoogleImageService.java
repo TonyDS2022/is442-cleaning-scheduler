@@ -1,15 +1,14 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.imagehandler;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.google.cloud.storage.*;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Objects;
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
 @Service
 @RequiredArgsConstructor
