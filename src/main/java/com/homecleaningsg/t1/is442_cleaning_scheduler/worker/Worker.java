@@ -1,10 +1,12 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -48,5 +50,13 @@ public class Worker {
     private String bio;
 
     @NonNull
-    private String workingHours;
+    private LocalTime startWorkingHours;
+
+    @NonNull
+    private LocalTime endWorkingHours;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id")
+    private Location location;
+
 }
