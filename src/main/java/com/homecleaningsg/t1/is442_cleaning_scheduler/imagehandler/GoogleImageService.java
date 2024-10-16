@@ -16,7 +16,7 @@ public class GoogleImageService {
 
     private final Storage storageService;
 
-//    @Value("${GCS_BUCKET_NAME}")
+    @Value("${GCS_BUCKET_NAME}")
     private String bucketName;
 
     public String uploadImage(MultipartFile file) throws IOException {
