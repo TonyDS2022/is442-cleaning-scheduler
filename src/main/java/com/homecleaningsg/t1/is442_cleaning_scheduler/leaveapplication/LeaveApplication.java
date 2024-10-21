@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.OffsetDateTime;
@@ -29,7 +30,9 @@ public class LeaveApplication {
     @NonNull
     private Long adminId;
     @NonNull
-    private String leaveType;
+    @Enumerated(EnumType.STRING)
+    private LeaveType leaveType;
+    @JsonIgnore
     private String fileName;
     @NonNull
     private OffsetDateTime affectedShiftStart;
@@ -40,4 +43,15 @@ public class LeaveApplication {
     @NonNull
     @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
+
+    public LeaveApplication(Long workerId, Long adminId, LeaveType leaveType, String fileName, OffsetDateTime affectedShiftStart, OffsetDateTime affectedShiftEnd, OffsetDateTime applicationSubmitted, ApplicationStatus applicationStatus) {
+        this.workerId = workerId;
+        this.adminId = adminId;
+        this.leaveType = leaveType;
+        this.fileName = fileName;
+        this.affectedShiftStart = affectedShiftStart;
+        this.affectedShiftEnd = affectedShiftEnd;
+        this.applicationSubmitted = applicationSubmitted;
+        this.applicationStatus = applicationStatus;
+    }
 }

@@ -6,6 +6,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSe
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationConfig;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
@@ -71,5 +73,10 @@ public class DevelopmentConfig {
     @Bean
     public MedicalRecordConfig medicalRecordConfig(MedicalRecordRepository medicalRecordRepository, MedicalRecordService medicalRecordService) {
         return new MedicalRecordConfig(medicalRecordRepository, medicalRecordService);
+    }
+
+    @Bean
+    public LeaveApplicationConfig leaveApplicationConfig(LeaveApplicationRepository leaveApplicationRepository) {
+        return new LeaveApplicationConfig(leaveApplicationRepository);
     }
 }

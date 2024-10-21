@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v0.1/leave-applications")
@@ -16,42 +19,31 @@ public class LeaveApplicationController {
     // Endpoint to create a new leave application
     @PostMapping
     public ResponseEntity<LeaveApplication> createLeaveApplication(@RequestBody LeaveApplication leaveApplication) {
-        LeaveApplication savedApplication = leaveApplicationService.saveLeaveApplication(leaveApplication);
+        LeaveApplication savedApplication = leaveApplicationService.createLeaveApplication(leaveApplication);
         return ResponseEntity.ok(savedApplication);
     }
 
-    // Endpoint to get a leave application by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<LeaveApplication> getLeaveApplicationById(@PathVariable Long id) {
-        return leaveApplicationService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    // Endpoint to get all pending applications and the most recent approved application for a worker
+    @GetMapping("/worker/{workerId}/pending-with-approved")
+    public ResponseEntity<Map<String, Object>> getPendingAndMostRecentApprovedApplication(@PathVariable Long workerId) {
+        // Retrieve pending applications
+        List<LeaveApplication> pendingApplications = leaveApplicationService.getPendingApplicationsByWorkerId(workerId);
+
+        // Retrieve the most recent approved application (if any)
+        Optional<LeaveApplication> mostRecentApprovedApplication = leaveApplicationService.getMostRecentApprovedApplication(workerId);
+
+        // Create a response map to return both pending applications and the most recent approved application
+        Map<String, Object> response = new HashMap<>();
+        response.put("pendingApplications", pendingApplications);
+        response.put("mostRecentApprovedApplication", mostRecentApprovedApplication.orElse(null));
+
+        return ResponseEntity.ok(response);
     }
 
-    // Endpoint to retrieve all leave applications
-    @GetMapping
-    public ResponseEntity<List<LeaveApplication>> getAllLeaveApplications() {
-        List<LeaveApplication> applications = leaveApplicationService.findAllApplications();
+    // Endpoint to get all historical (non-pending) applications for a specific worker
+    @GetMapping("/worker/{workerId}/history")
+    public ResponseEntity<List<LeaveApplication>> getHistoricalApplicationsByWorkerId(@PathVariable Long workerId) {
+        List<LeaveApplication> applications = leaveApplicationService.getHistoricalApplicationsByWorkerId(workerId);
         return ResponseEntity.ok(applications);
-    }
-
-    // Endpoint to update an existing leave application
-    @PutMapping("/{id}")
-    public ResponseEntity<LeaveApplication> updateLeaveApplication(@PathVariable Long id, @RequestBody LeaveApplication leaveApplication) {
-        // You may want to check if the application exists before updating
-        return leaveApplicationService.findById(id)
-                .map(existingApplication -> {
-                    leaveApplication.setApplicationId(id); // Ensure the ID remains the same
-                    LeaveApplication updatedApplication = leaveApplicationService.updateLeaveApplication(leaveApplication);
-                    return ResponseEntity.ok(updatedApplication);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Endpoint to delete a leave application
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLeaveApplication(@PathVariable Long id) {
-        leaveApplicationService.deleteLeaveApplication(id);
-        return ResponseEntity.noContent().build();
     }
 }
