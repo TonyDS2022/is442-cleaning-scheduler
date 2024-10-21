@@ -1,7 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,15 +46,4 @@ public class ShiftController {
     public List<Shift> getShiftsByWorkerId(@PathVariable("workerId") Long workerId) {
         return shiftService.getShiftsByWorkerId(workerId);
     }
-
-    @PostMapping("/{shiftId}/set-worker/{workerId}")
-    public ResponseEntity<String> assignWorkerToShift(@PathVariable("shiftId") Long shiftId, @PathVariable("workerId") Long workerId) {
-        try {
-            shiftService.setWorker(shiftId, workerId);
-            return ResponseEntity.ok("Worker successfully assigned to shift.");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
 }

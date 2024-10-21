@@ -32,27 +32,23 @@ public class ShiftConfig implements CommandLineRunner {
 
      Worker worker1 = workerRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
      Worker worker2 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 2 not found"));
-     Worker worker6 = workerRepository.findById(6L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
-     Worker worker7 = workerRepository.findById(7L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
 
      Shift shift1 = new Shift(session1);
      shift1.setWorker(worker1);
 
      Shift shift2 = new Shift(session1);
-     shift2.setWorker(worker6);
+     shift2.setWorker(worker2);
 
      Shift shift3 = new Shift(session2);
-     shift3.setWorker(worker7);
+     shift3.setWorker(worker1);
 
      Shift shift4 = new Shift(session2);
      shift4.setWorker(worker2);
 
-     Shift shift5 = new Shift(session2);
-
      session1.setShifts(List.of(shift1, shift2));
-     session2.setShifts(List.of(shift3, shift4,shift5));
+     session2.setShifts(List.of(shift3, shift4));
 
-     shiftRepository.saveAll(List.of(shift1, shift2, shift3, shift4, shift5));
+     shiftRepository.saveAll(List.of(shift1, shift2, shift3, shift4));
      cleaningSessionRepository.saveAll(List.of(session1, session2));
  }
 }

@@ -7,8 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.sql.Timestamp;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,32 +49,18 @@ public class Shift {
     private CleaningSession cleaningSession;
 
     @NonNull
-    @Column(name = "sessionStartDate")
-    private LocalDate sessionStartDate;
+    @Column(name = "sessionStart")
+    private Timestamp sessionStart;
 
     @NonNull
-    @Column(name = "sessionStartTime")
-    private LocalTime sessionStartTime;
+    @Column(name = "sessionEnd")
+    private Timestamp sessionEnd;
 
-    @NonNull
-    @Column(name = "sessionEndDate")
-    private LocalDate sessionEndDate;
+    @Column(name = "actualStart")
+    private Timestamp actualStart;
 
-    @NonNull
-    @Column(name = "sessionEndTime")
-    private LocalTime sessionEndTime;
-
-    @Column(name = "actualStartDate")
-    private LocalDate actualStartDate;
-
-    @Column(name = "actualStartTime")
-    private LocalTime actualStartTime;
-
-    @Column(name = "actualEndDate")
-    private LocalDate actualEndDate;
-
-    @Column(name = "actualEndTime")
-    private LocalTime actualEndTime;
+    @Column(name = "actualEnd")
+    private Timestamp actualEnd;
 
     @NonNull
     @Enumerated(EnumType.STRING)
@@ -102,10 +87,8 @@ public class Shift {
         this.cleaningSession = cleaningSession;
         this.location = cleaningSession.getLocation();
         this.sessionDescription = cleaningSession.getSessionDescription();
-        this.sessionStartDate = cleaningSession.getSessionStartDate();
-        this.sessionStartTime = cleaningSession.getSessionStartTime();
-        this.sessionEndDate = cleaningSession.getSessionEndDate();
-        this.sessionEndTime = cleaningSession.getSessionEndTime();
+        this.sessionStart = cleaningSession.getSessionStart();
+        this.sessionEnd = cleaningSession.getSessionEnd();
         this.workingStatus = WorkingStatus.NOT_STARTED;
     }
 }
