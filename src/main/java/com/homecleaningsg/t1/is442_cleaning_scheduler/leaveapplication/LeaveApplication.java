@@ -1,7 +1,5 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.enumHandler.ApplicationStatus;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.enumHandler.ApplicationStatusConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.OffsetDateTime;
@@ -39,7 +37,7 @@ public class LeaveApplication {
     private OffsetDateTime affectedShiftEnd;
     @NonNull
     private OffsetDateTime applicationSubmitted;
-    @Convert(converter = ApplicationStatusConverter.class)
     @NonNull
+    @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
 }
