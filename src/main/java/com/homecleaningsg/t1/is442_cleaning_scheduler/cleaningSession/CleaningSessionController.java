@@ -23,12 +23,12 @@ public class CleaningSessionController {
     }
 
     @GetMapping("/{contractId}")
-    public List<CleaningSession> getCleaningSessionsByContractId(@PathVariable int contractId) {
+    public List<CleaningSession> getCleaningSessionsByContractId(@PathVariable Long contractId) {
         return cleaningSessionService.getCleaningSessionsByContractId(contractId);
     }
 
     @GetMapping("/{contractId}/{cleaningSessionId}")
-    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(@PathVariable int contractId, @PathVariable int cleaningSessionId) {
+    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(@PathVariable Long contractId, @PathVariable Long cleaningSessionId) {
         return cleaningSessionService.getCleaningSessionByContractIdAndCleaningSessionId(contractId, cleaningSessionId);
     }
 }

@@ -12,7 +12,6 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicketConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripConfig;
@@ -52,21 +51,16 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn("workerConfig")
-    public ContractConfig contractConfig(ContractRepository contractRepository) {
-        return new ContractConfig(contractRepository);
+    @DependsOn({"workerConfig", "locationConfig"})
+    public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository) {
+        return new ContractConfig(contractRepository, locationRepository);
     }
 
     @Bean
     @DependsOn({"workerConfig", "contractConfig"})
-    public CleaningSessionConfig cleaningSessionConfig(CleaningSessionRepository cleaningSessionRepository, ContractRepository contractRepository, WorkerRepository workerRepository) {
-        return new CleaningSessionConfig(cleaningSessionRepository, contractRepository, workerRepository);
-    }
-
-    @Bean
-    @DependsOn({"workerConfig", "contractConfig", "cleaningSessionConfig"})
-    public SessionTicketConfig sessionTicketConfig() {
-        return new SessionTicketConfig();
+    public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository,
+                                                       CleaningSessionRepository cleaningSessionRepository) {
+        return new CleaningSessionConfig(contractRepository, cleaningSessionRepository);
     }
 
     @Bean

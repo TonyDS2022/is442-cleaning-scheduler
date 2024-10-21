@@ -1,9 +1,10 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -27,17 +28,13 @@ public class Contract {
             strategy = GenerationType.SEQUENCE,
             generator = "contract_sequence"
     )
-    private int contractId;
+    private Long contractId;
 
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<CleaningSession> cleaningSessionId;
+    @ManyToOne
+    private Location location;
 
-    @Column(name = "geolocationId")
-    private int geolocationId;
-
-    @Column(name = "acctId")
-    private int acctId;
+    @Column(name = "clientId")
+    private Long clientId;
 
     @NonNull
     @Column(name = "contractStart")
@@ -56,8 +53,8 @@ public class Contract {
     @Column(name = "price")
     private float price;
 
-    @Column(name = "workersAssigned")
-    private int workersAssigned;
+    @Column(name = "workersBudgeted")
+    private int workersBudgeted;
 
     @Column(name = "rooms")
     private int rooms;

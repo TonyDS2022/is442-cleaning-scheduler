@@ -2,12 +2,13 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.sessionTicket.SessionTicket;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -18,15 +19,9 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@IdClass(CleaningSessionId.class)
 @Table(name = "CleaningSession")
 public class CleaningSession {
     // refers to Contract contractId col to establish relationship
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "contractId", nullable = false)
-    @JsonBackReference // prevent infinite recursion
-    private Contract contract;
 
     // use sequence generator for sessionId
     @Id
@@ -39,20 +34,33 @@ public class CleaningSession {
             strategy = GenerationType.SEQUENCE,
             generator = "cleaning_session_sequence"
     )
-    private int cleaningSessionId;
+    private Long cleaningSessionId;
 
-    // refers to cleaningSessionId col to establish relationship with SessionTicket START
+    // refers to cleaningSessionId col to establish relationship with Shift START
     @OneToMany(mappedBy = "cleaningSession", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference // prevent infinite recursion
-    private List<SessionTicket> sessionTickets;
+    private List<Shift> shifts;
+
+    @ManyToOne
+    private Location location;
+
+    @Column(name = "workersBudgeted")
+    private int workersBudgeted;
 
     @NonNull
-    @Column(name = "sessionStart")
-    private Timestamp sessionStart;
+    @Column(name = "sessionStartDate")
+    private LocalDate sessionStartDate;
 
     @NonNull
-    @Column(name = "sessionEnd")
-    private Timestamp sessionEnd;
+    @Column(name = "sessionStartTime")
+    private LocalTime sessionStartTime;
+
+    @NonNull
+    @Column(name = "sessionEndDate")
+    private LocalDate sessionEndDate;
+
+    @NonNull
+    @Column(name = "sessionEndTime")
+    private LocalTime sessionEndTime;
 
     @NonNull
     @Column(name = "sessionDescription")
@@ -81,14 +89,38 @@ public class CleaningSession {
         EXCELLENT
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "planningStage")
+    private PlanningStage planningStage;
+
+    public enum PlanningStage {
+        GREEN, /* if workersBudgeted == no. shifts that has a worker assigned */
+        EMBER, /* if workersBudgeted == no. shifts that has a worker assinged but one or more of them has pending leave application */
+        RED, /* if workersBudgeted < no. shifts that has a worker assigned */
+    }
+
     @Column(name = "sessionFeedback")
     private String sessionFeedback;
 
+    @ManyToOne
+    @JoinColumn(name = "contractId", nullable = false)
+    @JsonBackReference // prevent infinite recursion
+    private Contract contract;
+
     // New constructor
-    public CleaningSession(Contract contract, Timestamp sessionStart, Timestamp sessionEnd, String sessionDescription, sessionStatus sessionStatus) {
+    public CleaningSession(Contract contract,
+                           LocalDate sessionStartDate,
+                           LocalTime sessionStartTime,
+                           LocalDate sessionEndDate,
+                           LocalTime sessionEndTime,
+                           String sessionDescription,
+                           sessionStatus sessionStatus) {
         this.contract = contract;
-        this.sessionStart = sessionStart;
-        this.sessionEnd = sessionEnd;
+        this.location = contract.getLocation();
+        this.sessionStartDate = sessionStartDate;
+        this.sessionStartTime = sessionStartTime;
+        this.sessionEndDate = sessionEndDate;
+        this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
     }

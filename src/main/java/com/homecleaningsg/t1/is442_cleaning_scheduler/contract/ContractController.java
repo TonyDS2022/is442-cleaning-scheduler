@@ -6,12 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// temp for retrieving all contracts by cleaningSessionIds
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionIdsRequest;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -32,16 +26,7 @@ public class ContractController {
     }
 
     @GetMapping("/{contractId}/rate")
-    public Optional<Float> getRateByContractId(@PathVariable int contractId) {
+    public Optional<Float> getRateByContractId(@PathVariable Long contractId) {
         return contractService.getRateByContractId(contractId);
-    }
-
-    // temp for retrieving all contracts by cleaningSessionIds
-    @PostMapping("/byCleaningSessionIds")
-    // public List<Contract> getContractsByCleaningSessionIds(@RequestBody List<Integer> cleaningSessionIds) {
-    //     return contractService.getContractsByCleaningSessionIds(cleaningSessionIds);
-    // }
-    public List<Contract> getContractsByCleaningSessionIds(@RequestBody CleaningSessionIdsRequest request) {
-        return contractService.getContractsByCleaningSessionIds(request.getCleaningSessionIds());
     }
 }

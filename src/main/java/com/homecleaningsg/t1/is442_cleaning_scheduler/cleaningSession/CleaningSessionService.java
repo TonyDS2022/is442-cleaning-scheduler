@@ -20,11 +20,11 @@ public class CleaningSessionService {
         return cleaningSessionRepository.findAll();
     }
 
-    public List<CleaningSession> getCleaningSessionsByContractId(int contractId) {
+    public List<CleaningSession> getCleaningSessionsByContractId(Long contractId) {
         return cleaningSessionRepository.findByContract_ContractId(contractId);
     }
 
-    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(int contractId, int cleaningSessionId) {
+    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(Long contractId, Long cleaningSessionId) {
         return cleaningSessionRepository.findByContract_ContractIdAndCleaningSessionId(contractId, cleaningSessionId);
     }
 }
