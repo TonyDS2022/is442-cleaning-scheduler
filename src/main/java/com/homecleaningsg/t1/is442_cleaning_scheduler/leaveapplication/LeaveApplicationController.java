@@ -17,7 +17,7 @@ public class LeaveApplicationController {
     private LeaveApplicationService leaveApplicationService;
 
     // Endpoint to create a new leave application
-    @PostMapping
+    @PostMapping("/worker/{workerId}/application-submission")
     public ResponseEntity<LeaveApplication> createLeaveApplication(@RequestBody LeaveApplication leaveApplication) {
         LeaveApplication savedApplication = leaveApplicationService.createLeaveApplication(leaveApplication);
         return ResponseEntity.ok(savedApplication);

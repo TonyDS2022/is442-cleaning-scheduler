@@ -20,12 +20,6 @@ public class LeaveApplicationService {
     // Method to create a new LeaveApplication directly from the object
     public LeaveApplication createLeaveApplication(LeaveApplication leaveApplication) {
 
-        // Business logic: If leave type is medical, a file must be attached
-        if (leaveApplication.getLeaveType() == LeaveType.MEDICAL &&
-                (leaveApplication.getFileName() == null || leaveApplication.getFileName().isEmpty())) {
-            throw new IllegalArgumentException("A file must be attached for medical leave.");
-        }
-
         // Save the leave application to the repository
         return leaveApplicationRepository.save(leaveApplication);
     }
@@ -42,10 +36,6 @@ public class LeaveApplicationService {
 
     // Get the most recent approved application for a worker
     public Optional<LeaveApplication> getMostRecentApprovedApplication(Long workerId) {
-        return leaveApplicationRepository.findLastApprovedApplication(workerId, ApplicationStatus.APPROVED);
-    }
-
-    public void deleteLeaveApplication(Long applicationId) {
-        leaveApplicationRepository.deleteById(applicationId);
+        return leaveApplicationRepository.findTopByWorkerIdAndApplicationStatusOrderByApplicationSubmittedDesc(workerId, ApplicationStatus.APPROVED);
     }
 }

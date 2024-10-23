@@ -18,10 +18,5 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
     List<LeaveApplication> findByWorkerIdAndApplicationStatusNot(Long workerId, ApplicationStatus applicationStatus);
 
     // Retrieve the most recent approved application for a worker
-    // Custom query to retrieve the most recent approved application for a worker
-    @Query("SELECT la FROM LeaveApplication la " +
-            "WHERE la.workerId = :workerId AND la.applicationStatus = :applicationStatus " +
-            "ORDER BY la.applicationSubmitted DESC")
-    Optional<LeaveApplication> findLastApprovedApplication(@Param("workerId") Long workerId,
-                                                           @Param("applicationStatus") ApplicationStatus applicationStatus);
+    Optional<LeaveApplication> findTopByWorkerIdAndApplicationStatusOrderByApplicationSubmittedDesc(Long workerId, ApplicationStatus applicationStatus);
 }

@@ -30,7 +30,7 @@ public class LeaveApplicationConfig implements CommandLineRunner {
         );
 
         LeaveApplication leaveApp2 = new LeaveApplication(
-                2L,
+                1L,
                 3L,
                 LeaveType.OTHERS,
                 OffsetDateTime.now().plusDays(2),
@@ -40,7 +40,7 @@ public class LeaveApplicationConfig implements CommandLineRunner {
         );
 
         LeaveApplication leaveApp3 = new LeaveApplication(
-                3L,
+                1L,
                 4L,
                 LeaveType.OTHERS,
                 OffsetDateTime.now().minusDays(3),
@@ -49,10 +49,9 @@ public class LeaveApplicationConfig implements CommandLineRunner {
                 ApplicationStatus.REJECTED
         );
 
-        // Additional approved leave application
         LeaveApplication leaveApp4 = new LeaveApplication(
                 1L,
-                2L,
+                5L,
                 LeaveType.OTHERS,
                 OffsetDateTime.now().minusDays(20),
                 OffsetDateTime.now().minusDays(15),
