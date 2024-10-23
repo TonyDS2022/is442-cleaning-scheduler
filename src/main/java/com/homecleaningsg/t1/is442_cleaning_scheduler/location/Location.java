@@ -26,13 +26,15 @@ public class Location {
             strategy = GenerationType.SEQUENCE,
             generator = "location_sequence"
     )
-    @JsonIgnore
+
     private Long locationId;
 
     @NonNull
     private String address;
     @NonNull
     private String postalCode;
+
+    private String unitNumber;
 
     private Double latitude;
     private Double longitude;

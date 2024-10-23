@@ -7,7 +7,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -46,12 +47,20 @@ public class CleaningSession {
     private int workersBudgeted;
 
     @NonNull
-    @Column(name = "sessionStart")
-    private Timestamp sessionStart;
+    @Column(name = "sessionStartDate")
+    private LocalDate sessionStartDate;
 
     @NonNull
-    @Column(name = "sessionEnd")
-    private Timestamp sessionEnd;
+    @Column(name = "sessionStartTime")
+    private LocalTime sessionStartTime;
+
+    @NonNull
+    @Column(name = "sessionEndDate")
+    private LocalDate sessionEndDate;
+
+    @NonNull
+    @Column(name = "sessionEndTime")
+    private LocalTime sessionEndTime;
 
     @NonNull
     @Column(name = "sessionDescription")
@@ -99,11 +108,19 @@ public class CleaningSession {
     private Contract contract;
 
     // New constructor
-    public CleaningSession(Contract contract, Timestamp sessionStart, Timestamp sessionEnd, String sessionDescription, sessionStatus sessionStatus) {
+    public CleaningSession(Contract contract,
+                           LocalDate sessionStartDate,
+                           LocalTime sessionStartTime,
+                           LocalDate sessionEndDate,
+                           LocalTime sessionEndTime,
+                           String sessionDescription,
+                           sessionStatus sessionStatus) {
         this.contract = contract;
         this.location = contract.getLocation();
-        this.sessionStart = sessionStart;
-        this.sessionEnd = sessionEnd;
+        this.sessionStartDate = sessionStartDate;
+        this.sessionStartTime = sessionStartTime;
+        this.sessionEndDate = sessionEndDate;
+        this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
     }
