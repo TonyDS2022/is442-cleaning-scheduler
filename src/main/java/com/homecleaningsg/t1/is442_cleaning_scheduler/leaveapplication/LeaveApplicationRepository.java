@@ -19,4 +19,5 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 
     // Retrieve the most recent approved application for a worker
     Optional<LeaveApplication> findTopByWorkerIdAndApplicationStatusOrderByApplicationSubmittedDesc(Long workerId, ApplicationStatus applicationStatus);
+    boolean existsByImageHash(String imageHash);
 }
