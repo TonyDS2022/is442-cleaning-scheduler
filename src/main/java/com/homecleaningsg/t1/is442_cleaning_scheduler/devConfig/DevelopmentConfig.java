@@ -2,6 +2,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.devConfig;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftConfig;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
@@ -62,10 +64,18 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn({"workerConfig", "contractConfig"})
+    @DependsOn({"workerConfig", "contractConfig", "locationConfig"})
     public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository,
                                                        CleaningSessionRepository cleaningSessionRepository) {
         return new CleaningSessionConfig(contractRepository, cleaningSessionRepository);
+    }
+
+    @Bean
+    @DependsOn({"workerConfig", "contractConfig", "locationConfig", "cleaningSessionConfig"})
+    public ShiftConfig shiftConfig(CleaningSessionRepository cleaningSessionRepository,
+                                   ShiftRepository shiftRepository,
+                                   WorkerRepository workerRepository) {
+        return new ShiftConfig(cleaningSessionRepository, shiftRepository, workerRepository);
     }
 
     @Bean
