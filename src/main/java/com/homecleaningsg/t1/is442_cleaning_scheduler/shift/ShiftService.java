@@ -3,8 +3,9 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,12 +15,16 @@ public class ShiftService {
 
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
+    private final CleaningSessionRepository cleaningSessionRepository;
 
     @Autowired
     public ShiftService(ShiftRepository shiftRepository,
-                        WorkerRepository workerRepository) {
+                        WorkerRepository workerRepository,
+                        CleaningSessionRepository cleaningSessionRepository
+    ) {
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
+        this.cleaningSessionRepository = cleaningSessionRepository;
     }
 
     public List<Shift> getAllShifts() {
@@ -32,6 +37,7 @@ public class ShiftService {
 
     public void addShift(Shift shift) {
         shiftRepository.save(shift);
+        updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
     public void updateShift(Long shiftId, Shift shift) {
@@ -41,9 +47,21 @@ public class ShiftService {
         }
     }
 
+    // public void deleteShift(Long shiftId) {
+    //     shiftRepository.deleteById(shiftId);
+    // }
     public void deleteShift(Long shiftId) {
+        Shift shift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
         shiftRepository.deleteById(shiftId);
+        updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
+
+    private void updateCleaningSessionPlanningStage(CleaningSession cleaningSession) {
+        cleaningSession.updatePlanningStage();
+        cleaningSessionRepository.save(cleaningSession);
+    }
+
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {
         return shiftRepository.findByWorkerWorkerId(workerId);
