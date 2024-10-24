@@ -95,7 +95,7 @@ public class CleaningSession {
 
     public enum PlanningStage {
         GREEN, /* if workersBudgeted == no. shifts that has a worker assigned */
-        EMBER, /* if workersBudgeted == no. shifts that has a worker assinged but one or more of them has pending leave application */
+        EMBER, /* if workersBudgeted == no. shifts that has a worker assigned but one or more of them has pending leave application */
         RED, /* if workersBudgeted < no. shifts that has a worker assigned */
     }
 
@@ -114,14 +114,40 @@ public class CleaningSession {
                            LocalDate sessionEndDate,
                            LocalTime sessionEndTime,
                            String sessionDescription,
-                           sessionStatus sessionStatus) {
+                           sessionStatus sessionStatus,
+                           int workersBudgeted
+                           ) {
         this.contract = contract;
-        this.location = contract.getLocation();
         this.sessionStartDate = sessionStartDate;
         this.sessionStartTime = sessionStartTime;
         this.sessionEndDate = sessionEndDate;
         this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
+        this.workersBudgeted = workersBudgeted;
+        this.location = contract.getLocation();
+    }
+
+    // update PlanningStage based on the shift's number of workers assigned and pending leave
+    public void updatePlanningStage() {
+        boolean hasPendingLeave = false;
+        int assignedWorkers = 0;
+
+        for (Shift shift : shifts) {
+            if (shift.isWorkerHasPendingLeave()) {
+                hasPendingLeave = true;
+            }
+            if (shift.getWorker() != null) {
+                assignedWorkers++;
+            }
+        }
+
+        if (assignedWorkers < workersBudgeted) {
+            this.planningStage = PlanningStage.RED;
+        } else if (hasPendingLeave) {
+            this.planningStage = PlanningStage.EMBER;
+        } else {
+            this.planningStage = PlanningStage.GREEN;
+        }
     }
 }

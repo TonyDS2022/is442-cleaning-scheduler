@@ -29,13 +29,6 @@ public class ContractService {
         return contract.map(Contract::getRate);
     }
 
-    // // temp for retrieving all contracts by cleaningSessionIds
-    // public List<Contract> getContractsByCleaningSessionIds(List<Integer> cleaningSessionIds) {
-    //     return contractRepository.findAll().stream()
-    //             .filter(contract -> contract.getCleaningSessions().stream()
-    //                     .anyMatch(session -> cleaningSessionIds.contains(session.getCleaningSessionId())))
-    //             .collect(Collectors.toList());
-    // }
     public List<Contract> getContractsByCleaningSessionIds(List<Long> cleaningSessionIds) {
         return contractRepository.findAll().stream()
                 .filter(contract -> contract.getCleaningSessions().stream()

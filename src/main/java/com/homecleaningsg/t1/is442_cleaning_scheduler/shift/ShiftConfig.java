@@ -49,10 +49,10 @@ public class ShiftConfig implements CommandLineRunner {
 
      Shift shift5 = new Shift(session2);
 
+     shiftRepository.saveAll(List.of(shift1, shift2, shift3, shift4, shift5));
+
      session1.setShifts(List.of(shift1, shift2));
      session2.setShifts(List.of(shift3, shift4,shift5));
-
-     shiftRepository.saveAll(List.of(shift1, shift2, shift3, shift4, shift5));
      cleaningSessionRepository.saveAll(List.of(session1, session2));
  }
 }
