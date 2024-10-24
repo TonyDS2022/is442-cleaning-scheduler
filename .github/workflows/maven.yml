@@ -19,15 +19,60 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgis/postgis:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: is442_proj
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn clean install
-    - name: Test Compilation
-      run: mvn test
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 1
+          done
+      - name: Create PostGIS Extension
+        run: |
+          psql -h localhost -U postgres -d is442_proj -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+        env:
+          PGPASSWORD: postgres
+      - name: Verify Database Connection
+        run: |
+          psql -h localhost -U postgres -d is442_proj -c '\l'
+        env:
+          PGPASSWORD: postgres
+      - name: Build with Maven
+        run: mvn clean install
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/is442_proj
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          GOOGLE_OD_API_KEY: dummy_key
+          GCS_BUCKET_NAME: dummy_name
+          GCS_PROJECT_ID: dummy_id
+      - name: Test Compilation
+        run: mvn test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/is442_proj
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          GOOGLE_OD_API_KEY: dummy_key
+          GCS_BUCKET_NAME: dummy_name
+          GCS_PROJECT_ID: dummy_id
