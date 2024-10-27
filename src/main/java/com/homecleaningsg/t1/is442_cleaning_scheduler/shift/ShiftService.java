@@ -35,9 +35,9 @@ public class ShiftService {
         return shiftRepository.findById(shiftId);
     }
 
-    public Shift addShift(Shift shift) {
+    public void addShift(Shift shift) {
         return shiftRepository.save(shift);
-        updateCleaningSessionPlanningStage(shift.getCleaningSession());
+        // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
     public Shift updateShift(Long shiftId, Shift updatedShift) {
@@ -63,13 +63,13 @@ public class ShiftService {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
         shiftRepository.deleteById(shiftId);
-        updateCleaningSessionPlanningStage(shift.getCleaningSession());
+        // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
-    private void updateCleaningSessionPlanningStage(CleaningSession cleaningSession) {
-        cleaningSession.updatePlanningStage();
-        cleaningSessionRepository.save(cleaningSession);
-    }
+    // private void updateCleaningSessionPlanningStage(CleaningSession cleaningSession) {
+    //     cleaningSession.updatePlanningStage();
+    //     cleaningSessionRepository.save(cleaningSession);
+    // }
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {
         return shiftRepository.findByWorkerWorkerId(workerId);

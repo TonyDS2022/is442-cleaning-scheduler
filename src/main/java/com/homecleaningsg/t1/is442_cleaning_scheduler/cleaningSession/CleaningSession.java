@@ -88,8 +88,10 @@ public class CleaningSession {
         EXCELLENT
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "planningStage")
+    // @Enumerated(EnumType.STRING)
+    // @Column(name = "planningStage")
+    // private PlanningStage planningStage;
+    @Transient
     private PlanningStage planningStage;
 
     public enum PlanningStage {
@@ -137,8 +139,31 @@ public class CleaningSession {
         this.location = contract.getLocation();
     }
 
-    // update PlanningStage based on the shift's number of workers assigned and pending leave
-    public void updatePlanningStage() {
+    // // update PlanningStage based on the shift's number of workers assigned and pending leave
+    // public void updatePlanningStage() {
+    //     boolean hasPendingLeave = false;
+    //     int assignedWorkers = 0;
+    //
+    //     for (Shift shift : shifts) {
+    //         if (shift.isWorkerHasPendingLeave()) {
+    //             hasPendingLeave = true;
+    //         }
+    //         if (shift.getWorker() != null) {
+    //             assignedWorkers++;
+    //         }
+    //     }
+    //
+    //     if (assignedWorkers < workersBudgeted) {
+    //         this.planningStage = PlanningStage.RED;
+    //     } else if (hasPendingLeave) {
+    //         this.planningStage = PlanningStage.EMBER;
+    //     } else {
+    //         this.planningStage = PlanningStage.GREEN;
+    //     }
+    // }
+
+    // Update PlanningStage based on the shift's number of workers assigned and pending leave
+    public PlanningStage getPlanningStage() {
         boolean hasPendingLeave = false;
         int assignedWorkers = 0;
 
@@ -152,11 +177,11 @@ public class CleaningSession {
         }
 
         if (assignedWorkers < workersBudgeted) {
-            this.planningStage = PlanningStage.RED;
+            return PlanningStage.RED;
         } else if (hasPendingLeave) {
-            this.planningStage = PlanningStage.EMBER;
+            return PlanningStage.EMBER;
         } else {
-            this.planningStage = PlanningStage.GREEN;
+            return PlanningStage.GREEN;
         }
     }
 
