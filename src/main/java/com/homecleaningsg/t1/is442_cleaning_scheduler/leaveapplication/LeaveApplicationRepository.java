@@ -1,9 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.ApplicationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +17,6 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
     // Retrieve the most recent approved application for a worker
     Optional<LeaveApplication> findTopByWorkerIdAndApplicationStatusOrderByApplicationSubmittedDesc(Long workerId, ApplicationStatus applicationStatus);
     boolean existsByImageHash(String imageHash);
+
+    Optional<LeaveApplication> findTopByWorkerIdAndLeaveTypeAndApplicationStatusOrderByApplicationSubmittedDesc(Long workerId, LeaveType leaveType, ApplicationStatus applicationStatus);
 }

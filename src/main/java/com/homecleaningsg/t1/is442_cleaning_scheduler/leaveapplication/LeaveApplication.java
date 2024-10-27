@@ -12,8 +12,6 @@ import java.time.OffsetDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
-@Builder
 public class LeaveApplication {
     @Id
     @SequenceGenerator(
@@ -26,38 +24,62 @@ public class LeaveApplication {
             generator = "leave_application_sequence"
     )
     private Long applicationId;
+
     @NonNull
     private Long workerId;
+
     @NonNull
     private Long adminId;
+
     @NonNull
     @Enumerated(EnumType.STRING)
     private LeaveType leaveType;
+
     @JsonIgnore
     private String fileName;
+
     @JsonIgnore
     private String imageHash;
+
     @NonNull
     private OffsetDateTime affectedShiftStart;
+
     @NonNull
     private OffsetDateTime affectedShiftEnd;
+
     @NonNull
     private OffsetDateTime applicationSubmitted;
+
     @NonNull
     @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
 
     private int medicalLeaveBalance;
+
     private int otherLeaveBalance;
 
-    public LeaveApplication(Long workerId, Long adminId, LeaveType leaveType, String fileName, OffsetDateTime affectedShiftStart, OffsetDateTime affectedShiftEnd, OffsetDateTime applicationSubmitted, ApplicationStatus applicationStatus) {
+    // Full constructor for including optional fields
+    public LeaveApplication(@NonNull Long workerId,
+                            @NonNull Long adminId,
+                            @NonNull LeaveType leaveType,
+                            String fileName,
+                            String imageHash,
+                            @NonNull OffsetDateTime affectedShiftStart,
+                            @NonNull OffsetDateTime affectedShiftEnd,
+                            @NonNull OffsetDateTime applicationSubmitted,
+                            @NonNull ApplicationStatus applicationStatus,
+                            int medicalLeaveBalance,
+                            int otherLeaveBalance) {
         this.workerId = workerId;
         this.adminId = adminId;
         this.leaveType = leaveType;
         this.fileName = fileName;
+        this.imageHash = imageHash;
         this.affectedShiftStart = affectedShiftStart;
         this.affectedShiftEnd = affectedShiftEnd;
         this.applicationSubmitted = applicationSubmitted;
         this.applicationStatus = applicationStatus;
+        this.medicalLeaveBalance = medicalLeaveBalance;
+        this.otherLeaveBalance = otherLeaveBalance;
     }
 }
