@@ -89,9 +89,6 @@ public class CleaningSession {
         EXCELLENT
     }
 
-    // @Enumerated(EnumType.STRING)
-    // @Column(name = "planningStage")
-    // private PlanningStage planningStage;
     @Transient
     private PlanningStage planningStage;
 
@@ -116,8 +113,7 @@ public class CleaningSession {
                            LocalDate sessionEndDate,
                            LocalTime sessionEndTime,
                            String sessionDescription,
-                           sessionStatus sessionStatus,
-                           int workersBudgeted
+                           sessionStatus sessionStatus
                            ) {
         this.contract = contract;
         this.sessionStartDate = sessionStartDate;
@@ -126,32 +122,9 @@ public class CleaningSession {
         this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
-        this.workersBudgeted = workersBudgeted;
+        this.workersBudgeted = contract.getWorkersBudgeted();
         this.location = contract.getLocation();
     }
-
-    // // update PlanningStage based on the shift's number of workers assigned and pending leave
-    // public void updatePlanningStage() {
-    //     boolean hasPendingLeave = false;
-    //     int assignedWorkers = 0;
-    //
-    //     for (Shift shift : shifts) {
-    //         if (shift.isWorkerHasPendingLeave()) {
-    //             hasPendingLeave = true;
-    //         }
-    //         if (shift.getWorker() != null) {
-    //             assignedWorkers++;
-    //         }
-    //     }
-    //
-    //     if (assignedWorkers < workersBudgeted) {
-    //         this.planningStage = PlanningStage.RED;
-    //     } else if (hasPendingLeave) {
-    //         this.planningStage = PlanningStage.EMBER;
-    //     } else {
-    //         this.planningStage = PlanningStage.GREEN;
-    //     }
-    // }
 
     // Update PlanningStage based on the shift's number of workers assigned and pending leave
     public PlanningStage getPlanningStage() {
