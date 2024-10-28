@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ShiftRepository extends JpaRepository<Shift, Long> {
@@ -27,4 +28,10 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
     @Query("SELECT s FROM Shift s WHERE s.sessionStartDate = :date AND s.worker.workerId = :workerId")
     List<Shift> findByDayAndWorker(@Param("date") LocalDate date, @Param("workerId") Long workerId);
+
+    @Query("SELECT s FROM Shift s WHERE s.sessionStartDate = :date AND s.worker.workerId = :workerId AND s.sessionEndTime < :time ORDER BY s.sessionEndTime DESC")
+    List<Shift> findLastShiftByDayAndWorkerBeforeTime(@Param("workerId") Long workerId,
+                                                          @Param("date") LocalDate date,
+                                                          @Param("time") LocalTime time);
+
 }

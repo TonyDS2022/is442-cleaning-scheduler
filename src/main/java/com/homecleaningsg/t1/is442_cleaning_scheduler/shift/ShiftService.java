@@ -10,6 +10,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSe
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -85,6 +86,10 @@ public class ShiftService {
 
     public List<Shift> getShiftsByDayAndWorker(LocalDate date, Long workerId) {
         return shiftRepository.findByDayAndWorker(date, workerId);
+    }
+
+    public List<Shift> getLastShiftByDayAndWorkerBeforeTime(Long workerId, LocalDate date, LocalTime time) {
+        return shiftRepository.findLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
     }
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {
