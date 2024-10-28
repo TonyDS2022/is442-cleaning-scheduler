@@ -15,13 +15,16 @@ public class ShiftConfig implements CommandLineRunner {
  private final CleaningSessionRepository cleaningSessionRepository;
  private final ShiftRepository shiftRepository;
  private final WorkerRepository workerRepository;
+ private final ShiftWorkerService shiftWorkerService;
 
  public ShiftConfig(CleaningSessionRepository cleaningSessionRepository,
                     ShiftRepository shiftRepository,
-                    WorkerRepository workerRepository) {
+                    WorkerRepository workerRepository,
+                    ShiftWorkerService shiftWorkerService) {
      this.cleaningSessionRepository = cleaningSessionRepository;
      this.shiftRepository = shiftRepository;
      this.workerRepository = workerRepository;
+     this.shiftWorkerService = shiftWorkerService;
  }
 
  @Override
