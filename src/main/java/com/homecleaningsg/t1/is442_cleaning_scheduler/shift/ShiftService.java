@@ -4,6 +4,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,11 +53,18 @@ public class ShiftService {
         // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
-    // private void updateCleaningSessionPlanningStage(CleaningSession cleaningSession) {
-    //     cleaningSession.updatePlanningStage();
-    //     cleaningSessionRepository.save(cleaningSession);
-    // }
+    // get shifts by month, week, day, worker
+    public List<Shift> getShiftsByMonthAndWorker(int month, int year, Long workerId) {
+        return shiftRepository.findByMonthAndWorker(month, year, workerId);
+    }
 
+    public List<Shift> getShiftsByWeekAndWorker(int week, int year, Long workerId) {
+        return shiftRepository.findByWeekAndWorker(week, year, workerId);
+    }
+
+    public List<Shift> getShiftsByDayAndWorker(LocalDate date, Long workerId) {
+        return shiftRepository.findByDayAndWorker(date, workerId);
+    }
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {
         return shiftRepository.findByWorkerWorkerId(workerId);
