@@ -1,13 +1,10 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalTime;
-import java.util.List;
 
 @NoArgsConstructor
 @RequiredArgsConstructor
