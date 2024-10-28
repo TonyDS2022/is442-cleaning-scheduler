@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,12 @@ import java.util.Optional;
 public class ShiftController {
 
     private final ShiftService shiftService;
+    private final ShiftWorkerService shiftWorkerService;
 
     @Autowired
-    public ShiftController(ShiftService shiftService) {
+    public ShiftController(ShiftService shiftService, ShiftWorkerService shiftWorkerService) {
         this.shiftService = shiftService;
+        this.shiftWorkerService = shiftWorkerService;
     }
 
     @GetMapping
@@ -86,5 +89,14 @@ public class ShiftController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // http://localhost:8080/api/v0.1/shift/worker/1/last-known-location?date=2024-10-05&time=15:00
+    @GetMapping("/worker/{workerId}/last-known-location")
+    public Location getWorkerLastKnownLocation(@PathVariable("workerId") Long workerId,
+                                               @RequestParam LocalDate date,
+                                               @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
+
+        return shiftWorkerService.getWorkerLastKnownLocation(workerId, date, time);
     }
 }

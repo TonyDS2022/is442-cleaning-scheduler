@@ -129,4 +129,19 @@ public class ShiftService {
                 .filter(worker -> isWorkerAvailableForShift(worker, newShift))
                 .collect(Collectors.toList());
     }
+
+    public Shift findLastShiftOnDayBeforeTime(Long workerId, LocalDate date, LocalTime time){
+        List<Shift> allWorkerShiftsOnDay = this.getLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
+        List<Shift> allWorkerShiftsOnDayBeforeTime = allWorkerShiftsOnDay.stream()
+                .filter(shift -> shift.getSessionEndTime().isBefore(time))
+                .toList();
+
+        if (allWorkerShiftsOnDayBeforeTime.isEmpty()) {
+            return null;
+        }
+
+        return allWorkerShiftsOnDayBeforeTime.stream()
+                .max((shift1, shift2) -> shift1.getSessionEndTime().compareTo(shift2.getSessionEndTime()))
+                .orElse(null);
+    }
 }
