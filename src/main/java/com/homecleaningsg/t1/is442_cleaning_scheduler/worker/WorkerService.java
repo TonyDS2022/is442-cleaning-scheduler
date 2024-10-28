@@ -19,12 +19,20 @@ import java.util.stream.Collectors;
 @Service
 public class WorkerService {
     private final WorkerRepository workerRepository;
+    private final LocationRepository locationRepository;
+    private final ShiftService shiftService;
     private final ShiftRepository shiftRepository;
 
-
     @Autowired
-    public WorkerService(WorkerRepository workerRepository, ShiftRepository shiftRepository) {
+    public WorkerService(
+            WorkerRepository workerRepository,
+            LocationRepository locationRepository,
+            ShiftService shiftService,
+            ShiftRepository shiftRepository
+    ) {
         this.workerRepository = workerRepository;
+        this.locationRepository = locationRepository;
+        this.shiftService = shiftService;
         this.shiftRepository = shiftRepository;
     }
 
@@ -34,6 +42,31 @@ public class WorkerService {
 
     public Worker getWorkerByUsername(String username) {
         return workerRepository.findByUsername(username).orElse(null);
+    }
+
+    public void addResidentialAddressToWorker(Long workerId, Long locationId) {
+        // Find the worker by ID
+        Optional<Worker> workerOptional = workerRepository.findById(workerId);
+        // Find the location by ID
+        Optional<Location> locationOptional = locationRepository.findById(locationId);
+
+        if (workerOptional.isPresent() && locationOptional.isPresent()) {
+            Worker worker = workerOptional.get();
+            Location location = locationOptional.get();
+            // Set the location to the worker
+            worker.setLocation(location);
+            // Save the updated worker
+            workerRepository.save(worker);
+        } else {
+            // Handle cases where the worker or location is not found
+            throw new RuntimeException("Worker or Location not found");
+        }
+    }
+
+    public Location getResidentialAddressOfWorker(Long workerId) {
+        return workerRepository.findById(workerId)
+                .map(Worker::getLocation)
+                .orElse(null); // Return null if worker not found
     }
 
     public Worker addWorker(Worker worker){

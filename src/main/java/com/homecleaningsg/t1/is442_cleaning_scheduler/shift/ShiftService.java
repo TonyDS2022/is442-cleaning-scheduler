@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +129,7 @@ public class ShiftService {
                 && !newShift.getSessionEndTime().isAfter(worker.getEndWorkingHours());
     }
 
-    public boolean isWorkerAvailable(Worker worker, Shift newShift){
+    public boolean isWorkerAvailableForShift(Worker worker, Shift newShift){
         List<Shift> workerShifts = this.getShiftsByDayAndWorker(newShift.getSessionStartDate(), worker.getWorkerId());
         boolean hasConflict = workerShifts.stream()
                 .anyMatch(existingShift -> shiftsTimeOverlap(existingShift, newShift));
@@ -140,14 +141,12 @@ public class ShiftService {
         return shiftIsWithinWorkingHours(worker,newShift);
     }
 
-    public List<Worker> getAvailableWorkersForShift(Long shiftId) {
-        Shift newShift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+    public List<Worker> getAvailableWorkersForShift(Shift newShift) {
 
         List<Worker> allWorkers = workerRepository.findAll();
 
         return allWorkers.stream()
-                .filter(worker -> isWorkerAvailable(worker, newShift))
+                .filter(worker -> isWorkerAvailableForShift(worker, newShift))
                 .collect(Collectors.toList());
     }
 }
