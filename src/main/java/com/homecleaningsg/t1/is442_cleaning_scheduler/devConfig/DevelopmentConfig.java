@@ -50,8 +50,8 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    public WorkerConfig workerConfig(WorkerRepository workerRepository) {
-        return new WorkerConfig(workerRepository);
+    public WorkerConfig workerConfig(WorkerRepository workerRepository, LocationRepository locationRepository) {
+        return new WorkerConfig(workerRepository, locationRepository);
     }
 
     @Bean
