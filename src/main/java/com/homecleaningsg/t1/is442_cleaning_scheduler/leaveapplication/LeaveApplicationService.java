@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.imagehandler.GoogleImageService;
 import lombok.*;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -57,6 +60,24 @@ public class LeaveApplicationService {
     // Get the most recent approved application for a worker
     public Optional<LeaveApplication> getMostRecentApprovedApplication(Long workerId) {
         return leaveApplicationRepository.findTopByWorkerIdAndApplicationStatusOrderByApplicationSubmittedDesc(workerId, ApplicationStatus.APPROVED);
+    }
+
+    public boolean isWorkerOnLeave(Long workerId, LocalDate shiftStartDate, LocalTime shiftStartTime, LocalDate shiftEndDate, LocalTime shiftEndTime) {
+        List<LeaveApplication> historicalApplications = getHistoricalApplicationsByWorkerId(workerId);
+
+        return historicalApplications.stream().anyMatch(application -> {
+            OffsetDateTime leaveStart = application.getAffectedShiftStart();
+            OffsetDateTime leaveEnd = application.getAffectedShiftEnd();
+
+            LocalDate leaveStartDate = leaveStart.toLocalDate();
+            LocalTime leaveStartTime = leaveStart.toLocalTime();
+            LocalDate leaveEndDate = leaveEnd.toLocalDate();
+            LocalTime leaveEndTime = leaveEnd.toLocalTime();
+
+            return (shiftStartDate.isEqual(leaveStartDate) && !shiftStartTime.isBefore(leaveStartTime)) || // Same start day and shift start after or at leave start
+                    (shiftEndDate.isEqual(leaveEndDate) && !shiftEndTime.isAfter(leaveEndTime)) ||          // Same end day and shift end before or at leave end
+                    (shiftStartDate.isAfter(leaveStartDate) && shiftEndDate.isBefore(leaveEndDate));
+        });
     }
 
     //

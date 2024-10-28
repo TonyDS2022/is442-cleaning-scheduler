@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,15 @@ public class ShiftController {
 
     private final ShiftService shiftService;
     private final ShiftWorkerService shiftWorkerService;
+    private final LeaveApplicationService leaveApplicationService;
 
     @Autowired
-    public ShiftController(ShiftService shiftService, ShiftWorkerService shiftWorkerService) {
+    public ShiftController(ShiftService shiftService,
+                           ShiftWorkerService shiftWorkerService,
+                           LeaveApplicationService leaveApplicationService) {
         this.shiftService = shiftService;
         this.shiftWorkerService = shiftWorkerService;
+        this.leaveApplicationService = leaveApplicationService;
     }
 
     @GetMapping
@@ -118,4 +123,17 @@ public class ShiftController {
 
         return shiftWorkerService.getWorkerLastKnownLocation(workerId, date, time);
     }
+
+    // http://localhost:8080/api/v0.1/shift/worker/5/is-worker-on-leave?shiftStartDate=2024-10-05&shiftStartTime=15:00&shiftEndDate=2024-10-05&shiftEndTime=18:00
+    @GetMapping("/worker/{workerId}/is-worker-on-leave")
+    public ResponseEntity<Boolean> isWorkerOnLeave(
+            @PathVariable Long workerId,
+            @RequestParam LocalDate shiftStartDate,
+            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime shiftStartTime,
+            @RequestParam LocalDate shiftEndDate,
+            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime shiftEndTime) {
+        boolean isOnLeave = leaveApplicationService.isWorkerOnLeave(workerId, shiftStartDate, shiftStartTime, shiftEndDate, shiftEndTime);
+        return ResponseEntity.ok(isOnLeave);
+    }
+
 }

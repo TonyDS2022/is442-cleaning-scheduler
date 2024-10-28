@@ -130,6 +130,19 @@ public class ShiftService {
     }
 
     public boolean isWorkerAvailableForShift(Worker worker, Shift newShift){
+
+        boolean isOnLeave = leaveApplicationService.isWorkerOnLeave(
+                worker.getWorkerId(),
+                newShift.getSessionStartDate(),
+                newShift.getSessionStartTime(),
+                newShift.getSessionEndDate(),
+                newShift.getSessionEndTime()
+        );
+
+        if (isOnLeave) {
+            return false;
+        }
+
         List<Shift> workerShifts = this.getShiftsByDayAndWorker(newShift.getSessionStartDate(), worker.getWorkerId());
         boolean hasConflict = workerShifts.stream()
                 .anyMatch(existingShift -> shiftsTimeOverlap(existingShift, newShift));
