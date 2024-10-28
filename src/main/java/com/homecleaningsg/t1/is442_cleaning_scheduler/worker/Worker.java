@@ -60,7 +60,7 @@ public class Worker {
     @NonNull
     private LocalTime endWorkingHours;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "location_id")
     private Location location;
 
