@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,13 +19,16 @@ public class ShiftService {
 
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
+    private final LeaveApplicationService leaveApplicationService;
 
     @Autowired
     public ShiftService(ShiftRepository shiftRepository,
-                        WorkerRepository workerRepository
+                        WorkerRepository workerRepository,
+                        LeaveApplicationService leaveApplicationService
     ) {
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
+        this.leaveApplicationService = leaveApplicationService;
     }
 
     public List<Shift> getAllShifts() {
@@ -110,6 +115,19 @@ public class ShiftService {
     }
 
     public boolean isWorkerAvailableForShift(Worker worker, Shift newShift){
+
+        boolean isOnLeave = leaveApplicationService.isWorkerOnLeave(
+                worker.getWorkerId(),
+                newShift.getSessionStartDate(),
+                newShift.getSessionStartTime(),
+                newShift.getSessionEndDate(),
+                newShift.getSessionEndTime()
+        );
+
+        if (isOnLeave) {
+            return false;
+        }
+
         List<Shift> workerShifts = this.getShiftsByDayAndWorker(newShift.getSessionStartDate(), worker.getWorkerId());
         boolean hasConflict = workerShifts.stream()
                 .anyMatch(existingShift -> shiftsTimeOverlap(existingShift, newShift));
