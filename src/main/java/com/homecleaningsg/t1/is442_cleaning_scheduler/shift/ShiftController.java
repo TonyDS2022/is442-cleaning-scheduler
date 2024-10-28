@@ -1,10 +1,12 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,6 +67,15 @@ public class ShiftController {
     @GetMapping("/worker/{workerId}/day")
     public List<Shift> getShiftsByDayAndWorker(@PathVariable("workerId") Long workerId, @RequestParam LocalDate date) {
         return shiftService.getShiftsByDayAndWorker(date, workerId);
+    }
+
+    // http://localhost:8080/api/v0.1/shift/worker/1/dayLastShiftBeforeTime?date=2024-10-05&time=15:00
+    @GetMapping("/worker/{workerId}/dayLastShiftBeforeTime")
+    public List<Shift> getLastShiftByDayAndWorkerBeforeTime(@PathVariable("workerId") Long workerId,
+                                                                      @RequestParam LocalDate date,
+                                                                      @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
+
+        return shiftService.getLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
     }
 
     @PostMapping("/{shiftId}/set-worker/{workerId}")

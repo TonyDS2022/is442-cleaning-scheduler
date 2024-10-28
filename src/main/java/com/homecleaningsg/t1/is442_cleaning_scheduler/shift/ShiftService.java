@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,6 +66,10 @@ public class ShiftService {
 
     public List<Shift> getShiftsByDayAndWorker(LocalDate date, Long workerId) {
         return shiftRepository.findByDayAndWorker(date, workerId);
+    }
+
+    public List<Shift> getLastShiftByDayAndWorkerBeforeTime(Long workerId, LocalDate date, LocalTime time) {
+        return shiftRepository.findLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
     }
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {
