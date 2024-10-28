@@ -55,8 +55,12 @@ public class Worker {
     @NonNull
     private LocalTime endWorkingHours;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "location_id")
-    private Location location;
+    private Location homeLocation;
+
+    public Worker(Location homeLocation){
+        this.homeLocation = homeLocation;
+    }
 
 }

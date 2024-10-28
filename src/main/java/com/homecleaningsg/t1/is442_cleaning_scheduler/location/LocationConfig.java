@@ -15,7 +15,6 @@ public class LocationConfig implements CommandLineRunner {
         this.locationRepository = locationRepository;
         this.locationService = locationService;
         Location loc1 = new Location("88 Corporation Road", "649823");
-        loc1.setUnitNumber("#11-25");
         Location loc2 = new Location("61 Kampong Arang Road", "438181");
         Location loc3 = new Location("20 Orchard Road", "238830");
 

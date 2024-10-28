@@ -74,7 +74,7 @@ public class WorkerConfig implements CommandLineRunner{
 
         Location loc5 = locationRepository.findByPostalCode("438181")
                 .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-        worker5.setLocation(loc5);
+        worker5.setHomeLocation(loc5);
 
         Worker worker6 = new Worker(
                 "Ravi Kumar",
@@ -111,7 +111,7 @@ public class WorkerConfig implements CommandLineRunner{
 
         Location loc8 = locationRepository.findByPostalCode("238830")
                 .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-        worker5.setLocation(loc8);
+        worker8.setHomeLocation(loc8);
 
         Worker worker9 = new Worker(
                 "Lucy Wang",
