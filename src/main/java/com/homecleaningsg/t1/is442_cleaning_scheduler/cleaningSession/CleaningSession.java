@@ -21,6 +21,13 @@ import java.util.List;
 @Entity
 @Table(name = "CleaningSession")
 public class CleaningSession {
+    private static final LocalTime MIN_START_TIME = LocalTime.of(8,0);
+    private static final LocalTime MAX_END_TIME = LocalTime.of(22,0);
+    private static final LocalTime START_LUNCH_TIME = LocalTime.of(12,0);
+    private static final LocalTime END_LUNCH_TIME = LocalTime.of(13,0);
+    private static final LocalTime START_DINNER_TIME = LocalTime.of(17,0);
+    private static final LocalTime END_DINNER_TIME = LocalTime.of(18,0);
+
     // refers to Contract contractId col to establish relationship
 
     // use sequence generator for sessionId
@@ -117,11 +124,48 @@ public class CleaningSession {
                            sessionStatus sessionStatus) {
         this.contract = contract;
         this.location = contract.getLocation();
-        this.sessionStartDate = sessionStartDate;
-        this.sessionStartTime = sessionStartTime;
+        setSessionStartTime(sessionStartTime);
+        setSessionEndTime(sessionEndTime);
         this.sessionEndDate = sessionEndDate;
         this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
+    }
+
+    // setter with validation checks
+    public void setSessionStartTime(LocalTime sessionStartTime){
+        if (sessionStartTime.isBefore(MIN_START_TIME) || sessionStartTime.isAfter(MAX_END_TIME)){
+            throw new IllegalArgumentException("Session time must be between 8am - 10pm.");
+        }
+
+        // Check if session overlaps with lunch time
+        boolean overlapsLunch = sessionStartTime.isBefore(END_LUNCH_TIME) && sessionStartTime.isAfter(START_LUNCH_TIME);
+
+        // Check if session overlaps with dinner time
+        boolean overlapsDinner = sessionStartTime.isBefore(END_DINNER_TIME) && sessionStartTime.isAfter(START_DINNER_TIME);
+
+        if (overlapsLunch || overlapsDinner) {
+            throw new IllegalArgumentException("Session time must not overlap with lunch (12pm - 1pm) or dinner (5pm - 6pm) hours.");
+        }
+
+        this.sessionStartTime = sessionStartTime;
+    }
+
+    public void setSessionEndTime(LocalTime sessionEndTime){
+        if (sessionEndTime.isBefore(MIN_START_TIME) || sessionEndTime.isAfter(MAX_END_TIME)){
+            throw new IllegalArgumentException("Session time must be between 8am - 10pm.");
+        }
+
+        // Check if session overlaps with lunch time
+        boolean overlapsLunch = sessionEndTime.isBefore(END_LUNCH_TIME) && sessionEndTime.isAfter(START_LUNCH_TIME);
+
+        // Check if session overlaps with dinner time
+        boolean overlapsDinner = sessionEndTime.isBefore(END_DINNER_TIME) && sessionEndTime.isAfter(START_DINNER_TIME);
+
+        if (overlapsLunch || overlapsDinner) {
+            throw new IllegalArgumentException("Session time must not overlap with lunch (12pm - 1pm) or dinner (5pm - 6pm) hours.");
+        }
+
+        this.sessionEndTime = sessionEndTime;
     }
 }
