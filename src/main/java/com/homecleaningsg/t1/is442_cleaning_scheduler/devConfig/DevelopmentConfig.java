@@ -2,6 +2,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.devConfig;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftConfig;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractConfig;
@@ -14,6 +16,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftWorkerService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripConfig;
@@ -48,8 +51,8 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    public WorkerConfig workerConfig(WorkerRepository workerRepository) {
-        return new WorkerConfig(workerRepository);
+    public WorkerConfig workerConfig(WorkerRepository workerRepository, LocationRepository locationRepository) {
+        return new WorkerConfig(workerRepository, locationRepository);
     }
 
     @Bean
@@ -59,10 +62,19 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn({"workerConfig", "contractConfig"})
+    @DependsOn({"workerConfig", "contractConfig", "locationConfig"})
     public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository,
                                                        CleaningSessionRepository cleaningSessionRepository) {
         return new CleaningSessionConfig(contractRepository, cleaningSessionRepository);
+    }
+
+    @Bean
+    @DependsOn({"workerConfig", "contractConfig", "locationConfig", "cleaningSessionConfig"})
+    public ShiftConfig shiftConfig(CleaningSessionRepository cleaningSessionRepository,
+                                   ShiftRepository shiftRepository,
+                                   WorkerRepository workerRepository,
+                                   ShiftWorkerService shiftWorkerService) {
+        return new ShiftConfig(cleaningSessionRepository, shiftRepository, workerRepository, shiftWorkerService);
     }
 
     @Bean

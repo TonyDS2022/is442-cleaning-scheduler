@@ -28,20 +28,4 @@ public class WorkerController {
         return workerService.getWorkerByUsername(username);
     }
 
-    @GetMapping("/{workerId}/getResidentialAddressOfWorker")
-    public Location getResidentialAddressOfWorker(@PathVariable Long workerId) {
-        return workerService.getResidentialAddressOfWorker(workerId);
-    }
-
-    @PostMapping("/{workerId}/addResidentialAddressToWorker/{locationId}")
-    public ResponseEntity<String> addResidentialAddressToWorker(
-            @PathVariable Long workerId,
-            @PathVariable Long locationId) {
-        try {
-            workerService.addResidentialAddressToWorker(workerId, locationId);
-            return ResponseEntity.ok("Location added to worker successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); // Return 404 if worker or location is not found
-        }
-    }
 }

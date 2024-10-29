@@ -26,7 +26,7 @@ public class Location {
             strategy = GenerationType.SEQUENCE,
             generator = "location_sequence"
     )
-
+    @JsonIgnore
     private Long locationId;
 
     @NonNull
