@@ -137,7 +137,7 @@ public class CleaningSessionService {
         Map<Worker, Location> workerOrigins = new HashMap<>();
         for (Worker worker : availableWorkers) {
             Shift lastShift = lastShiftByWorker.get(worker);
-            Location origin = (lastShift != null) ? lastShift.getLocation() : worker.getLocation();
+            Location origin = (lastShift != null) ? lastShift.getLocation() : worker.getHomeLocation();
             workerOrigins.put(worker, origin);
         }
 
