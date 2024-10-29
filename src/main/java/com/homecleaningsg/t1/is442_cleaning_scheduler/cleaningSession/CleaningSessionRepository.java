@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CleaningSessionRepository extends JpaRepository<CleaningSession, Integer> {
+public interface CleaningSessionRepository extends JpaRepository<CleaningSession, Long> {
     List<CleaningSession> findByContract_ContractId(Long contractId);
     Optional<CleaningSession> findByContract_ContractIdAndCleaningSessionId(Long contractId, Long cleaningSessionId);
 }
