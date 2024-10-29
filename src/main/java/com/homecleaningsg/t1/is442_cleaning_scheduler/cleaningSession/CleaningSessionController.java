@@ -29,7 +29,7 @@ public class CleaningSessionController {
     }
 
     @GetMapping("/{contractId}/{cleaningSessionId}")
-    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(@PathVariable Long contractId, @PathVariable Long cleaningSessionId) {
+    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(@PathVariable("contractId") Long contractId, @PathVariable("contractId") Long cleaningSessionId) {
         return cleaningSessionService.getCleaningSessionByContractIdAndCleaningSessionId(contractId, cleaningSessionId);
     }
 
@@ -43,9 +43,9 @@ public class CleaningSessionController {
         }
     }
 
-    @PutMapping("/update-cleaning-session/{id}")
+    @PutMapping("/update-cleaning-session/{cleaningSessionId}")
     public ResponseEntity<CleaningSession> updateCleaningSession(
-            @PathVariable Long cleaningSessionId, @RequestBody CleaningSession updatedSession) {
+            @PathVariable("cleaningSessionId") Long cleaningSessionId, @RequestBody CleaningSession updatedSession) {
         try {
             CleaningSession updatedCleaningSession = cleaningSessionService.updateCleaningSession(cleaningSessionId, updatedSession);
             return ResponseEntity.ok(updatedCleaningSession);
@@ -54,8 +54,9 @@ public class CleaningSessionController {
         }
     }
 
-    @DeleteMapping("/delete-cleaning-session/{id}")
-    public ResponseEntity<Void> deleteCleaningSession(@PathVariable Long cleaningSessionId) {
+    // localhost:8080/api/v0.1/cleaningSession/delete-cleaning-session/1
+    @DeleteMapping("/delete-cleaning-session/{cleaningSessionId}")
+    public ResponseEntity<Void> deleteCleaningSession(@PathVariable("cleaningSessionId") Long cleaningSessionId) {
         try {
             cleaningSessionService.deleteCleaningSession(cleaningSessionId);
             return ResponseEntity.noContent().build(); // Return 204 No Content if deletion is successful
