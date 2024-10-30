@@ -35,7 +35,7 @@ public class ClientController {
             clientService.addClient(client);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client added successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Unable to add client");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add client.");
         }
     }
 
@@ -52,7 +52,7 @@ public class ClientController {
 
     // localhost:8080/api/v0.1/client/deactivate-client/1
     @PutMapping("/deactivate-client/{clientId}")
-    public ResponseEntity<String> deactivateWorker(@PathVariable("clientId") Long clientId) {
+    public ResponseEntity<String> deactivateClient(@PathVariable("clientId") Long clientId) {
         try {
             clientService.deactivateClient(clientId);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client deactivated successfully.");

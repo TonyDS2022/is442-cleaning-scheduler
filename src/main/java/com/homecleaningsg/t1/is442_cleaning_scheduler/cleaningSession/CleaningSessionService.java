@@ -30,7 +30,7 @@ public class CleaningSessionService {
         return cleaningSessionRepository.findByContract_ContractIdAndCleaningSessionId(contractId, cleaningSessionId);
     }
 
-    public CleaningSession createCleaningSession(CleaningSession cleaningSession){
+    public CleaningSession addCleaningSession(CleaningSession cleaningSession){
         Contract contract = cleaningSession.getContract();
         Long durationMinutes = Duration.between(
                 cleaningSession.getSessionStartTime(),
@@ -46,24 +46,18 @@ public class CleaningSessionService {
     }
 
     public CleaningSession updateCleaningSession(Long cleaningSessionId, CleaningSession updatedCleaningSession){
-        CleaningSession existingSession = cleaningSessionRepository.findById(cleaningSessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
-
-        existingSession.setSessionStartDate(updatedCleaningSession.getSessionStartDate());
-        existingSession.setSessionStartTime(updatedCleaningSession.getSessionStartTime());
-        existingSession.setSessionEndDate(updatedCleaningSession.getSessionEndDate());
-        existingSession.setSessionEndTime(updatedCleaningSession.getSessionEndTime());
-        existingSession.setSessionDescription(updatedCleaningSession.getSessionDescription());
-        existingSession.setSessionStatus(updatedCleaningSession.getSessionStatus());
-
+        if(!cleaningSessionRepository.existsById(cleaningSessionId)){
+            throw new IllegalArgumentException("Cleaning session not found");
+        }
+        updatedCleaningSession.setCleaningSessionId(cleaningSessionId);
         return cleaningSessionRepository.save(updatedCleaningSession);
     }
 
-    public void deleteCleaningSession(Long cleaningSessionId) {
-        CleaningSession existingSession = cleaningSessionRepository.findById(cleaningSessionId)
+    public void deactivateCleaningSession(Long cleaningSessionId) {
+        CleaningSession cleaningSession = cleaningSessionRepository.findById(cleaningSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
-
-        cleaningSessionRepository.delete(existingSession);
+        cleaningSession.setActive(false);
+        cleaningSessionRepository.save(cleaningSession);
     }
 
 

@@ -116,6 +116,9 @@ public class CleaningSession {
     private Contract contract;
 
     @NonNull
+    private boolean isActive = true;
+
+    @NonNull
     private Timestamp lastModified;
 
     // New constructor
