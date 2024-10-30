@@ -1,5 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSe
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,15 +19,18 @@ public class ShiftService {
 
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
+    private final LeaveApplicationService leaveApplicationService;
     private final CleaningSessionRepository cleaningSessionRepository;
 
     @Autowired
     public ShiftService(ShiftRepository shiftRepository,
                         WorkerRepository workerRepository,
+                        LeaveApplicationService leaveApplicationService
                         CleaningSessionRepository cleaningSessionRepository
     ) {
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
+        this.leaveApplicationService = leaveApplicationService;
         this.cleaningSessionRepository = cleaningSessionRepository;
     }
 
@@ -37,7 +43,7 @@ public class ShiftService {
     }
 
     public void addShift(Shift shift) {
-        return shiftRepository.save(shift);
+        shiftRepository.save(shift);
         // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
