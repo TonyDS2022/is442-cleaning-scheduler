@@ -89,6 +89,7 @@ public class CleaningSession {
         EXCELLENT
     }
 
+    // @Transient prevents getters, will need to create manually
     @Transient
     private PlanningStage planningStage;
 

@@ -1,7 +1,11 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +21,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "Contract")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "contractId")
 public class Contract {
     @Id
     @SequenceGenerator(
@@ -29,6 +34,11 @@ public class Contract {
             generator = "contract_sequence"
     )
     private Long contractId;
+
+    // @ManyToOne
+    // @JoinColumn(name = "workerId", nullable = false)
+    // @JsonManagedReference
+    // private Worker worker;
 
     @ManyToOne
     private Location location;
@@ -71,7 +81,6 @@ public class Contract {
     }
 
     // temp for retrieving all contracts by cleaningSessionIds
-    @Getter
     @OneToMany(mappedBy = "contract")
     private List<CleaningSession> cleaningSessions;
 }

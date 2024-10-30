@@ -1,11 +1,15 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,13 +18,16 @@ public class ShiftService {
 
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
+    private final LeaveApplicationService leaveApplicationService;
 
     @Autowired
     public ShiftService(ShiftRepository shiftRepository,
-                        WorkerRepository workerRepository
+                        WorkerRepository workerRepository,
+                        LeaveApplicationService leaveApplicationService
     ) {
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
+        this.leaveApplicationService = leaveApplicationService;
     }
 
     public List<Shift> getAllShifts() {
@@ -86,5 +93,27 @@ public class ShiftService {
 
         shift.setWorker(worker);
         shiftRepository.save(shift);
+    }
+
+    public boolean isWorkerHasPendingLeave(Shift shift) {
+        return true; // for debugging. Revert comments below to get code working
+        // if (shift.getWorker() == null) {
+        //     return false;
+        // }
+        // List<LeaveApplication> leaveApplications = leaveApplicationService.getPendingApplicationsByWorkerId(shift.getWorker().getWorkerId());
+        // for (LeaveApplication leaveApplication : leaveApplications) {
+        //     return true;
+        //     // if (isOverlapping(shift, leaveApplication.getAffectedShiftStart(), leaveApplication.getAffectedShiftEnd())) {
+        //     //     return true;
+        //     // }
+        // }
+        // return false;
+    }
+
+    private boolean isOverlapping(Shift shift, OffsetDateTime leaveStart, OffsetDateTime leaveEnd) {
+        return true;
+        // OffsetDateTime shiftStart = shift.getSessionStartDate().atTime(shift.getSessionStartTime()).atOffset(OffsetDateTime.now().getOffset());
+        // OffsetDateTime shiftEnd = shift.getSessionEndDate().atTime(shift.getSessionEndTime()).atOffset(OffsetDateTime.now().getOffset());
+        // return (leaveStart.isBefore(shiftEnd) && leaveEnd.isAfter(shiftStart));
     }
 }

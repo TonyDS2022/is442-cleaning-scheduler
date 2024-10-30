@@ -86,7 +86,10 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    public LeaveApplicationConfig leaveApplicationConfig(LeaveApplicationRepository leaveApplicationRepository) {
+    // @DependsOn("workerConfig")
+    public LeaveApplicationConfig leaveApplicationConfig(
+            LeaveApplicationRepository leaveApplicationRepository
+    ) {
         return new LeaveApplicationConfig(leaveApplicationRepository);
     }
 }

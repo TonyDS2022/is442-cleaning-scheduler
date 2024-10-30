@@ -1,7 +1,13 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.ApplicationStatus;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
@@ -9,6 +15,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,6 +27,7 @@ import java.time.LocalTime;
 @ToString
 @Entity
 @Table(name = "Shift")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "shiftId")
 public class Shift {
     // reuse sequence generator of sessionId
     @Id
@@ -39,8 +48,9 @@ public class Shift {
     private String sessionDescription;
 
     // refers to workerId col to establish relationship
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // eager loading for workerhaspendingleave check
     @JoinColumn(name = "workerId")
+    @JsonManagedReference
     private Worker worker;
 
     // refers to cleaningSession to establish relationship
@@ -88,6 +98,8 @@ public class Shift {
         FINISHED
     }
 
+    // @Transient prevents getters, will need to create manually
+    @Transient
     private boolean workerHasPendingLeave;
 
     @Lob
@@ -108,4 +120,49 @@ public class Shift {
         this.sessionEndTime = cleaningSession.getSessionEndTime();
         this.workingStatus = WorkingStatus.NOT_STARTED;
     }
+
+    // // getter for transient field workerHasPendingLeave
+    public boolean isWorkerHasPendingLeave(ShiftService shiftService) {
+        return true; // for debugging. Revert comments below to get code working
+        // if (this.worker == null) {
+        //     System.out.println("Worker is null for shift: " + this.shiftId);
+        //     return false;
+        // }
+        // return shiftService.isWorkerHasPendingLeave(this);
+    }
+
+    // public boolean isWorkerHasPendingLeave() {
+    //     if (worker == null) {
+    //         return false;
+    //     }
+    //     // List<LeaveApplication> leaveApplications = leaveApplicationService.getPendingApplicationsByWorkerId(worker.getWorkerId());
+    //     // for (LeaveApplication leaveApplication : leaveApplications) {
+    //     //     if (isOverlapping(leaveApplication.getAffectedShiftStart(), leaveApplication.getAffectedShiftEnd())) {
+    //     //         return true;
+    //     //     }
+    //     // }
+    //     return false;
+    // }
+    //
+    // private boolean isOverlapping(OffsetDateTime leaveStart, OffsetDateTime leaveEnd) {
+    //     OffsetDateTime shiftStart = this.sessionStartDate.atTime(this.sessionStartTime).atOffset(OffsetDateTime.now().getOffset());
+    //     OffsetDateTime shiftEnd = this.sessionEndDate.atTime(this.sessionEndTime).atOffset(OffsetDateTime.now().getOffset());
+    //     return (leaveStart.isBefore(shiftEnd) && leaveEnd.isAfter(shiftStart));
+    // }
+    // public boolean isWorkerHasPendingLeave() {
+    //     for (LeaveApplication leaveApplication : this.worker.getLeaveApplications()) {
+    //         if (leaveApplication.getApplicationStatus() == ApplicationStatus.PENDING &&
+    //                 isOverlapping(leaveApplication.getAffectedShiftStart(), leaveApplication.getAffectedShiftEnd())) {
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
+    //
+    // private boolean isOverlapping(OffsetDateTime leaveStart, OffsetDateTime leaveEnd) {
+    //     OffsetDateTime shiftStart = this.sessionStartDate.atTime(this.sessionStartTime).atOffset(OffsetDateTime.now().getOffset());
+    //     OffsetDateTime shiftEnd = this.sessionEndDate.atTime(this.sessionEndTime).atOffset(OffsetDateTime.now().getOffset());
+    //     return (leaveStart.isBefore(shiftEnd) && leaveEnd.isAfter(shiftStart));
+    // }
+
 }
