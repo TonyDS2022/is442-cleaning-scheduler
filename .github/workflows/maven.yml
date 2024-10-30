@@ -12,7 +12,7 @@ on:
   push:
     branches: [ "main", "dev/mvp/data-model", "jennifer" ]
   pull_request:
-    branches: [ "main", "dev/mvp/data-model", "jennifer ]
+    branches: [ "main", "dev/mvp/data-model", "jennifer" ]
 
 jobs:
   build:
