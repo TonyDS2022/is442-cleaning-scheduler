@@ -24,13 +24,13 @@ import java.util.Optional;
 public class Client {
     @Id
     @SequenceGenerator(
-            name = "account_sequence",
-            sequenceName = "account_sequence",
+            name = "client_sequence",
+            sequenceName = "client_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "account_sequence"
+            generator = "client_sequence"
     )
     private Long clientId;
 
@@ -50,21 +50,18 @@ public class Client {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
-    @OneToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "contractId", nullable = false)
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
     @JsonBackReference
     private Contract contract;
 
     public Client(String name,
                            String phone,
                            boolean isActive,
-                           Location location,
-                           Contract contract) {
+                           Location location) {
         this.name = name;
         this.phone = phone;
         this.isActive = isActive;
         this.location = location;
-        this.contract = contract;
     }
 
     @PrePersist

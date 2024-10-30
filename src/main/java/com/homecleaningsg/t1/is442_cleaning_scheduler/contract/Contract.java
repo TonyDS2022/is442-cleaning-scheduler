@@ -1,6 +1,10 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,11 +37,14 @@ public class Contract {
     )
     private Long contractId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "locationId", nullable = false)
     private Location location;
 
-    @Column(name = "clientId")
-    private Long clientId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "clientId", referencedColumnName = "clientId")
+    @JsonManagedReference
+    private Client client;
 
     @NonNull
     @Column(name = "contractStart")
@@ -92,7 +99,7 @@ public class Contract {
     private List<CleaningSession> cleaningSessions;
 
     public Contract(Location location,
-                    Long clientId,
+                    Client client,
                     @NonNull Timestamp contractStart,
                     @NonNull Timestamp contractEnd,
                     String contractComment,
@@ -103,7 +110,7 @@ public class Contract {
                     int sessionDurationMinutes,
                     ContractStatus contractStatus) {
         this.location = location;
-        this.clientId = clientId;
+        this.client = client;
         this.contractStart = contractStart;
         this.contractEnd = contractEnd;
         this.contractComment = contractComment;
