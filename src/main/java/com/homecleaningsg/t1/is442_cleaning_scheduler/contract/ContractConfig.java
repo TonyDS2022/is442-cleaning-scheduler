@@ -29,7 +29,6 @@ public class ContractConfig implements CommandLineRunner {
         contract1.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("01 Jan 2025 00:00:00", this.dateTimeFormatter)));
         contract1.setContractComment("Contract 1");
         contract1.setLocation(loc1);
-        contract1.setOngoing(true);
         contract1.setPrice(60.0f);
         contract1.setWorkersBudgeted(1);
         contract1.setRooms(1);
@@ -41,7 +40,6 @@ public class ContractConfig implements CommandLineRunner {
         contract2.setContractEnd(new Timestamp(System.currentTimeMillis()));
         contract2.setContractComment("Contract 2");
         contract2.setLocation(loc2);
-        contract2.setOngoing(false);
         contract2.setPrice(250.0f);
         contract2.setWorkersBudgeted(3);
         contract2.setRooms(2);
