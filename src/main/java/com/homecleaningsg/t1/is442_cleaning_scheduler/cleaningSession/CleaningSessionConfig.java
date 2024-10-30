@@ -22,7 +22,7 @@ public class CleaningSessionConfig implements CommandLineRunner {
 
         Contract contract = this.contractRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Contract not found"));
 
-        // Attempt to retrieve the CleaningSession at index 1
+        // Create CleaningSession instances
         CleaningSession session1 = new CleaningSession(
             contract,
             LocalDate.of(2024,10,5),
@@ -49,7 +49,19 @@ public class CleaningSessionConfig implements CommandLineRunner {
             CleaningSession.sessionStatus.NOT_STARTED
         );
 
-        this.cleaningSessionRepository.saveAll(List.of(session1, session2));
+        // create a session on 11-06-2024 to test leaveApplication clash
+        CleaningSession session3 = new CleaningSession(
+                contract,
+                LocalDate.of(2024,11,6),
+                LocalTime.of(8,0),
+                LocalDate.of(2024,11,6),
+                LocalTime.of(12,0),
+                "Session 3",
+                CleaningSession.sessionStatus.NOT_STARTED
+        );
+
+        // Save CleaningSession instances
+        this.cleaningSessionRepository.saveAll(List.of(session1, session2, session3));
     }
 
     @Override
