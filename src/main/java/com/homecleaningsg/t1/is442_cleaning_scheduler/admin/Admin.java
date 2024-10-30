@@ -3,6 +3,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -33,4 +35,21 @@ public class Admin {
 
     @NonNull
     private boolean isRootAdmin;
+
+    @NonNull
+    private Timestamp lastModified;
+
+    public Admin(String username,
+                 String password,
+                 boolean isRootAdmin){
+        this.username = username;
+        this.password = password;
+        this.isRootAdmin = isRootAdmin;
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
+    }
 }

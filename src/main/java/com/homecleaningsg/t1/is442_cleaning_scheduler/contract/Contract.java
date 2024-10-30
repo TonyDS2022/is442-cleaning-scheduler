@@ -65,6 +65,9 @@ public class Contract {
     @Column(name = "sessionDurationMinutes")
     private int sessionDurationMinutes;
 
+    @NonNull
+    private Timestamp lastModified;
+
     // Derived field: getRate = price / sessionDurationMinutes
     public float getRate() {
         return price / sessionDurationMinutes;
@@ -113,5 +116,11 @@ public class Contract {
         if(sessionDurationMinutes < 60 || sessionDurationMinutes > 240){
             throw new IllegalArgumentException("Service hours must be between 1 and 4 hours.");
         }
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
     }
 }

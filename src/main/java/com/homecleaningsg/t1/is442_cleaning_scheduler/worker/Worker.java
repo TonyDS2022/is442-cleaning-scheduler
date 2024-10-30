@@ -5,7 +5,9 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 
+import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -62,8 +64,35 @@ public class Worker {
     @NonNull
     private boolean isActive = true;
 
+    @NonNull
+    private Timestamp lastModified;
+
     public void setIsActive(boolean isActive){
         this.isActive = isActive;
+    }
+
+    public Worker(String name,
+                  String username,
+                  String password,
+                  String email,
+                  String phone,
+                  String bio,
+                  LocalTime startWorkingHours,
+                  LocalTime endWorkingHours){
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.phone = phone;
+        this.bio = bio;
+        this.startWorkingHours = startWorkingHours;
+        this.endWorkingHours = endWorkingHours;
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
     }
 
 }

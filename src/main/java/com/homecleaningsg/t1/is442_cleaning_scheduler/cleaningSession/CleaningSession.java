@@ -7,6 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -114,22 +115,28 @@ public class CleaningSession {
     @JsonBackReference // prevent infinite recursion
     private Contract contract;
 
+    @NonNull
+    private Timestamp lastModified;
+
     // New constructor
-    public CleaningSession(Contract contract,
-                           LocalDate sessionStartDate,
+    public CleaningSession(LocalDate sessionStartDate,
                            LocalTime sessionStartTime,
                            LocalDate sessionEndDate,
                            LocalTime sessionEndTime,
                            String sessionDescription,
                            sessionStatus sessionStatus) {
-        this.contract = contract;
-        this.location = contract.getLocation();
         setSessionStartTime(sessionStartTime);
         setSessionEndTime(sessionEndTime);
         this.sessionEndDate = sessionEndDate;
         this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
     }
 
     // setter with validation checks

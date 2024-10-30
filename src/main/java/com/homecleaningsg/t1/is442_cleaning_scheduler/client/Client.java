@@ -7,6 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -42,6 +43,9 @@ public class Client {
     @NonNull
     private boolean isActive = true;
 
+    @NonNull
+    private Timestamp lastModified;
+
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
@@ -61,6 +65,12 @@ public class Client {
         this.isActive = isActive;
         this.location = location;
         this.contract = contract;
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
     }
 
 }

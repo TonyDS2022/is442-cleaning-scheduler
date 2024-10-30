@@ -3,6 +3,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 
 
@@ -46,6 +48,8 @@ public class LeaveApplication {
     @NonNull
     @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
+    @NonNull
+    private Timestamp lastModified;
 
     private int medicalLeaveBalance;
     private int otherLeaveBalance;
@@ -59,5 +63,11 @@ public class LeaveApplication {
         this.affectedShiftEnd = affectedShiftEnd;
         this.applicationSubmitted = applicationSubmitted;
         this.applicationStatus = applicationStatus;
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
     }
 }
