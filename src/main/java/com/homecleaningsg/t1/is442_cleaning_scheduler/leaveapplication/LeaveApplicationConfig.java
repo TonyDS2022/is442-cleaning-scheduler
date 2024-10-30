@@ -3,7 +3,10 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Component
@@ -23,10 +26,10 @@ public class LeaveApplicationConfig implements CommandLineRunner {
                 2L,  // adminId
                 LeaveType.MEDICAL,
                 "fake-medical-cert-001.pdf",  // fileName
-                OffsetDateTime.now().minusDays(10),  // affectedShiftStart
-                OffsetDateTime.now().minusDays(5),   // affectedShiftEnd
+                OffsetDateTime.of(LocalDate.of(2024, 11, 6), LocalTime.MIDNIGHT, ZoneOffset.UTC),  // affectedShiftStart
+                OffsetDateTime.of(LocalDate.of(2024, 11, 11), LocalTime.MIDNIGHT, ZoneOffset.UTC),  // affectedShiftEnd
                 OffsetDateTime.now().minusDays(12),  // applicationSubmitted
-                ApplicationStatus.APPROVED            // applicationStatus (Enum)
+                ApplicationStatus.PENDING  // applicationStatus
         );
 
         LeaveApplication leaveApp2 = new LeaveApplication(

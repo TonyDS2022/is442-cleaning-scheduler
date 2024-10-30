@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v0.1/leave-applications")
-public class LeaveApplicationController {
+public class    LeaveApplicationController {
 
     @Autowired
     private LeaveApplicationService leaveApplicationService;
