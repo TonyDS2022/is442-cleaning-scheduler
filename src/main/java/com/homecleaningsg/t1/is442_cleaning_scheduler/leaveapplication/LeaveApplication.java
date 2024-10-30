@@ -13,6 +13,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @RequiredArgsConstructor
+@Builder
 public class LeaveApplication {
     @Id
     @SequenceGenerator(
@@ -34,6 +35,8 @@ public class LeaveApplication {
     private LeaveType leaveType;
     @JsonIgnore
     private String fileName;
+    @JsonIgnore
+    private String imageHash;
     @NonNull
     private OffsetDateTime affectedShiftStart;
     @NonNull
@@ -43,6 +46,9 @@ public class LeaveApplication {
     @NonNull
     @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
+
+    private int medicalLeaveBalance;
+    private int otherLeaveBalance;
 
     public LeaveApplication(Long workerId, Long adminId, LeaveType leaveType, String fileName, OffsetDateTime affectedShiftStart, OffsetDateTime affectedShiftEnd, OffsetDateTime applicationSubmitted, ApplicationStatus applicationStatus) {
         this.workerId = workerId;

@@ -1,6 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +13,11 @@ import java.util.List;
 public class WorkerConfig implements CommandLineRunner{
 
     private final WorkerRepository workerRepository;
+    private final LocationRepository locationRepository;
 
-    public WorkerConfig(WorkerRepository workerRepository) {
+    public WorkerConfig(WorkerRepository workerRepository, LocationRepository locationRepository) {
         this.workerRepository = workerRepository;
+        this.locationRepository = locationRepository;
 
 
         Worker worker1 = new Worker(
@@ -68,6 +72,10 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(19, 0)
         );
 
+        Location loc5 = locationRepository.findByPostalCode("438181")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker5.setHomeLocation(loc5);
+
         Worker worker6 = new Worker(
                 "Ravi Kumar",
                 "ravi",
@@ -75,7 +83,7 @@ public class WorkerConfig implements CommandLineRunner{
                 "ravi.kumar@example.com",
                 "94567890",
                 "Specializes in cleaning kitchens and commercial food preparation areas.",
-                LocalTime.of(6, 0),
+                LocalTime.of(9, 0),
                 LocalTime.of(15, 0)
         );
 
@@ -98,8 +106,12 @@ public class WorkerConfig implements CommandLineRunner{
                 "96789012",
                 "Focused on deep-cleaning services for industrial environments.",
                 LocalTime.of(14, 0),
-                LocalTime.of(23, 0)
+                LocalTime.of(22, 0)
         );
+
+        Location loc8 = locationRepository.findByPostalCode("238830")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker8.setHomeLocation(loc8);
 
         Worker worker9 = new Worker(
                 "Lucy Wang",
@@ -119,7 +131,7 @@ public class WorkerConfig implements CommandLineRunner{
                 "david.ong@example.com",
                 "98901234",
                 "Experienced in managing cleaning teams and ensuring high-quality standards in large commercial facilities.",
-                LocalTime.of(5, 0),
+                LocalTime.of(8, 0),
                 LocalTime.of(14, 0)
         );
 

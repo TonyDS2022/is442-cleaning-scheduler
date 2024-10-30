@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ShiftService {
@@ -73,6 +75,10 @@ public class ShiftService {
         return shiftRepository.findByDayAndWorker(date, workerId);
     }
 
+    public List<Shift> getLastShiftByDayAndWorkerBeforeTime(Long workerId, LocalDate date, LocalTime time) {
+        return shiftRepository.findLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
+    }
+
     public List<Shift> getShiftsByWorkerId(Long workerId) {
         return shiftRepository.findByWorkerWorkerId(workerId);
     }
@@ -93,27 +99,5 @@ public class ShiftService {
 
         shift.setWorker(worker);
         shiftRepository.save(shift);
-    }
-
-    public boolean isWorkerHasPendingLeave(Shift shift) {
-        return true; // for debugging. Revert comments below to get code working
-        // if (shift.getWorker() == null) {
-        //     return false;
-        // }
-        // List<LeaveApplication> leaveApplications = leaveApplicationService.getPendingApplicationsByWorkerId(shift.getWorker().getWorkerId());
-        // for (LeaveApplication leaveApplication : leaveApplications) {
-        //     return true;
-        //     // if (isOverlapping(shift, leaveApplication.getAffectedShiftStart(), leaveApplication.getAffectedShiftEnd())) {
-        //     //     return true;
-        //     // }
-        // }
-        // return false;
-    }
-
-    private boolean isOverlapping(Shift shift, OffsetDateTime leaveStart, OffsetDateTime leaveEnd) {
-        return true;
-        // OffsetDateTime shiftStart = shift.getSessionStartDate().atTime(shift.getSessionStartTime()).atOffset(OffsetDateTime.now().getOffset());
-        // OffsetDateTime shiftEnd = shift.getSessionEndDate().atTime(shift.getSessionEndTime()).atOffset(OffsetDateTime.now().getOffset());
-        // return (leaveStart.isBefore(shiftEnd) && leaveEnd.isAfter(shiftStart));
     }
 }

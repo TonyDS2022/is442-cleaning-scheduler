@@ -14,11 +14,11 @@ public class LocationConfig implements CommandLineRunner {
     public LocationConfig(LocationRepository locationRepository, LocationService locationService) {
         this.locationRepository = locationRepository;
         this.locationService = locationService;
-        Location loc1 = new Location("649823", "88 Corporation Road");
-        loc1.setUnitNumber("#11-25");
-        Location loc2 = new Location("438181", "61 Kampong Arang Road");
+        Location loc1 = new Location("88 Corporation Road", "649823");
+        Location loc2 = new Location("61 Kampong Arang Road", "438181");
+        Location loc3 = new Location("20 Orchard Road", "238830");
 
-        this.locationRepository.saveAll(List.of(loc1, loc2));
+        this.locationRepository.saveAll(List.of(loc1, loc2, loc3));
 
         this.locationService.updateLocationLatLong().subscribe();
     }

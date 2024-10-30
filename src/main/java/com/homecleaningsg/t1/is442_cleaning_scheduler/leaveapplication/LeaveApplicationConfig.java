@@ -36,6 +36,7 @@ public class LeaveApplicationConfig implements CommandLineRunner {
                 1L,
                 3L,
                 LeaveType.OTHERS,
+                null,  // fileName
                 OffsetDateTime.now().plusDays(2),
                 OffsetDateTime.now().plusDays(7),
                 OffsetDateTime.now(),
@@ -46,6 +47,7 @@ public class LeaveApplicationConfig implements CommandLineRunner {
                 1L,
                 4L,
                 LeaveType.OTHERS,
+                null,  // fileName
                 OffsetDateTime.now().minusDays(3),
                 OffsetDateTime.now().minusDays(1),
                 OffsetDateTime.now().minusDays(4),
@@ -55,7 +57,8 @@ public class LeaveApplicationConfig implements CommandLineRunner {
         LeaveApplication leaveApp4 = new LeaveApplication(
                 1L,
                 5L,
-                LeaveType.OTHERS,
+                LeaveType.MEDICAL,
+                "fake-medical-cert-002.pdf",  // fileName
                 OffsetDateTime.now().minusDays(20),
                 OffsetDateTime.now().minusDays(15),
                 OffsetDateTime.now().minusDays(25),
