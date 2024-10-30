@@ -4,6 +4,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientConfig;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationConfig;
@@ -78,5 +80,12 @@ public class DevelopmentConfig {
     @Bean
     public LeaveApplicationConfig leaveApplicationConfig(LeaveApplicationRepository leaveApplicationRepository) {
         return new LeaveApplicationConfig(leaveApplicationRepository);
+    }
+
+    @Bean
+    public ClientConfig clientConfig(ClientRepository clientRepository,
+                                     ContractRepository contractRepository,
+                                     LocationRepository locationRepository){
+        return new ClientConfig(clientRepository, contractRepository, locationRepository);
     }
 }
