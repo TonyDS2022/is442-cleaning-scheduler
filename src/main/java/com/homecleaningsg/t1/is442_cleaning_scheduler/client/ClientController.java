@@ -55,7 +55,7 @@ public class ClientController {
     public ResponseEntity<String> deactivateClient(@PathVariable("clientId") Long clientId) {
         try {
             clientService.deactivateClient(clientId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client deactivated successfully.");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client has been deactivated successfully, along with all associated future contracts, cleaning sessions and shifts.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate client.");
         }
