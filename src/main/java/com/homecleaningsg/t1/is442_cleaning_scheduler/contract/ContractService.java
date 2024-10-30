@@ -4,11 +4,13 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSe
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,11 +23,13 @@ public class ContractService {
 
     private final ContractRepository contractRepository;
     private final CleaningSessionRepository cleaningSessionRepository;
+    private final CleaningSessionService cleaningSessionService;
 
     @Autowired
-    public ContractService(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository) {
+    public ContractService(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, CleaningSessionService cleaningSessionService) {
         this.contractRepository = contractRepository;
         this.cleaningSessionRepository = cleaningSessionRepository;
+        this.cleaningSessionService = cleaningSessionService;
     }
 
     // updates contractStatus automatically when all contracts are retrieved
@@ -68,7 +72,7 @@ public class ContractService {
                 .collect(Collectors.toList());
     }
 
-    public Contract createContract(Contract contract){
+    public Contract addContract(Contract contract){
         return contractRepository.save(contract);
     }
 
@@ -80,15 +84,22 @@ public class ContractService {
         return contractRepository.save(updatedContract);
     }
 
-    public void deleteContract(Long contractId){
-        if(!contractRepository.existsById(contractId)){
-            throw new IllegalArgumentException("Contract not found");
-        }
+    public void deactivateContract(Long contractId){
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
         List<CleaningSession> cleaningSessions = cleaningSessionRepository.findByContract_ContractId(contractId);
-        if (!cleaningSessions.isEmpty()) {
-            throw new IllegalArgumentException("Cannot delete contract with ID " + contractId + " as there are associated cleaning sessions. Please delete all related cleaning sessions before deleting this contract.");
+        if(!cleaningSessions.isEmpty()){
+            for(CleaningSession cleaningSession : cleaningSessions) {
+                // deactivate linked cleaning session and shift that has not occurred yet
+                if (cleaningSession.getSessionStartDate().isAfter(LocalDate.now())) {
+                    Long cleaningSessionId = cleaningSession.getCleaningSessionId();
+                    cleaningSessionService.deactivateCleaningSession(cleaningSessionId);
+                }
+            }
         }
-        contractRepository.deleteById(contractId);
+        // deactivate contract
+        contract.setActive(false);
+        contractRepository.save(contract);
     }
 
 }

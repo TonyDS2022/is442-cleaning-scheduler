@@ -29,35 +29,36 @@ public class ContractController {
         return contractService.getRateByContractId(contractId);
     }
 
-    @PostMapping("/create-contract/")
-    public ResponseEntity<Contract> createContract(@RequestBody Contract contract) {
+    @PostMapping("/add-contract/")
+    public ResponseEntity<String> addContract(@RequestBody Contract contract) {
         try {
-            Contract createdContract = contractService.createContract(contract);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdContract); // Return 201 Created
+            contractService.addContract(contract);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Contract added successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null); // Return 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add contract.");
         }
     }
 
+    // localhost:8080/api/v0.1/contract/update-contract/1
     @PutMapping("/update-contract/{contractId}")
-    public ResponseEntity<Contract> updateContract(
+    public ResponseEntity<String> updateContract(
             @PathVariable("contractId") Long contractId, @RequestBody Contract updatedContract) {
         try {
-            Contract updatedContractResponse = contractService.updateContract(contractId, updatedContract);
-            return ResponseEntity.ok(updatedContractResponse);
+            contractService.updateContract(contractId, updatedContract);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Contract updated successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update contract details.");
         }
     }
 
-    // localhost:8080/api/v0.1/contract/delete-contract/1
-    @DeleteMapping("/delete-contract/{contractId}")
-    public ResponseEntity<String> deleteContract(@PathVariable("contractId") Long contractId) {
+    // localhost:8080/api/v0.1/contract/deactivate-contract/2
+    @PutMapping("/deactivate-contract/{contractId}")
+    public ResponseEntity<String> deactivateContract(@PathVariable("contractId") Long contractId) {
         try {
-            contractService.deleteContract(contractId);
-            return ResponseEntity.ok("Contract is deleted");
+            contractService.deactivateContract(contractId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The contract has been successfully deactivated, along with all associated future cleaning sessions and shifts.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate contract.");
         }
     }
 }

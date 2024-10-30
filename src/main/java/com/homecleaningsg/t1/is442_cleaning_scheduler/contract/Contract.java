@@ -83,6 +83,9 @@ public class Contract {
         COMPLETED
     }
 
+    @NonNull
+    private boolean isActive = true;
+
     // temp for retrieving all contracts by cleaningSessionIds
     @Getter
     @OneToMany(mappedBy = "contract")
