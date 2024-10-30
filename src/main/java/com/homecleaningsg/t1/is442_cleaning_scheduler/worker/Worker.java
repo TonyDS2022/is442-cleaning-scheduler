@@ -59,4 +59,11 @@ public class Worker {
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @NonNull
+    private boolean isActive = true;
+
+    public void setIsActive(boolean isActive){
+        this.isActive = isActive;
+    }
+
 }
