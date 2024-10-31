@@ -45,8 +45,8 @@ public class CleaningSessionTest {
     public void testPlanningStageGreen() {
         when(shift1.getWorker()).thenReturn(new Worker());
         when(shift2.getWorker()).thenReturn(new Worker());
-        when(shift1.isWorkerHasPendingLeave()).thenReturn(false);
-        when(shift2.isWorkerHasPendingLeave()).thenReturn(false);
+        // when(shift1.isWorkerHasPendingLeave()).thenReturn(false);
+        // when(shift2.isWorkerHasPendingLeave()).thenReturn(false);
 
         cleaningSession.setShifts(Arrays.asList(shift1, shift2));
 
@@ -57,8 +57,8 @@ public class CleaningSessionTest {
     public void testGetPlanningStageEmber() {
         when(shift1.getWorker()).thenReturn(new Worker());
         when(shift2.getWorker()).thenReturn(new Worker());
-        when(shift1.isWorkerHasPendingLeave()).thenReturn(true);
-        when(shift2.isWorkerHasPendingLeave()).thenReturn(false);
+        // when(shift1.isWorkerHasPendingLeave()).thenReturn(true);
+        // when(shift2.isWorkerHasPendingLeave()).thenReturn(false);
 
         cleaningSession.setShifts(Arrays.asList(shift1, shift2));
 
@@ -69,8 +69,8 @@ public class CleaningSessionTest {
     public void testGetPlanningStageRed() {
         when(shift1.getWorker()).thenReturn(new Worker());
         when(shift2.getWorker()).thenReturn(null);
-        when(shift1.isWorkerHasPendingLeave()).thenReturn(false);
-        when(shift2.isWorkerHasPendingLeave()).thenReturn(false);
+        // when(shift1.isWorkerHasPendingLeave()).thenReturn(false);
+        // when(shift2.isWorkerHasPendingLeave()).thenReturn(false);
 
         cleaningSession.setShifts(Arrays.asList(shift1, shift2));
 

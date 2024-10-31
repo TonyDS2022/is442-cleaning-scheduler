@@ -143,9 +143,9 @@ public class CleaningSession {
         int assignedWorkers = 0;
 
         for (Shift shift : shifts) {
-            if (shift.isWorkerHasPendingLeave()) {
-                hasPendingLeave = true;
-            }
+            // if (shift.isWorkerHasPendingLeave()) {
+            //     hasPendingLeave = true;
+            // }
             if (shift.getWorker() != null) {
                 assignedWorkers++;
             }
