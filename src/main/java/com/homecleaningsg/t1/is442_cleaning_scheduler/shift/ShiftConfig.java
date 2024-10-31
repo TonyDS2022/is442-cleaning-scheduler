@@ -30,9 +30,9 @@ public class ShiftConfig implements CommandLineRunner {
  @Override
  public void run(String... args) throws Exception {
      // Use Integer for querying
-     CleaningSession session1 = cleaningSessionRepository.findById(1).orElseThrow(() -> new IllegalStateException("CleaningSession 1 not found"));
-     CleaningSession session2 = cleaningSessionRepository.findById(2).orElseThrow(() -> new IllegalStateException("CleaningSession 2 not found"));
-     CleaningSession session3 = cleaningSessionRepository.findById(3).orElseThrow(() -> new IllegalStateException("CleaningSession 3 not found"));
+     CleaningSession session1 = cleaningSessionRepository.findById(1L).orElseThrow(() -> new IllegalStateException("CleaningSession 1 not found"));
+     CleaningSession session2 = cleaningSessionRepository.findById(2L).orElseThrow(() -> new IllegalStateException("CleaningSession 2 not found"));
+     CleaningSession session3 = cleaningSessionRepository.findById(3L).orElseThrow(() -> new IllegalStateException("CleaningSession 3 not found"));
 
      Worker worker1 = workerRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
      Worker worker2 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 2 not found"));

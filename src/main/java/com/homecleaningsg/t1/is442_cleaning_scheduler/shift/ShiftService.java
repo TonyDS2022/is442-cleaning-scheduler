@@ -1,16 +1,13 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -99,5 +96,59 @@ public class ShiftService {
 
         shift.setWorker(worker);
         shiftRepository.save(shift);
+    }
+
+    public boolean shiftsTimeOverlap(Shift existingShift, Shift newShift){
+        // this encompasses all edge cases:
+        // 1. partial overlap
+        // 2. full overlap (new shift within existing shift/ existing shift within new shift)
+        // 3. touching boundaries (new shift ends exactly when the existing shift starts etc)
+        return !newShift.getSessionEndTime().isBefore(existingShift.getSessionStartTime())
+                && !newShift.getSessionStartTime().isAfter(existingShift.getSessionEndTime());
+    }
+    public boolean shiftIsWithinWorkingHours(Worker worker, Shift newShift){
+        return !newShift.getSessionStartTime().isBefore(worker.getStartWorkingHours())
+                && !newShift.getSessionEndTime().isAfter(worker.getEndWorkingHours());
+    }
+
+    public boolean isWorkerAvailableForShift(Worker worker, Shift newShift){
+
+        boolean isOnLeave = leaveApplicationService.isWorkerOnLeave(
+                worker.getWorkerId(),
+                newShift.getSessionStartDate(),
+                newShift.getSessionStartTime(),
+                newShift.getSessionEndDate(),
+                newShift.getSessionEndTime()
+        );
+
+        if (isOnLeave) {
+            return false;
+        }
+
+        List<Shift> workerShifts = this.getShiftsByDayAndWorker(newShift.getSessionStartDate(), worker.getWorkerId());
+        boolean hasConflict = workerShifts.stream()
+                .anyMatch(existingShift -> shiftsTimeOverlap(existingShift, newShift));
+        if(hasConflict){
+            return false;
+        }
+        return shiftIsWithinWorkingHours(worker,newShift);
+    }
+    public List<Worker> getAvailableWorkersForShift(Shift newShift) {
+        List<Worker> allWorkers = workerRepository.findAll();
+        return allWorkers.stream()
+                .filter(worker -> isWorkerAvailableForShift(worker, newShift))
+                .collect(Collectors.toList());
+    }
+    public Shift findLastShiftOnDayBeforeTime(Long workerId, LocalDate date, LocalTime time){
+        List<Shift> allWorkerShiftsOnDay = this.getLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
+        List<Shift> allWorkerShiftsOnDayBeforeTime = allWorkerShiftsOnDay.stream()
+                .filter(shift -> shift.getSessionEndTime().isBefore(time))
+                .toList();
+        if (allWorkerShiftsOnDayBeforeTime.isEmpty()) {
+            return null;
+        }
+        return allWorkerShiftsOnDayBeforeTime.stream()
+                .max((shift1, shift2) -> shift1.getSessionEndTime().compareTo(shift2.getSessionEndTime()))
+                .orElse(null);
     }
 }

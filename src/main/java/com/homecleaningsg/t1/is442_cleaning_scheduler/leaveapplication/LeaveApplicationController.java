@@ -21,34 +21,34 @@ public class    LeaveApplicationController {
     private LeaveApplicationService leaveApplicationService;
 
     // Endpoint to create a new leave application
-    @PostMapping("/worker/{workerId}/application-submission")
-    public ResponseEntity<?> createLeaveApplication(@RequestParam LeaveType leaveType,
-                                                    @RequestParam OffsetDateTime affectedShiftStart,
-                                                    @RequestParam OffsetDateTime affectedShiftEnd,
-                                                    @RequestParam MultipartFile file) {
-        try {
-            Long workerId = getLoggedInWorkerId();
-            Long adminId = getAdminForWorker(workerId);
-
-            LeaveApplication leaveApplication = new LeaveApplication();
-            leaveApplication.setWorkerId(workerId);
-            leaveApplication.setAdminId(adminId);
-            leaveApplication.setLeaveType(leaveType);
-            leaveApplication.setAffectedShiftStart(affectedShiftStart);
-            leaveApplication.setAffectedShiftEnd(affectedShiftEnd);
-            leaveApplication.setApplicationSubmitted(OffsetDateTime.now());
-            leaveApplication.setApplicationStatus(ApplicationStatus.PENDING);
-
-            LeaveApplication createdLeaveApplication = leaveApplicationService.createLeaveApplication(leaveApplication, file);
-            leaveApplicationService.updateLeaveBalance(createdLeaveApplication);
-
-            return ResponseEntity.ok(createdLeaveApplication);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Duplicate Image Submitted", e);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while creating the leave application", e);
-        }
-    }
+//    @PostMapping("/worker/{workerId}/application-submission")
+//    public ResponseEntity<?> createLeaveApplication(@RequestParam LeaveType leaveType,
+//                                                    @RequestParam OffsetDateTime affectedShiftStart,
+//                                                    @RequestParam OffsetDateTime affectedShiftEnd,
+//                                                    @RequestParam MultipartFile file) {
+//        try {
+//            Long workerId = getLoggedInWorkerId();
+//            Long adminId = getAdminForWorker(workerId);
+//
+//            LeaveApplication leaveApplication = new LeaveApplication();
+//            leaveApplication.setWorkerId(workerId);
+//            leaveApplication.setAdminId(adminId);
+//            leaveApplication.setLeaveType(leaveType);
+//            leaveApplication.setAffectedShiftStart(affectedShiftStart);
+//            leaveApplication.setAffectedShiftEnd(affectedShiftEnd);
+//            leaveApplication.setApplicationSubmitted(OffsetDateTime.now());
+//            leaveApplication.setApplicationStatus(ApplicationStatus.PENDING);
+//
+//            LeaveApplication createdLeaveApplication = leaveApplicationService.createLeaveApplication(leaveApplication, file);
+//            leaveApplicationService.updateLeaveBalance(createdLeaveApplication);
+//
+//            return ResponseEntity.ok(createdLeaveApplication);
+//        } catch (IllegalArgumentException e) {
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Duplicate Image Submitted", e);
+//        } catch (Exception e) {
+//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while creating the leave application", e);
+//        }
+//    }
 
     @GetMapping("/worker/{workerId}/pending-with-approved")
     public ResponseEntity<Map<String, Object>> getPendingAndMostRecentApprovedApplication(@PathVariable Long workerId) {
