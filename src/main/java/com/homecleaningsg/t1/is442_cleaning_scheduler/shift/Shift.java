@@ -98,9 +98,9 @@ public class Shift {
         FINISHED
     }
 
-    // @Transient prevents getters, will need to create manually
-    @Transient
-    private boolean workerHasPendingLeave;
+    // // @Transient prevents getters, will need to create manually
+    // @Transient
+    // private boolean workerHasPendingLeave;
 
     @Lob
     @Column(name = "startAcknowledge")
@@ -121,15 +121,15 @@ public class Shift {
         this.workingStatus = WorkingStatus.NOT_STARTED;
     }
 
-    // // getter for transient field workerHasPendingLeave
-    public boolean isWorkerHasPendingLeave(ShiftService shiftService) {
-        return true; // for debugging. Revert comments below to get code working
-        // if (this.worker == null) {
-        //     System.out.println("Worker is null for shift: " + this.shiftId);
-        //     return false;
-        // }
-        // return shiftService.isWorkerHasPendingLeave(this);
-    }
+    // // // getter for transient field workerHasPendingLeave
+    // public boolean isWorkerHasPendingLeave(ShiftService shiftService) {
+    //     return true; // for debugging. Revert comments below to get code working
+    //     // if (this.worker == null) {
+    //     //     System.out.println("Worker is null for shift: " + this.shiftId);
+    //     //     return false;
+    //     // }
+    //     // return shiftService.isWorkerHasPendingLeave(this);
+    // }
 
     // public boolean isWorkerHasPendingLeave() {
     //     if (worker == null) {
