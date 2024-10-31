@@ -130,6 +130,7 @@ public class CleaningSession {
                            sessionStatus sessionStatus) {
         setSessionStartTime(sessionStartTime);
         setSessionEndTime(sessionEndTime);
+        this.sessionStartDate = sessionStartDate;
         this.sessionEndDate = sessionEndDate;
         this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;

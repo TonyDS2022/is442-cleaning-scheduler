@@ -32,11 +32,12 @@ public class WorkerController {
 
 
     @PostMapping("/add-worker/")
-    public ResponseEntity<String> createWorker(@RequestBody Worker worker) {
+    public ResponseEntity<String> addWorker(@RequestBody Worker worker) {
         try {
-            return workerService.addWorker(worker);
+            workerService.addWorker(worker);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker added successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Unable to add worker");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add contract.");
         }
     }
 
@@ -44,19 +45,21 @@ public class WorkerController {
     public ResponseEntity<String> updateWorker(
             @PathVariable("workerId") Long workerId, @RequestBody Worker updatedWorker) {
         try {
-            return workerService.updateWorker(workerId, updatedWorker);
+            workerService.updateWorker(workerId, updatedWorker);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker details updated successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Unable to update worker details.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update worker details.");
         }
     }
 
-    // localhost:8080/api/v0.1/workers/deactivate-worker/1
-    @PutMapping("/deactivate-worker/{workerId}") // Endpoint to deactivate a worker
+    // localhost:8080/api/v0.1/workers/deactivate-worker/2
+    @PutMapping("/deactivate-worker/{workerId}")
     public ResponseEntity<String> deactivateWorker(@PathVariable("workerId") Long workerId) {
         try {
-            return workerService.deactivateWorker(workerId);
+            workerService.deactivateWorker(workerId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The worker has been successfully deactivated, and removed from all associated future shifts.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Unable to deactivate worker.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate worker.");
         }
     }
 }
