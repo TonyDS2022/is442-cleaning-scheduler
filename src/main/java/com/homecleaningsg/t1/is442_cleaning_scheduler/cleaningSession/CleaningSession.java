@@ -90,6 +90,8 @@ public class CleaningSession {
 
     // @Transient prevents getters, will need to create manually
     @Transient
+    @Enumerated(EnumType.STRING)
+    @Column(name = "planningStage")
     private PlanningStage planningStage;
 
     public enum PlanningStage {

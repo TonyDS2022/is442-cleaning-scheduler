@@ -60,4 +60,16 @@ public class CleaningSessionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate cleaning session.");
         }
     }
+
+    @GetMapping("/cleaningSessions/{id}/planningStage")
+    // public CleaningSession.PlanningStage getPlanningStage(@PathVariable Long id) {
+    //     CleaningSession cleaningSession = cleaningSessionService.getCleaningSessionById(id)
+    //             .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
+    //     return cleaningSessionService.getPlanningStage(cleaningSession);
+    // }
+    public CleaningSession.PlanningStage getPlanningStage(@PathVariable Long id) {
+        CleaningSession cleaningSession = cleaningSessionService.getCleaningSessionById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
+        return cleaningSession.getPlanningStage();
+    }
 }

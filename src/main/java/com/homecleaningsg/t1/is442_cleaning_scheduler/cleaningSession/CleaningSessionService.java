@@ -8,10 +8,12 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,22 +26,33 @@ public class CleaningSessionService {
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
     private final TripRepository tripRepository;
+    private final LeaveApplicationService leaveApplicationService;
 
     @Autowired
     public CleaningSessionService(
             CleaningSessionRepository cleaningSessionRepository,
             ShiftRepository shiftRepository,
             WorkerRepository workerRepository,
-            TripRepository tripRepository
+            TripRepository tripRepository,
+            LeaveApplicationService leaveApplicationService
     ) {
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
         this.tripRepository = tripRepository;
+        this.leaveApplicationService = leaveApplicationService;
     }
 
     public List<CleaningSession> getAllCleaningSessions() {
         return cleaningSessionRepository.findAll();
+    }
+
+    // get cleaningsessions by sessionid
+    public Optional<CleaningSession> getCleaningSessionById(Long cleaningSessionId) {
+        // return cleaningSessionRepository.findById(cleaningSessionId);
+        Optional<CleaningSession> cleaningSession = cleaningSessionRepository.findById(cleaningSessionId);
+        cleaningSession.ifPresent(session -> session.setPlanningStage(getPlanningStage(session)));
+        return cleaningSession;
     }
 
     public List<CleaningSession> getCleaningSessionsByContractId(Long contractId) {
@@ -158,5 +171,46 @@ public class CleaningSessionService {
                         workerTrip.get(worker).getTripDurationSeconds(),
                         workerTrip.get(worker).getTripDistanceMeters())
                 ).toList();
+    }
+
+    // try to calculate workerhaspendingleave dynamically
+    public void updateWorkerHasPendingLeave(CleaningSession cleaningSession) {
+        for (Shift shift : cleaningSession.getShifts()) {
+            boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(shift.getWorker().getWorkerId())
+                    .stream()
+                    .anyMatch(leave -> isOverlapping(leave.getAffectedShiftStart(), leave.getAffectedShiftEnd(), shift));
+            shift.setWorkerHasPendingLeave(hasPendingLeave);
+            shiftRepository.save(shift);
+        }
+    }
+
+    private boolean isOverlapping(OffsetDateTime leaveStart, OffsetDateTime leaveEnd, Shift shift) {
+        OffsetDateTime shiftStart = shift.getSessionStartDate().atTime(shift.getSessionStartTime()).atOffset(OffsetDateTime.now().getOffset());
+        OffsetDateTime shiftEnd = shift.getSessionEndDate().atTime(shift.getSessionEndTime()).atOffset(OffsetDateTime.now().getOffset());
+        return (leaveStart.isBefore(shiftEnd) && leaveEnd.isAfter(shiftStart));
+    }
+
+    public CleaningSession.PlanningStage getPlanningStage(CleaningSession cleaningSession) {
+        updateWorkerHasPendingLeave(cleaningSession);
+
+        boolean hasPendingLeave = false;
+        int assignedWorkers = 0;
+
+        for (Shift shift : cleaningSession.getShifts()) {
+            if (shift.isWorkerHasPendingLeave()) {
+                hasPendingLeave = true;
+            }
+            if (shift.getWorker() != null) {
+                assignedWorkers++;
+            }
+        }
+
+        if (assignedWorkers < cleaningSession.getWorkersBudgeted()) {
+            return CleaningSession.PlanningStage.RED;
+        } else if (hasPendingLeave) {
+            return CleaningSession.PlanningStage.EMBER;
+        } else {
+            return CleaningSession.PlanningStage.GREEN;
+        }
     }
 }
