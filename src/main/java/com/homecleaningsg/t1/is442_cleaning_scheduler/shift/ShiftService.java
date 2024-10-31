@@ -12,7 +12,6 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSe
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -155,9 +154,7 @@ public class ShiftService {
     }
 
     public List<Worker> getAvailableWorkersForShift(Shift newShift) {
-
         List<Worker> allWorkers = workerRepository.findAll();
-
         return allWorkers.stream()
                 .filter(worker -> isWorkerAvailableForShift(worker, newShift))
                 .collect(Collectors.toList());

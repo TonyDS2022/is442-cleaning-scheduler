@@ -1,15 +1,13 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
-import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ShiftRepository extends JpaRepository<Shift, Long> {
@@ -17,7 +15,8 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
     List<Shift> findBySessionStartTimeBetween(LocalTime start, LocalTime end);
 
-    Shift findLastShiftOnDateByWorkerWorkerId(@NonNull Long workerId, @NonNull LocalDate date);
+    @Query("SELECT s FROM Shift s WHERE s.worker.workerId = :workerId AND s.sessionStartDate = :date ORDER BY s.sessionEndTime DESC")
+    Shift findLastShiftOnDateByWorkerWorkerId(@Param("workerId") Long workerId, @Param("date") LocalDate date);
 
     // get shifts by worker and month / week / day
     @Query("SELECT s FROM Shift s WHERE MONTH(s.sessionStartDate) = :month AND YEAR(s.sessionStartDate) = :year AND s.worker.workerId = :workerId")
