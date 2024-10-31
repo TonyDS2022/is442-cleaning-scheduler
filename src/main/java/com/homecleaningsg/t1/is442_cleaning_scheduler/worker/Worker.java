@@ -68,6 +68,16 @@ public class Worker {
         this.homeLocation = homeLocation;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leaveApplicationId", nullable = true)
+    private LeaveApplication leaveApplication;
+
+    // // establish relationship with leaveApplications
+    // @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
+    // // @JsonIgnore
+    // @JsonBackReference // prevent infinite recursion when serializing
+    // private List<LeaveApplication> leaveApplications;
+
     @NonNull
     private boolean isActive = true;
 
