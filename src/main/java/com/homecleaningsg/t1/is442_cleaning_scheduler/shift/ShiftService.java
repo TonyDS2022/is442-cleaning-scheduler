@@ -30,19 +30,27 @@ public class ShiftService {
         return shiftRepository.findById(shiftId);
     }
 
-    public void addShift(Shift shift) {
-        shiftRepository.save(shift);
+    public Shift addShift(Shift shift) {
+        return shiftRepository.save(shift);
     }
 
-    public void updateShift(Long shiftId, Shift shift) {
-        if (shiftRepository.existsById(shiftId)) {
-            shift.setShiftId(shiftId);
-            shiftRepository.save(shift);
+    public Shift updateShift(Long shiftId, Shift updatedShift) {
+        if (!shiftRepository.existsById(shiftId)) {
+            throw new IllegalArgumentException("Shift not found");
         }
+        updatedShift.setShiftId(shiftId);
+        return shiftRepository.save(updatedShift);
     }
 
-    public void deleteShift(Long shiftId) {
-        shiftRepository.deleteById(shiftId);
+    public void deactivateShift(Long shiftId) {
+        Shift shift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+        Worker worker = shift.getWorker();
+        if(worker != null){
+            shift.setWorker(null);
+        }
+        shift.setActive(false);
+        shiftRepository.save(shift);
     }
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {

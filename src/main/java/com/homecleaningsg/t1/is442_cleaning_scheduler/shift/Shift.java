@@ -102,6 +102,9 @@ public class Shift {
     @NonNull
     private Timestamp lastModified;
 
+    @NonNull
+    private boolean isActive = true;
+
     public Shift(CleaningSession cleaningSession) {
         this.cleaningSession = cleaningSession;
         this.location = cleaningSession.getLocation();
