@@ -58,5 +58,4 @@ public class LeaveApplicationService {
                     (shiftStartDate.isAfter(leaveStartDate) && shiftEndDate.isBefore(leaveEndDate));
         });
     }
-
 }

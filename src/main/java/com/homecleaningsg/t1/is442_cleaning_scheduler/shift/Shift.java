@@ -98,9 +98,9 @@ public class Shift {
         FINISHED
     }
 
-    // // @Transient prevents getters, will need to create manually
-    // @Transient
-    // private boolean workerHasPendingLeave;
+    // @Transient prevents getters, will need to create manually
+    @Transient
+    private boolean workerHasPendingLeave;
 
     @Lob
     @Column(name = "startAcknowledge")

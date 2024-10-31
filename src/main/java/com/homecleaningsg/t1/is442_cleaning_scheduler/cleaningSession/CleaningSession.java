@@ -90,7 +90,9 @@ public class CleaningSession {
     }
 
     // @Transient prevents getters, will need to create manually
-    @Transient
+    // @Transient
+    @Enumerated(EnumType.STRING)
+    @Column(name = "planningStage")
     private PlanningStage planningStage;
 
     public enum PlanningStage {
@@ -127,26 +129,26 @@ public class CleaningSession {
         this.location = contract.getLocation();
     }
 
-    // Update PlanningStage based on the shift's number of workers assigned and pending leave
-    public PlanningStage getPlanningStage() {
-        boolean hasPendingLeave = false;
-        int assignedWorkers = 0;
-
-        for (Shift shift : shifts) {
-            // if (shift.isWorkerHasPendingLeave()) {
-            //     hasPendingLeave = true;
-            // }
-            if (shift.getWorker() != null) {
-                assignedWorkers++;
-            }
-        }
-
-        if (assignedWorkers < workersBudgeted) {
-            return PlanningStage.RED;
-        } else if (hasPendingLeave) {
-            return PlanningStage.EMBER;
-        } else {
-            return PlanningStage.GREEN;
-        }
-    }
+    // // Update PlanningStage based on the shift's number of workers assigned and pending leave
+    // public PlanningStage getPlanningStage() {
+    //     boolean hasPendingLeave = false;
+    //     int assignedWorkers = 0;
+    //
+    //     for (Shift shift : shifts) {
+    //         if (shift.isWorkerHasPendingLeave()) {
+    //             hasPendingLeave = true;
+    //         }
+    //         if (shift.getWorker() != null) {
+    //             assignedWorkers++;
+    //         }
+    //     }
+    //
+    //     if (assignedWorkers < workersBudgeted) {
+    //         return PlanningStage.RED;
+    //     } else if (hasPendingLeave) {
+    //         return PlanningStage.EMBER;
+    //     } else {
+    //         return PlanningStage.GREEN;
+    //     }
+    // }
 }
