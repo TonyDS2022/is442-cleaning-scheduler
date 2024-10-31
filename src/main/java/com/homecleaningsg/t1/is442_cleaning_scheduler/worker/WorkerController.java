@@ -32,12 +32,11 @@ public class WorkerController {
 
 
     @PostMapping("/add-worker/")
-    public ResponseEntity<String> addWorker(@RequestBody Worker worker) {
+    public ResponseEntity<String> createWorker(@RequestBody Worker worker) {
         try {
-            workerService.addWorker(worker);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker added successfully.");
+            return workerService.addWorker(worker);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add contract.");
+            return ResponseEntity.badRequest().body("Unable to add worker");
         }
     }
 
@@ -45,21 +44,19 @@ public class WorkerController {
     public ResponseEntity<String> updateWorker(
             @PathVariable("workerId") Long workerId, @RequestBody Worker updatedWorker) {
         try {
-            workerService.updateWorker(workerId, updatedWorker);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker details updated successfully.");
+            return workerService.updateWorker(workerId, updatedWorker);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update worker details.");
+            return ResponseEntity.badRequest().body("Unable to update worker details.");
         }
     }
 
     // localhost:8080/api/v0.1/workers/deactivate-worker/1
-    @PutMapping("/deactivate-worker/{workerId}")
+    @PutMapping("/deactivate-worker/{workerId}") // Endpoint to deactivate a worker
     public ResponseEntity<String> deactivateWorker(@PathVariable("workerId") Long workerId) {
         try {
-            workerService.deactivateWorker(workerId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The worker has been successfully deactivated, and removed from all associated future shifts.");
+            return workerService.deactivateWorker(workerId);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate worker.");
+            return ResponseEntity.badRequest().body("Unable to deactivate worker.");
         }
     }
 }

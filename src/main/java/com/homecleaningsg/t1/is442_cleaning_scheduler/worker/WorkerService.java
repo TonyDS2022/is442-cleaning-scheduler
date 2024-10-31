@@ -36,21 +36,25 @@ public class WorkerService {
         return workerRepository.findByUsername(username).orElse(null);
     }
 
-    public Worker addWorker(Worker worker){
-        return workerRepository.save(worker);
+    public ResponseEntity<String> addWorker(Worker worker){
+        workerRepository.save(worker);
+        return ResponseEntity.ok("Worker added");
     }
 
-    public Worker updateWorker(Long workerId, Worker updatedWorker){
+    public ResponseEntity<String> updateWorker(Long workerId, Worker updatedWorker){
         if(!workerRepository.existsById(workerId)){
             throw new IllegalArgumentException("Worker not found");
         }
         updatedWorker.setWorkerId(workerId);
-        return workerRepository.save(updatedWorker);
+        workerRepository.save(updatedWorker);
+        return ResponseEntity.ok("Worker updated");
     }
 
-    public void deactivateWorker(Long workerId){
+    // soft delete - make worker inactive
+    public ResponseEntity<String> deactivateWorker(Long workerId){
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new IllegalArgumentException("Worker not found"));
+
         List<Shift> shifts = shiftRepository.findByWorkerWorkerId(workerId);
 
         // filter for shift that happen after date of deactivation
@@ -59,15 +63,23 @@ public class WorkerService {
                         .isAfter(LocalDate.now()))
                 .toList();
 
+        StringBuilder message = new StringBuilder();
+
         if (!futureShifts.isEmpty()) {
             // Remove worker from future shifts
-            for (Shift shift : futureShifts) {
+            for (Shift shift: futureShifts){
                 shift.setWorker(null);
                 shiftRepository.save(shift);
             }
-        }
 
+            // Append the IDs of the deleted shifts to the message
+            message.append("Removed worker from future shifts with shift IDs: ")
+                    .append(futureShifts.stream().map(Shift::getShiftId).collect(Collectors.toList()))
+                    .append(". ");
+        }
         worker.setIsActive(false);
         workerRepository.save(worker);
+        message.append("Worker with ID ").append(workerId).append(" marked as inactive successfully.");
+        return ResponseEntity.ok(message.toString());
     }
 }
