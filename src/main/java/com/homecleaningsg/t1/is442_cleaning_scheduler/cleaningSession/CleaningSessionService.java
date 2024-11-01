@@ -42,7 +42,9 @@ public class CleaningSessionService {
     }
 
     public List<CleaningSession> getAllCleaningSessions() {
-        return cleaningSessionRepository.findAll();
+        List<CleaningSession> cleaningSessions = cleaningSessionRepository.findAll();
+        cleaningSessions.forEach(session -> session.setPlanningStage(getPlanningStage(session)));
+        return cleaningSessions;
     }
 
     // get cleaningsessions by sessionid
@@ -54,16 +56,21 @@ public class CleaningSessionService {
     }
 
     public List<CleaningSession> getCleaningSessionsByContractId(Long contractId) {
-        return cleaningSessionRepository.findByContract_ContractId(contractId);
+        List<CleaningSession> cleaningSessions = cleaningSessionRepository.findByContract_ContractId(contractId);
+        cleaningSessions.forEach(session -> session.setPlanningStage(getPlanningStage(session)));
+        return cleaningSessions;
     }
 
     public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(Long contractId, Long cleaningSessionId) {
-        return cleaningSessionRepository.findByContract_ContractIdAndCleaningSessionId(contractId, cleaningSessionId);
+        Optional<CleaningSession> cleaningSession = cleaningSessionRepository.findByContract_ContractIdAndCleaningSessionId(contractId, cleaningSessionId);
+        cleaningSession.ifPresent(session -> session.setPlanningStage(getPlanningStage(session)));
+        return cleaningSession;
     }
 
     public List<AvailableWorkerDto> getAssignableWorkers(Long cleaningSessionId) {
         CleaningSession session = cleaningSessionRepository.findById(cleaningSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
+        session.setPlanningStage(getPlanningStage(session));
 
         List<Worker> unavailableWorkers = shiftRepository
                 .findBySessionStartTimeBetween(session.getSessionStartTime(), session.getSessionEndTime())
@@ -109,14 +116,18 @@ public class CleaningSessionService {
                 ).toList();
     }
 
-    // try to calculate workerhaspendingleave dynamically
+    // // try to calculate workerhaspendingleave dynamically
     public void updateWorkerHasPendingLeave(CleaningSession cleaningSession) {
         for (Shift shift : cleaningSession.getShifts()) {
-            boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(shift.getWorker().getWorkerId())
-                    .stream()
-                    .anyMatch(leave -> isOverlapping(leave.getAffectedShiftStart(), leave.getAffectedShiftEnd(), shift));
-            shift.setWorkerHasPendingLeave(hasPendingLeave);
-            shiftRepository.save(shift);
+            if (shift.getWorker() != null) {
+                boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(shift.getWorker().getWorkerId())
+                        .stream()
+                        .anyMatch(leave -> isOverlapping(leave.getAffectedShiftStart(), leave.getAffectedShiftEnd(), shift));
+                shift.setWorkerHasPendingLeave(hasPendingLeave);
+                shiftRepository.save(shift);
+            } else {
+                shift.setWorkerHasPendingLeave(false);
+            }
         }
     }
 
