@@ -1,4 +1,4 @@
-package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
+package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

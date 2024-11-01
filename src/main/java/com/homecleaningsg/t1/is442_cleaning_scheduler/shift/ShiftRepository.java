@@ -13,10 +13,12 @@ import java.util.List;
 public interface ShiftRepository extends JpaRepository<Shift, Long> {
     List<Shift> findByWorkerWorkerId(Long workerId);
 
-    List<Shift> findBySessionStartTimeBetween(LocalTime start, LocalTime end);
+    List<Shift> findBySessionStartTimeBetween(LocalTime startTimeLeftBound, LocalTime startTimeRightBound);
 
-    @Query("SELECT s FROM Shift s WHERE s.worker.workerId = :workerId AND s.sessionStartDate = :date ORDER BY s.sessionEndTime DESC")
-    Shift findLastShiftOnDateByWorkerWorkerId(@Param("workerId") Long workerId, @Param("date") LocalDate date);
+    List<Shift> findBySessionEndTimeBetween(LocalTime endTimeLeftBound, LocalTime endTimeRightBound);
+
+    @Query("SELECT s FROM Shift s WHERE s.worker.workerId = :workerId AND s.sessionStartDate = :date AND s.sessionEndTime < :time ORDER BY s.sessionEndTime DESC")
+    Shift findLastShiftOnDateByWorkerWorkerIdAndSessionEndTimeBefore(@Param("workerId") Long workerId, @Param("date") LocalDate date, @Param("time") LocalTime time);
 
     // get shifts by worker and month / week / day
     @Query("SELECT s FROM Shift s WHERE MONTH(s.sessionStartDate) = :month AND YEAR(s.sessionStartDate) = :year AND s.worker.workerId = :workerId")

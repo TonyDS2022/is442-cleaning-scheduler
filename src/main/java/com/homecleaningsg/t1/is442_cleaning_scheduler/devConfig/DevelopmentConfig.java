@@ -19,7 +19,6 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftWorkerService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripConfig;
@@ -75,9 +74,9 @@ public class DevelopmentConfig {
     @DependsOn({"workerConfig", "contractConfig", "locationConfig", "cleaningSessionConfig"})
     public ShiftConfig shiftConfig(CleaningSessionRepository cleaningSessionRepository,
                                    ShiftRepository shiftRepository,
-                                   WorkerRepository workerRepository,
-                                   ShiftWorkerService shiftWorkerService) {
-        return new ShiftConfig(cleaningSessionRepository, shiftRepository, workerRepository, shiftWorkerService);
+                                   WorkerRepository workerRepository
+) {
+        return new ShiftConfig(cleaningSessionRepository, shiftRepository, workerRepository);
     }
 
     @Bean
