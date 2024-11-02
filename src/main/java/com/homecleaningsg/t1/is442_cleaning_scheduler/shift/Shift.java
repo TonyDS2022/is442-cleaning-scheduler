@@ -50,6 +50,7 @@ public class Shift {
     // refers to workerId col to establish relationship
     @ManyToOne
     @JoinColumn(name = "workerId")
+    @JsonManagedReference
     private Worker worker;
 
     // refers to cleaningSession to establish relationship
