@@ -113,12 +113,14 @@ public class CleaningSession {
     private Timestamp lastModified;
 
     // New constructor
-    public CleaningSession(LocalDate sessionStartDate,
+    public CleaningSession(Contract contract, /* Note: DO NOT remove this parameter */
+                           LocalDate sessionStartDate,
                            LocalTime sessionStartTime,
                            LocalDate sessionEndDate,
                            LocalTime sessionEndTime,
                            String sessionDescription,
                            sessionStatus sessionStatus) {
+        this.location = contract.getLocation(); /* Note: DO NOT remove this line */
         setSessionStartTime(sessionStartTime);
         setSessionEndTime(sessionEndTime);
         this.sessionStartDate = sessionStartDate;

@@ -24,6 +24,7 @@ public class CleaningSessionConfig implements CommandLineRunner {
 
         // Attempt to retrieve the CleaningSession at index 1
         CleaningSession session1 = new CleaningSession(
+            contract,
             LocalDate.of(2024,10,5),
             LocalTime.of(8,0),
             LocalDate.of(2024,10,5),
@@ -36,6 +37,7 @@ public class CleaningSessionConfig implements CommandLineRunner {
         session1.setSessionFeedback("Feedback 1");
 
         CleaningSession session2 = new CleaningSession(
+            contract,
             LocalDate.of(2024,10,12),
             LocalTime.of(14,0),
             LocalDate.of(2024,10,12),
