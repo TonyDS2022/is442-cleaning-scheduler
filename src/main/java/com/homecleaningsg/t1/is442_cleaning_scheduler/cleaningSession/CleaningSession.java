@@ -120,6 +120,7 @@ public class CleaningSession {
                            LocalTime sessionEndTime,
                            String sessionDescription,
                            sessionStatus sessionStatus) {
+        this.contract = contract;
         this.location = contract.getLocation(); /* Note: DO NOT remove this line */
         setSessionStartTime(sessionStartTime);
         setSessionEndTime(sessionEndTime);
