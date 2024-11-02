@@ -70,6 +70,10 @@ public class Worker {
     @JoinColumn(name = "leaveApplicationId", nullable = true)
     private LeaveApplication leaveApplication;
 
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Shift> shifts;
+
     // // establish relationship with leaveApplications
     // @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
     // // @JsonIgnore

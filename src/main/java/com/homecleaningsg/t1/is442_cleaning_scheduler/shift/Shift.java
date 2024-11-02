@@ -48,9 +48,9 @@ public class Shift {
     private String sessionDescription;
 
     // refers to workerId col to establish relationship
-    @ManyToOne(fetch = FetchType.EAGER) // eager loading for workerhaspendingleave check
+    @ManyToOne
     @JoinColumn(name = "workerId")
-    @JsonBackReference
+    @JsonManagedReference
     private Worker worker;
 
     // refers to cleaningSession to establish relationship
