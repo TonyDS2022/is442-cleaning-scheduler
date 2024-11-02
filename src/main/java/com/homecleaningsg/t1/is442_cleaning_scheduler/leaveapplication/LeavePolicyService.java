@@ -12,32 +12,51 @@ public class LeavePolicyService {
 
     private final LeaveApplicationRepository leaveApplicationRepository;
 
-    // Placeholder method to interact with AdminLeaveApprovalService for dynamic leave balance management
-    public int getDynamicMedicalLeaveBalance() {
-        // Call AdminLeaveApprovalService (not yet implemented) to get the updated medical leave balance
-        return 5; // Placeholder value until integration with adminLeaveApprovalService
-    }
-
-    public int getDynamicOtherLeaveBalance() {
-        // Call AdminLeaveApprovalService (not yet implemented) to get the updated medical leave balance
-        return 10; // Placeholder value until integration with adminLeaveApprovalService
-    }
+    @Getter
+    @Setter
+    private int dynamicMedicalLeaveBalance = 5;
+    @Getter
+    @Setter
+    private int dynamicOtherLeaveBalance = 10;
 
     public int getMedicalLeaveBalance(Long workerId) {
-        // Fetch the leave balance based on HR-configured policies or database
-        Optional<LeaveApplication> mostRecentApprovedMedicalLeave = leaveApplicationRepository.findTopByWorkerIdAndLeaveTypeAndApplicationStatusOrderByApplicationSubmittedDesc(workerId, LeaveType.MEDICAL, ApplicationStatus.APPROVED);
-        if (mostRecentApprovedMedicalLeave.isEmpty() || mostRecentApprovedMedicalLeave.get().getApplicationSubmitted().getYear() != OffsetDateTime.now().getYear()) {
-            return getDynamicMedicalLeaveBalance(); // Default medical leave balance
-        }
-        return mostRecentApprovedMedicalLeave.get().getMedicalLeaveBalance();
+        // Fetch the most recent approved leave balance for medical leave
+        Optional<LeaveApplication> mostRecentApprovedMedicalLeave = leaveApplicationRepository
+                .findTopByWorkerIdAndLeaveTypeAndApplicationStatusOrderByApplicationSubmittedDesc(workerId, LeaveType.MEDICAL, ApplicationStatus.APPROVED);
+
+        int approvedBalance = mostRecentApprovedMedicalLeave
+                .map(LeaveApplication::getMedicalLeaveBalance)
+                .orElse(getDynamicMedicalLeaveBalance());
+
+        // Calculate the number of pending medical leave days
+        int pendingMedicalLeaveDays = leaveApplicationRepository
+                .findByWorkerIdAndLeaveTypeAndApplicationStatus(workerId, LeaveType.MEDICAL, ApplicationStatus.PENDING)
+                .size(); // Assuming each pending application is for one leave day
+
+        // Deduct pending leave from the approved balance to calculate the current available balance
+        int availableMedicalLeave = approvedBalance - pendingMedicalLeaveDays;
+
+        return Math.max(availableMedicalLeave, 0); // Ensure that balance is not negative
     }
 
     public int getOtherLeaveBalance(Long workerId) {
-        // Fetch the leave balance based on HR-configured policies or database
-        Optional<LeaveApplication> mostRecentApprovedOtherLeave = leaveApplicationRepository.findTopByWorkerIdAndLeaveTypeAndApplicationStatusOrderByApplicationSubmittedDesc(workerId, LeaveType.OTHERS, ApplicationStatus.APPROVED);
-        if (mostRecentApprovedOtherLeave.isEmpty() || mostRecentApprovedOtherLeave.get().getApplicationSubmitted().getYear() != OffsetDateTime.now().getYear()) {
-            return getDynamicOtherLeaveBalance(); // Default other leave balance
-        }
-        return mostRecentApprovedOtherLeave.get().getOtherLeaveBalance();
+        // Fetch the most recent approved leave balance for other leave
+        Optional<LeaveApplication> mostRecentApprovedOtherLeave = leaveApplicationRepository
+                .findTopByWorkerIdAndLeaveTypeAndApplicationStatusOrderByApplicationSubmittedDesc(workerId, LeaveType.OTHERS, ApplicationStatus.APPROVED);
+
+        int approvedBalance = mostRecentApprovedOtherLeave
+                .map(LeaveApplication::getOtherLeaveBalance)
+                .orElse(getDynamicOtherLeaveBalance());
+
+        // Calculate the number of pending other leave days
+        int pendingOtherLeaveDays = leaveApplicationRepository
+                .findByWorkerIdAndLeaveTypeAndApplicationStatus(workerId, LeaveType.OTHERS, ApplicationStatus.PENDING)
+                .size(); // Assuming each pending application is for one leave day
+
+        // Deduct pending leave from the approved balance to calculate the current available balance
+        int availableOtherLeave = approvedBalance - pendingOtherLeaveDays;
+
+        return Math.max(availableOtherLeave, 0); // Ensure that balance is not negative
     }
+
 }

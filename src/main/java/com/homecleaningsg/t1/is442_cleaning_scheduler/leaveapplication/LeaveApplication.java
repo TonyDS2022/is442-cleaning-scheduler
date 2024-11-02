@@ -42,10 +42,10 @@ public class LeaveApplication {
     private String imageHash;
 
     @NonNull
-    private OffsetDateTime affectedShiftStart;
+    private OffsetDateTime leaveStart;
 
     @NonNull
-    private OffsetDateTime affectedShiftEnd;
+    private OffsetDateTime leaveEnd;
 
     @NonNull
     private OffsetDateTime applicationSubmitted;
@@ -55,17 +55,15 @@ public class LeaveApplication {
     private ApplicationStatus applicationStatus;
 
     private int medicalLeaveBalance;
-
     private int otherLeaveBalance;
 
-    // Full constructor for including optional fields
     public LeaveApplication(@NonNull Long workerId,
                             @NonNull Long adminId,
                             @NonNull LeaveType leaveType,
                             String fileName,
                             String imageHash,
-                            @NonNull OffsetDateTime affectedShiftStart,
-                            @NonNull OffsetDateTime affectedShiftEnd,
+                            @NonNull OffsetDateTime leaveStart,
+                            @NonNull OffsetDateTime leaveEnd,
                             @NonNull OffsetDateTime applicationSubmitted,
                             @NonNull ApplicationStatus applicationStatus,
                             int medicalLeaveBalance,
@@ -75,8 +73,8 @@ public class LeaveApplication {
         this.leaveType = leaveType;
         this.fileName = fileName;
         this.imageHash = imageHash;
-        this.affectedShiftStart = affectedShiftStart;
-        this.affectedShiftEnd = affectedShiftEnd;
+        this.leaveStart = leaveStart;
+        this.leaveEnd = leaveEnd;
         this.applicationSubmitted = applicationSubmitted;
         this.applicationStatus = applicationStatus;
         this.medicalLeaveBalance = medicalLeaveBalance;

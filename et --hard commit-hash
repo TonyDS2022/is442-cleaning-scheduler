@@ -1,0 +1,232 @@
+[33mcommit 6ed03910f34883c100f588cadba7bf6161f8318a[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mfeature/leaveApplication[m[33m)[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Mon Oct 28 01:00:32 2024 +0800
+
+    Add: Logic to retrieve Leave Balances; Calculation will be done on Admin end
+
+[33mcommit 66693efe92af66219f696796f357b1f02f1dbd8e[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Thu Oct 24 22:32:06 2024 +0800
+
+    Add: Function to handle image upload in leaveapplication
+
+[33mcommit 8081fc2dfc0c53321c8918c60d0e69e536f7c5a2[m
+Merge: 72a9c93 6f3e0cd
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Thu Oct 24 19:54:25 2024 +0800
+
+    Merge pull request #1 from TonyDS2022/dev/mvp/data-model
+    
+    🤡This has been going on for long enough
+
+[33mcommit 6f3e0cdc9fd64492c318a35cb17cfa178446c6ea[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Wed Oct 23 19:35:59 2024 +0800
+
+    Revert "Merge branch 'dev/mvp/data-model' of https://github.com/TonyDS2022/is442-cleaning-scheduler into dev/mvp/data-model"
+    
+    This reverts commit bcadf56812014c4391a47e7581f3f2fd0d85c33e, reversing
+    changes made to ee5e1d8b81b954b7f3d65db404346e07d7d9e118.
+
+[33mcommit bcadf56812014c4391a47e7581f3f2fd0d85c33e[m
+Merge: ee5e1d8 38c2d89
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Wed Oct 23 15:05:34 2024 +0800
+
+    Merge branch 'dev/mvp/data-model' of https://github.com/TonyDS2022/is442-cleaning-scheduler into dev/mvp/data-model
+
+[33mcommit ee5e1d8b81b954b7f3d65db404346e07d7d9e118[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Wed Oct 23 15:05:30 2024 +0800
+
+    Add: Debugged service and config value errors
+
+[33mcommit 38c2d89f41b35a261eafbf7cf5e7a8affcde6092[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 22 01:48:07 2024 +0800
+
+    🐛fix: repair missing environment variable references
+
+[33mcommit 7a1e8a30e473dc4a221a4cb890798a2750b9637c[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Mon Oct 21 21:16:34 2024 +0800
+
+    Revert "🧹chore: resolve minor test failure"
+    
+    This reverts commit f48b233d414e5f30ccac7dc5c0668db6d4c5df1a.
+
+[33mcommit 369c0dcd6e7d90824f881ffa5132909616cd867e[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Mon Oct 21 21:15:45 2024 +0800
+
+    Revert "feat: add worker assignment and removal to shift"
+    
+    This reverts commit 032ac9a920d4fa932586936d9dede23ad3a47c04.
+
+[33mcommit bc9907b7572d5f2a29d6973808b53a2f2b1c8d74[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Mon Oct 21 21:14:14 2024 +0800
+
+    Add: Main Functionality for leaveapplication
+
+[33mcommit 5bda45d5735c8eb6307ca92b491f868f2919deb2[m
+Merge: 6067952 f48b233
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Mon Oct 21 13:06:35 2024 +0800
+
+    Merge branch 'dev/mvp/data-model' of https://github.com/TonyDS2022/is442-cleaning-scheduler into dev/mvp/data-model
+
+[33mcommit 6067952033399c01f47be754be505774599c8881[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Mon Oct 21 13:06:29 2024 +0800
+
+    Constructed the class Application table
+
+[33mcommit f48b233d414e5f30ccac7dc5c0668db6d4c5df1a[m
+Author: jenniferwxe11 <jenniferwxe@gmail.com>
+Date:   Wed Oct 16 17:45:23 2024 +0800
+
+    🧹chore: resolve minor test failure
+
+[33mcommit 032ac9a920d4fa932586936d9dede23ad3a47c04[m
+Author: jenniferwxe11 <jenniferwxe@gmail.com>
+Date:   Wed Oct 16 17:38:23 2024 +0800
+
+    feat: add worker assignment and removal to shift
+
+[33mcommit 0192f0c6e0bd71f66b14dfad6ed3f71062b967fe[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 11:05:43 2024 +0800
+
+    🧹chore: cleanup dead code
+
+[33mcommit 56b1b80ef2ff1fdd1fd845a08bfbd555388d22b2[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 11:00:49 2024 +0800
+
+    🧹chore: standardize integer primary keys to Long/BigInt
+
+[33mcommit 1784d0c6bd4a08c5cda6538ade4b76f3fc48b783[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 10:23:54 2024 +0800
+
+    💅style: remove unused imports
+
+[33mcommit 0e943d95278aee3599c175d21ce0a8396b3dbffc[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 10:19:36 2024 +0800
+
+    🧹chore: remove `CleaningSessionIdsRequest.java`
+
+[33mcommit 7548d8de8d7e7c96dfdda139f1bffcd45553621b[m
+Merge: f0ed433 8e76f2c
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 00:33:50 2024 +0800
+
+    Merge pull request #4 from TonyDS2022/dev/mvp/data-model-problem
+    
+    🤡 Cleaning up some shit
+
+[33mcommit 8e76f2cd5a0b7788bb13a58948f727389fe207ed[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 00:32:27 2024 +0800
+
+    🤡fix: clean up Contract, CleaningSession, Shift
+
+[33mcommit 1adc8b8f41fe3c8ecd49b7da4f34b683b0df0f2c[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 00:30:08 2024 +0800
+
+    🧹chore: import Location into Contract
+
+[33mcommit e5801ddb803b2bded3f85320408bb5ef7332cb23[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 00:29:38 2024 +0800
+
+    🧹chore: rename Contract.workersAssigned to Contract.workersBudgeted
+
+[33mcommit 807c8224d87fcf0be59f1ae57d360163edf8c209[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Tue Oct 15 00:29:06 2024 +0800
+
+    🧹chore: establish ManyToOne linking between Contract and Location
+
+[33mcommit bcefe2f70334d048177973d7d9629bae6338d394[m
+Author: CKChiangGit <88221395+CKChiangGit@users.noreply.github.com>
+Date:   Mon Oct 14 22:43:46 2024 +0800
+
+    Refactor: Remove redundant imports in CleaningSession
+
+[33mcommit f0ed43379abe12bd9335793c61f20786e34060c9[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Mon Oct 14 15:44:51 2024 +0800
+
+    🐛fix[wip]: clean up CleaningSessionConfig so that the code compiles
+
+[33mcommit 13c01c1c194523634fcfc008cc64b2b3f08f73cf[m
+Merge: cd245b8 0527056
+Author: CKChiangGit <88221395+CKChiangGit@users.noreply.github.com>
+Date:   Mon Oct 14 15:02:51 2024 +0800
+
+    Refactor: Rename sessionTicket to Shift
+
+[33mcommit cd245b8a52bd915dffcb5ad1d55c5c9c04736dc4[m
+Author: CKChiangGit <88221395+CKChiangGit@users.noreply.github.com>
+Date:   Mon Oct 14 14:40:06 2024 +0800
+
+    Add: Shifts, Remove:CleaingingSession
+
+[33mcommit 0527056dad61ae188989e01bf4c64f2d369060ae[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Sun Oct 13 23:37:47 2024 +0800
+
+    Added: Enumerate Configuration Files and Enumerate Values
+
+[33mcommit 823ba3ea7de6e78d7de1edd35d03715212569a81[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Sun Oct 13 15:22:48 2024 +0800
+
+    Add: MedicalRecordConfig Bean Dependencies
+
+[33mcommit f8b7d4cf444d49920981a87b7114f2b4dc9cbb62[m
+Author: Dawntwister <ngzhanhui9@gmail.com>
+Date:   Sun Oct 13 01:52:19 2024 +0800
+
+    Add: Replace Java LocalDate with Timestamp
+
+[33mcommit d154e44072c949b383d12062163583d670f671dd[m
+Merge: 55b65d6 d6d6aac
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Sat Oct 12 23:52:09 2024 +0800
+
+    Merge pull request #3 from TonyDS2022/backup-dev/mvp/firestore
+    
+    Added the medical_record services and Google Cloud dependencies
+
+[33mcommit d6d6aacfc657bbe2826d7eb2ac748a4447108c93[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Sat Oct 12 23:48:48 2024 +0800
+
+    ♻️refactor: implement DI to loosely couple ggl storage service and add fall-back noOpsService
+
+[33mcommit 4b219c0c954cd24f26a011f0d3d05d0972325bad[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Sat Oct 12 23:47:25 2024 +0800
+
+    🐛fix: move worker instantiation to config constructor to ensure initializing order is respected
+
+[33mcommit 3836c2a85487cec3b33fcd0b1b13b63ae06c885c[m
+Merge: 9a543f8 55b65d6
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Sat Oct 12 21:49:57 2024 +0800
+
+    Merge branch 'dev/mvp/data-model' into backup-dev/mvp/firestore
+
+[33mcommit 9a543f84eb457df1b7e63bc61008eaf07de5c9cf[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail.com>
+Date:   Sat Oct 12 21:48:55 2024 +0800
+
+    🚧git: add dummy credentials to CI/CD config
+
+[33mcommit 55b65d6ea4c6c40ccb53aa6af505815000824645[m
+Author: Tony Zeng <tony.zeng.tianzhi@gmail
