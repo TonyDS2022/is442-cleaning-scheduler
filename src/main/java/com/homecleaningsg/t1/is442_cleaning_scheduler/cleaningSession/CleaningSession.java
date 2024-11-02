@@ -4,12 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -137,52 +134,31 @@ public class CleaningSession {
         lastModified = new Timestamp(System.currentTimeMillis());
     }
 
-    // setter with validation checks
-    public void setSessionStartTime(LocalTime sessionStartTime){
-        LocalTime MIN_START_TIME = CleaningSessionConfigLoader.MIN_START_TIME;
-        LocalTime MAX_END_TIME = CleaningSessionConfigLoader.MAX_END_TIME;
-        LocalTime START_LUNCH_TIME = CleaningSessionConfigLoader.START_LUNCH_TIME;
-        LocalTime END_LUNCH_TIME = CleaningSessionConfigLoader.END_LUNCH_TIME;
-        LocalTime START_DINNER_TIME = CleaningSessionConfigLoader.START_DINNER_TIME;
-        LocalTime END_DINNER_TIME = CleaningSessionConfigLoader.END_DINNER_TIME;
-        if (sessionStartTime.isBefore(MIN_START_TIME) || sessionStartTime.isAfter(MAX_END_TIME)){
-            throw new IllegalArgumentException("Session time must be between 8am - 10pm.");
+
+    // Helper method for validation
+    private void validateSessionTime(LocalTime time, String errorMsg) {
+        if (time.isBefore(CleaningSessionConfigLoader.MIN_START_TIME) || time.isAfter(CleaningSessionConfigLoader.MAX_END_TIME)) {
+            throw new IllegalArgumentException(errorMsg);
         }
 
-        // Check if session overlaps with lunch time
-        boolean overlapsLunch = sessionStartTime.isBefore(END_LUNCH_TIME) && sessionStartTime.isAfter(START_LUNCH_TIME);
-
-        // Check if session overlaps with dinner time
-        boolean overlapsDinner = sessionStartTime.isBefore(END_DINNER_TIME) && sessionStartTime.isAfter(START_DINNER_TIME);
+        boolean overlapsLunch = !time.isBefore(CleaningSessionConfigLoader.START_LUNCH_TIME)
+                && !time.isAfter(CleaningSessionConfigLoader.END_LUNCH_TIME);
+        boolean overlapsDinner = !time.isBefore(CleaningSessionConfigLoader.START_DINNER_TIME)
+                && !time.isAfter(CleaningSessionConfigLoader.END_DINNER_TIME);
 
         if (overlapsLunch || overlapsDinner) {
             throw new IllegalArgumentException("Session time must not overlap with lunch (12pm - 1pm) or dinner (5pm - 6pm) hours.");
         }
+    }
 
+    // Setters with validation
+    public void setSessionStartTime(LocalTime sessionStartTime) {
+        validateSessionTime(sessionStartTime, "Session start time must be between 8am - 10pm.");
         this.sessionStartTime = sessionStartTime;
     }
 
-    public void setSessionEndTime(LocalTime sessionEndTime){
-        LocalTime MIN_START_TIME = CleaningSessionConfigLoader.MIN_START_TIME;
-        LocalTime MAX_END_TIME = CleaningSessionConfigLoader.MAX_END_TIME;
-        LocalTime START_LUNCH_TIME = CleaningSessionConfigLoader.START_LUNCH_TIME;
-        LocalTime END_LUNCH_TIME = CleaningSessionConfigLoader.END_LUNCH_TIME;
-        LocalTime START_DINNER_TIME = CleaningSessionConfigLoader.START_DINNER_TIME;
-        LocalTime END_DINNER_TIME = CleaningSessionConfigLoader.END_DINNER_TIME;
-        if (sessionEndTime.isBefore(MIN_START_TIME) || sessionEndTime.isAfter(MAX_END_TIME)){
-            throw new IllegalArgumentException("Session time must be between 8am - 10pm.");
-        }
-
-        // Check if session overlaps with lunch time
-        boolean overlapsLunch = sessionEndTime.isBefore(END_LUNCH_TIME) && sessionEndTime.isAfter(START_LUNCH_TIME);
-
-        // Check if session overlaps with dinner time
-        boolean overlapsDinner = sessionEndTime.isBefore(END_DINNER_TIME) && sessionEndTime.isAfter(START_DINNER_TIME);
-
-        if (overlapsLunch || overlapsDinner) {
-            throw new IllegalArgumentException("Session time must not overlap with lunch (12pm - 1pm) or dinner (5pm - 6pm) hours.");
-        }
-
+    public void setSessionEndTime(LocalTime sessionEndTime) {
+        validateSessionTime(sessionEndTime, "Session end time must be between 8am - 10pm.");
         this.sessionEndTime = sessionEndTime;
     }
 }
