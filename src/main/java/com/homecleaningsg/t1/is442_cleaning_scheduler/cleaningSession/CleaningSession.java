@@ -126,6 +126,7 @@ public class CleaningSession {
         this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
+        this.validateSessionTime();
     }
 
     @PrePersist
@@ -134,31 +135,29 @@ public class CleaningSession {
         lastModified = new Timestamp(System.currentTimeMillis());
     }
 
-
     // Helper method for validation
-    private void validateSessionTime(LocalTime time, String errorMsg) {
-        if (time.isBefore(CleaningSessionConfigLoader.MIN_START_TIME) || time.isAfter(CleaningSessionConfigLoader.MAX_END_TIME)) {
-            throw new IllegalArgumentException(errorMsg);
+    private void validateSessionTime() {
+        // Check that start time is before end time
+        if (sessionStartTime.isAfter(sessionEndTime)) {
+            throw new IllegalArgumentException("Session start time must be before session end time.");
         }
-
-        boolean overlapsLunch = !time.isBefore(CleaningSessionConfigLoader.START_LUNCH_TIME)
-                && !time.isAfter(CleaningSessionConfigLoader.END_LUNCH_TIME);
-        boolean overlapsDinner = !time.isBefore(CleaningSessionConfigLoader.START_DINNER_TIME)
-                && !time.isAfter(CleaningSessionConfigLoader.END_DINNER_TIME);
-
-        if (overlapsLunch || overlapsDinner) {
+        // Check that session time is within 8am - 10pm
+        if (sessionStartTime.isBefore(CleaningSessionConfigLoader.MIN_START_TIME)
+                || sessionStartTime.isAfter(CleaningSessionConfigLoader.MAX_END_TIME)
+                || sessionEndTime.isBefore(CleaningSessionConfigLoader.MIN_START_TIME)
+                || sessionEndTime.isAfter(CleaningSessionConfigLoader.MAX_END_TIME)) {
+            throw new IllegalArgumentException("Session time must be between 8am - 10pm.");
+        }
+        // Check that session time does not overlap with lunch or dinner hours
+        if (sessionStartTime.isAfter(CleaningSessionConfigLoader.START_LUNCH_TIME)
+                && sessionStartTime.isBefore(CleaningSessionConfigLoader.END_LUNCH_TIME)
+                || sessionEndTime.isAfter(CleaningSessionConfigLoader.START_LUNCH_TIME)
+                && sessionEndTime.isBefore(CleaningSessionConfigLoader.END_LUNCH_TIME)
+                || sessionStartTime.isAfter(CleaningSessionConfigLoader.START_DINNER_TIME)
+                && sessionStartTime.isBefore(CleaningSessionConfigLoader.END_DINNER_TIME)
+                || sessionEndTime.isAfter(CleaningSessionConfigLoader.START_DINNER_TIME)
+                && sessionEndTime.isBefore(CleaningSessionConfigLoader.END_DINNER_TIME)) {
             throw new IllegalArgumentException("Session time must not overlap with lunch (12pm - 1pm) or dinner (5pm - 6pm) hours.");
         }
-    }
-
-    // Setters with validation
-    public void setSessionStartTime(LocalTime sessionStartTime) {
-        validateSessionTime(sessionStartTime, "Session start time must be between 8am - 10pm.");
-        this.sessionStartTime = sessionStartTime;
-    }
-
-    public void setSessionEndTime(LocalTime sessionEndTime) {
-        validateSessionTime(sessionEndTime, "Session end time must be between 8am - 10pm.");
-        this.sessionEndTime = sessionEndTime;
     }
 }

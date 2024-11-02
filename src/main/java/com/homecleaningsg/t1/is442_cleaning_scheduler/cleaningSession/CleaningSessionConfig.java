@@ -37,9 +37,9 @@ public class CleaningSessionConfig implements CommandLineRunner {
 
         CleaningSession session2 = new CleaningSession(
             LocalDate.of(2024,10,12),
-            LocalTime.of(16,0),
+            LocalTime.of(14,0),
             LocalDate.of(2024,10,12),
-            LocalTime.of(20,0),
+            LocalTime.of(17,0),
             "Session 2",
             CleaningSession.sessionStatus.NOT_STARTED
         );
