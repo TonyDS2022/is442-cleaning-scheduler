@@ -4,11 +4,15 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+@Configuration
+@EnableTransactionManagement
 @Component
 public class CleaningSessionConfig implements CommandLineRunner {
 

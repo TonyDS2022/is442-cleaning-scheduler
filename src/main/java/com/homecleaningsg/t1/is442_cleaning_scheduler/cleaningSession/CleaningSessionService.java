@@ -8,8 +8,11 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -43,27 +46,39 @@ public class CleaningSessionService {
 
     public List<CleaningSession> getAllCleaningSessions() {
         List<CleaningSession> cleaningSessions = cleaningSessionRepository.findAll();
-        cleaningSessions.forEach(session -> session.setPlanningStage(getPlanningStage(session)));
+        cleaningSessions.forEach(session -> {
+            updateWorkerHasPendingLeave(session);
+            session.setPlanningStage(getPlanningStage(session));
+            cleaningSessionRepository.save(session);
+        });
         return cleaningSessions;
     }
 
     // get cleaningsessions by sessionid
     public Optional<CleaningSession> getCleaningSessionById(Long cleaningSessionId) {
-        // return cleaningSessionRepository.findById(cleaningSessionId);
         Optional<CleaningSession> cleaningSession = cleaningSessionRepository.findById(cleaningSessionId);
-        cleaningSession.ifPresent(session -> session.setPlanningStage(getPlanningStage(session)));
+        cleaningSession.ifPresent(session -> {
+            session.setPlanningStage(getPlanningStage(session));
+            cleaningSessionRepository.save(session);
+        });
         return cleaningSession;
     }
 
     public List<CleaningSession> getCleaningSessionsByContractId(Long contractId) {
         List<CleaningSession> cleaningSessions = cleaningSessionRepository.findByContract_ContractId(contractId);
-        cleaningSessions.forEach(session -> session.setPlanningStage(getPlanningStage(session)));
+        cleaningSessions.forEach(session -> {
+            session.setPlanningStage(getPlanningStage(session));
+            cleaningSessionRepository.save(session);
+        });
         return cleaningSessions;
     }
 
     public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(Long contractId, Long cleaningSessionId) {
         Optional<CleaningSession> cleaningSession = cleaningSessionRepository.findByContract_ContractIdAndCleaningSessionId(contractId, cleaningSessionId);
-        cleaningSession.ifPresent(session -> session.setPlanningStage(getPlanningStage(session)));
+        cleaningSession.ifPresent(session -> {
+            session.setPlanningStage(getPlanningStage(session));
+            cleaningSessionRepository.save(session);
+        });
         return cleaningSession;
     }
 
@@ -117,6 +132,7 @@ public class CleaningSessionService {
     }
 
     // // try to calculate workerhaspendingleave dynamically
+    @Transactional // get the changes are properly committed to the database.
     public void updateWorkerHasPendingLeave(CleaningSession cleaningSession) {
         for (Shift shift : cleaningSession.getShifts()) {
             if (shift.getWorker() != null) {
@@ -127,8 +143,10 @@ public class CleaningSessionService {
                 shiftRepository.save(shift);
             } else {
                 shift.setWorkerHasPendingLeave(false);
+                shiftRepository.save(shift);
             }
         }
+        shiftRepository.flush(); // Ensure changes are flushed / persist to the database
     }
 
     private boolean isOverlapping(OffsetDateTime leaveStart, OffsetDateTime leaveEnd, Shift shift) {
