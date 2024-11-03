@@ -13,14 +13,14 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-
-@Entity
-@Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Builder
+@Entity
+@Table(name = "LeaveApplication")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "leaveApplicationId")
 public class LeaveApplication {
     @Id
     @SequenceGenerator(

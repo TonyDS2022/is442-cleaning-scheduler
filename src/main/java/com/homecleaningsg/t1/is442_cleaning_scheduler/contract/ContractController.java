@@ -24,9 +24,33 @@ public class ContractController {
         return contractService.getContract();
     }
 
-    @GetMapping("/{contractId}/rate")
-    public Optional<Float> getRateByContractId(@PathVariable Long contractId) {
-        return contractService.getRateByContractId(contractId);
+    // add contract
+    // URL: POST /api/v0.1/contract
+    // {
+    //     "clientId": 1,
+    //         "contractStart": "2024-12-01T00:00:00.000+08:00",
+    //         "contractEnd": "2024-12-03T00:00:00.000+012:00",
+    //         "contractComment": "Contract Comment",
+    //         "ongoing": true,
+    //         "price": 100.0,
+    //         "workersBudgeted": 1,
+    //         "rooms": 3,
+    //         "frequency": "DAILY",
+    //         "sessionDurationMinutes": 180
+    // }
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Contract> createContract(@RequestBody Contract contract) {
+        Contract createdContract = contractService.createContract(contract);
+        return new ResponseEntity<>(createdContract, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public Contract updateContract(@PathVariable Long id, @RequestBody Contract contract) {
+        return contractService.updateContract(id, contract);
+    }
+    @DeleteMapping("/{id}")
+    public void deleteContract(@PathVariable Long id) {
+        contractService.deleteContract(id);
     }
 
     @PostMapping("/add-contract/")
