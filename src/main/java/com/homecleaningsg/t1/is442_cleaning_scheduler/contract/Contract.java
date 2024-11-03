@@ -69,8 +69,19 @@ public class Contract {
     @Column(name = "rooms")
     private int rooms;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "frequency")
-    private String frequency;
+    private Frequency frequency;
+
+    public enum Frequency {
+        DAILY,
+        WEEKLY,
+        BIWEEKLY,
+        MONTHLY,
+        BIMONTHLY,
+        QUARTERLY,
+        ANNUALLY
+    }
 
     @Column(name = "sessionDurationMinutes")
     private int sessionDurationMinutes;
@@ -82,5 +93,6 @@ public class Contract {
 
     // temp for retrieving all contracts by cleaningSessionIds
     @OneToMany(mappedBy = "contract")
+    @JsonManagedReference
     private List<CleaningSession> cleaningSessions;
 }
