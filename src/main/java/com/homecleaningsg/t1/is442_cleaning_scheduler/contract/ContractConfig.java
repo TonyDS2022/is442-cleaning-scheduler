@@ -33,7 +33,7 @@ public class ContractConfig implements CommandLineRunner {
         contract1.setPrice(60.0f);
         contract1.setWorkersBudgeted(1);
         contract1.setRooms(1);
-        contract1.setFrequency("Weekly");
+        contract1.setFrequency(Contract.Frequency.WEEKLY);
         contract1.setSessionDurationMinutes(60);
 
         Contract contract2 = new Contract();
@@ -45,7 +45,7 @@ public class ContractConfig implements CommandLineRunner {
         contract2.setPrice(250.0f);
         contract2.setWorkersBudgeted(3);
         contract2.setRooms(2);
-        contract2.setFrequency("Bi-weekly");
+        contract2.setFrequency(Contract.Frequency.BIWEEKLY);
         contract2.setSessionDurationMinutes(120);
 
         // Log hourly rates

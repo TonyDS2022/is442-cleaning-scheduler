@@ -20,7 +20,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table
-// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "workerId") // temp solution to prevent infinite recursion
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "workerId") // temp solution to prevent infinite recursion
 public class Worker {
     @Id
     @SequenceGenerator(
@@ -66,18 +66,11 @@ public class Worker {
         this.homeLocation = homeLocation;
     }
 
-    // // establish relationship with leaveApplications
-    // @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
-    // // @JsonIgnore
-    // @JsonBackReference // prevent infinite recursion when serializing
-    // private List<LeaveApplication> leaveApplications;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leaveApplicationId", nullable = true)
+    private LeaveApplication leaveApplication;
 
-    // @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
-    // @JsonBackReference
-    // private List<Shift> shifts;
-
-    // @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
-    // @JsonBackReference
-    // private List<Contract> contracts;
-
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Shift> shifts;
 }

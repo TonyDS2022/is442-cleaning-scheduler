@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "api/v0.1/shift")
@@ -117,4 +119,25 @@ public class ShiftController {
         return ResponseEntity.ok(isOnLeave);
     }
 
+    // DTO for getting dynamic workerhaspendingleave status
+    // given a workerId, find all leave applications in leaveApplicationRepo
+    // that are pending
+    // that have matching workerid
+    // and whos leave have a start and end date that overlaps with the cleaning session
+    @GetMapping("/worker/{workerId}/shifts-with-pending-leave")
+    public List<WorkerPendingLeaveDto> getShiftsWithPendingLeave(@PathVariable("workerId") Long workerId) {
+        List<Shift> shifts = shiftService.getShiftsByWorkerId(workerId);
+        return shifts.stream().map(shift -> {
+            boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(workerId)
+                    .stream()
+                    .anyMatch(leave -> isOverlapping(leave.getAffectedShiftStart(), leave.getAffectedShiftEnd(), shift));
+            return new WorkerPendingLeaveDto(shift, hasPendingLeave);
+        }).collect(Collectors.toList());
+    }
+
+    private boolean isOverlapping(OffsetDateTime leaveStart, OffsetDateTime leaveEnd, Shift shift) {
+        OffsetDateTime shiftStart = shift.getSessionStartDate().atTime(shift.getSessionStartTime()).atOffset(OffsetDateTime.now().getOffset());
+        OffsetDateTime shiftEnd = shift.getSessionEndDate().atTime(shift.getSessionEndTime()).atOffset(OffsetDateTime.now().getOffset());
+        return (leaveStart.isBefore(shiftEnd) && leaveEnd.isAfter(shiftStart));
+    }
 }
