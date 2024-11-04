@@ -1,19 +1,18 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.OffsetDateTime;
 
-
-
-@Entity
-@Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Builder
+@Entity
+@Table(name = "LeaveApplication")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "leaveApplicationId")
 public class LeaveApplication {
     @Id
     @SequenceGenerator(
@@ -25,7 +24,7 @@ public class LeaveApplication {
             strategy = GenerationType.SEQUENCE,
             generator = "leave_application_sequence"
     )
-    private Long applicationId;
+    private Long leaveApplicationId;
     @NonNull
     private Long workerId;
     @NonNull

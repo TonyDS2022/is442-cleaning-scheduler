@@ -27,7 +27,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "Shift")
-// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "shiftId")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "shiftId")
 public class Shift {
     // reuse sequence generator of sessionId
     @Id
@@ -50,7 +50,7 @@ public class Shift {
     // refers to workerId col to establish relationship
     @ManyToOne(fetch = FetchType.EAGER) // eager loading for workerhaspendingleave check
     @JoinColumn(name = "workerId")
-    @JsonManagedReference
+    // @JsonManagedReference
     private Worker worker;
 
     // refers to cleaningSession to establish relationship
