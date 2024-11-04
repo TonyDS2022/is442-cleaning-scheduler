@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -202,7 +203,7 @@ public class CleaningSessionService {
             if (shift.getWorker() != null) {
                 boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(shift.getWorker().getWorkerId())
                         .stream()
-                        .anyMatch(leave -> isOverlapping(leave.getAffectedShiftStart(), leave.getAffectedShiftEnd(), shift));
+                        .anyMatch(leave -> isOverlapping(leave.getLeaveStartDate(), leave.getLeaveStartDate(), shift));
                 shift.setWorkerHasPendingLeave(hasPendingLeave);
                 shiftRepository.save(shift);
             } else {
@@ -213,10 +214,11 @@ public class CleaningSessionService {
         shiftRepository.flush(); // Ensure changes are flushed / persist to the database
     }
 
-    private boolean isOverlapping(OffsetDateTime leaveStart, OffsetDateTime leaveEnd, Shift shift) {
-        OffsetDateTime shiftStart = shift.getSessionStartDate().atTime(shift.getSessionStartTime()).atOffset(OffsetDateTime.now().getOffset());
-        OffsetDateTime shiftEnd = shift.getSessionEndDate().atTime(shift.getSessionEndTime()).atOffset(OffsetDateTime.now().getOffset());
-        return (leaveStart.isBefore(shiftEnd) && leaveEnd.isAfter(shiftStart));
+    private boolean isOverlapping(LocalDate leaveStart, LocalDate leaveEnd, Shift shift) {
+        LocalDate shiftStartDate = shift.getSessionStartDate();
+        LocalDate shiftEndDate = shift.getSessionEndDate();
+        return (leaveStart.isBefore(shiftEndDate) || leaveStart.isEqual(shiftEndDate)) &&
+                (leaveEnd.isAfter(shiftStartDate) || leaveEnd.isEqual(shiftStartDate));
     }
 
     public CleaningSession.PlanningStage getPlanningStage(CleaningSession cleaningSession) {
