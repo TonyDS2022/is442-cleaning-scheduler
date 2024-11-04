@@ -1,8 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
