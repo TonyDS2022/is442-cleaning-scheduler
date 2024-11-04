@@ -73,18 +73,4 @@ public class Worker {
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Shift> shifts;
-
-    // // establish relationship with leaveApplications
-    // @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
-    // // @JsonIgnore
-    // @JsonBackReference // prevent infinite recursion when serializing
-    // private List<LeaveApplication> leaveApplications;
-
-    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
-    // @JsonBackReference
-    private List<Shift> shifts;
-
-    // @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
-    // @JsonBackReference
-    // private List<Contract> contracts;
 }
