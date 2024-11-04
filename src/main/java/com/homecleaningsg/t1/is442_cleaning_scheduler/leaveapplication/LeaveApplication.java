@@ -17,6 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Builder
+@Entity
+@Table(name = "LeaveApplication")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "leaveApplicationId")
 public class LeaveApplication {
     @Id
     @SequenceGenerator(
@@ -28,7 +31,7 @@ public class LeaveApplication {
             strategy = GenerationType.SEQUENCE,
             generator = "leave_application_sequence"
     )
-    private Long applicationId;
+    private Long leaveApplicationId;
     @NonNull
     private Long workerId;
     @NonNull
