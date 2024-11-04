@@ -48,7 +48,7 @@ public class Shift {
     private String sessionDescription;
 
     // refers to workerId col to establish relationship
-    @ManyToOne(fetch = FetchType.EAGER) // eager loading for workerhaspendingleave check
+    @ManyToOne
     @JoinColumn(name = "workerId")
     // @JsonManagedReference
     private Worker worker;
@@ -121,15 +121,15 @@ public class Shift {
         this.workingStatus = WorkingStatus.NOT_STARTED;
     }
 
-    // // getter for transient field workerHasPendingLeave
-    public boolean isWorkerHasPendingLeave(ShiftService shiftService) {
-        return true; // for debugging. Revert comments below to get code working
-        // if (this.worker == null) {
-        //     System.out.println("Worker is null for shift: " + this.shiftId);
-        //     return false;
-        // }
-        // return shiftService.isWorkerHasPendingLeave(this);
-    }
+    // // // getter for transient field workerHasPendingLeave
+    // public boolean isWorkerHasPendingLeave(ShiftService shiftService) {
+    //     return true; // for debugging. Revert comments below to get code working
+    //     // if (this.worker == null) {
+    //     //     System.out.println("Worker is null for shift: " + this.shiftId);
+    //     //     return false;
+    //     // }
+    //     // return shiftService.isWorkerHasPendingLeave(this);
+    // }
 
     // public boolean isWorkerHasPendingLeave() {
     //     if (worker == null) {

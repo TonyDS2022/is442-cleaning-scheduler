@@ -31,4 +31,11 @@ public class CleaningSessionController {
     public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(@PathVariable Long contractId, @PathVariable Long cleaningSessionId) {
         return cleaningSessionService.getCleaningSessionByContractIdAndCleaningSessionId(contractId, cleaningSessionId);
     }
+
+    @GetMapping("/cleaningSessionId/{id}")
+    public CleaningSession getPlanningStage(@PathVariable Long id) {
+        return cleaningSessionService.getCleaningSessionById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
+    }
+
 }
