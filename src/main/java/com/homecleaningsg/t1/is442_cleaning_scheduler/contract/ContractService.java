@@ -24,15 +24,34 @@ public class ContractService {
         return contractRepository.findAll();
     }
 
-    public Optional<Float> getRateByContractId(Long contractId) {
-        Optional<Contract> contract = contractRepository.findById(contractId);
-        return contract.map(Contract::getRate);
-    }
-
     public List<Contract> getContractsByCleaningSessionIds(List<Long> cleaningSessionIds) {
         return contractRepository.findAll().stream()
                 .filter(contract -> contract.getCleaningSessions().stream()
                         .anyMatch(session -> cleaningSessionIds.contains(session.getCleaningSessionId())))
                 .collect(Collectors.toList());
+    }
+
+    // Create, Update, Delete Contract
+    public Contract createContract(Contract contract) {
+        return contractRepository.save(contract);
+    }
+
+    public Contract updateContract(Long id, Contract contract) {
+        Contract existingContract = contractRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
+        existingContract.setClientId(contract.getClientId());
+        existingContract.setContractStart(contract.getContractStart());
+        existingContract.setContractEnd(contract.getContractEnd());
+        existingContract.setContractComment(contract.getContractComment());
+        existingContract.setOngoing(contract.isOngoing());
+        existingContract.setPrice(contract.getPrice());
+        existingContract.setWorkersBudgeted(contract.getWorkersBudgeted());
+        existingContract.setRooms(contract.getRooms());
+        existingContract.setFrequency(contract.getFrequency());
+        existingContract.setSessionDurationMinutes(contract.getSessionDurationMinutes());
+        return contractRepository.save(existingContract);
+    }
+    public void deleteContract(Long id) {
+        contractRepository.deleteById(id);
     }
 }

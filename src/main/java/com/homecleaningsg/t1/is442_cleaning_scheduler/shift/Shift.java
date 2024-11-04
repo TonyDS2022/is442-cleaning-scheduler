@@ -1,7 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
@@ -20,7 +21,7 @@ import java.time.LocalTime;
 @ToString
 @Entity
 @Table(name = "Shift")
-// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "shiftId")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "shiftId")
 public class Shift {
     // reuse sequence generator of sessionId
     @Id
@@ -41,9 +42,9 @@ public class Shift {
     private String sessionDescription;
 
     // refers to workerId col to establish relationship
-    @ManyToOne(fetch = FetchType.EAGER) // eager loading for workerhaspendingleave check
+    @ManyToOne
     @JoinColumn(name = "workerId")
-    @JsonManagedReference
+    // @JsonManagedReference
     private Worker worker;
 
     // refers to cleaningSession to establish relationship
@@ -114,15 +115,15 @@ public class Shift {
         this.workingStatus = WorkingStatus.NOT_STARTED;
     }
 
-    // // getter for transient field workerHasPendingLeave
-    public boolean isWorkerHasPendingLeave(ShiftService shiftService) {
-        return true; // for debugging. Revert comments below to get code working
-        // if (this.worker == null) {
-        //     System.out.println("Worker is null for shift: " + this.shiftId);
-        //     return false;
-        // }
-        // return shiftService.isWorkerHasPendingLeave(this);
-    }
+    // // // getter for transient field workerHasPendingLeave
+    // public boolean isWorkerHasPendingLeave(ShiftService shiftService) {
+    //     return true; // for debugging. Revert comments below to get code working
+    //     // if (this.worker == null) {
+    //     //     System.out.println("Worker is null for shift: " + this.shiftId);
+    //     //     return false;
+    //     // }
+    //     // return shiftService.isWorkerHasPendingLeave(this);
+    // }
 
     // public boolean isWorkerHasPendingLeave() {
     //     if (worker == null) {

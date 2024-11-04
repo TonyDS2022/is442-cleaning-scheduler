@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "api/v0.1/shift")
@@ -118,4 +119,26 @@ public class ShiftController {
         return shiftService.getAvailableWorkersForShift(shiftId);
     }
 
+    // DTO for getting dynamic workerhaspendingleave status
+    // given a workerId, find all leave applications in leaveApplicationRepo
+    // that are pending
+    // that have matching workerid
+    // and whos leave have a start and end date that overlaps with the cleaning session
+    @GetMapping("/worker/{workerId}/shifts-with-pending-leave")
+    public List<WorkerPendingLeaveDto> getShiftsWithPendingLeave(@PathVariable("workerId") Long workerId) {
+        List<Shift> shifts = shiftService.getShiftsByWorkerId(workerId);
+        return shifts.stream().map(shift -> {
+            boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(workerId)
+                    .stream()
+                    .anyMatch(leave -> isOverlapping(leave.getLeaveStartDate(), leave.getLeaveStartDate(), shift));
+            return new WorkerPendingLeaveDto(shift, hasPendingLeave);
+        }).collect(Collectors.toList());
+    }
+
+    private boolean isOverlapping(LocalDate leaveStart, LocalDate leaveEnd, Shift shift) {
+        LocalDate shiftStartDate = shift.getSessionStartDate();
+        LocalDate shiftEndDate = shift.getSessionEndDate();
+        return (leaveStart.isBefore(shiftEndDate) || leaveStart.isEqual(shiftEndDate)) &&
+                (leaveEnd.isAfter(shiftStartDate) || leaveEnd.isEqual(shiftStartDate));
+    }
 }

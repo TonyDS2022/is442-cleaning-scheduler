@@ -19,7 +19,6 @@ public class WorkerConfig implements CommandLineRunner{
         this.workerRepository = workerRepository;
         this.locationRepository = locationRepository;
 
-
         Worker worker1 = new Worker(
                 "Karthiga",
                 "karthiga",
@@ -136,6 +135,10 @@ public class WorkerConfig implements CommandLineRunner{
         );
 
         workerRepository.saveAll(List.of(worker1, worker2, worker3, worker4, worker5, worker6, worker7, worker8, worker9, worker10));
+        // save loc instances
+        locationRepository.saveAll(List.of(
+                loc8, loc5
+        ));
 
     }
 
