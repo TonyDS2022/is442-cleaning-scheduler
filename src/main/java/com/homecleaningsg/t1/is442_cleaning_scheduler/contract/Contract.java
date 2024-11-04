@@ -106,7 +106,7 @@ public class Contract {
 
     // temp for retrieving all contracts by cleaningSessionIds
     @Getter
-    @OneToMany(mappedBy = "contract")
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<CleaningSession> cleaningSessions;
 
