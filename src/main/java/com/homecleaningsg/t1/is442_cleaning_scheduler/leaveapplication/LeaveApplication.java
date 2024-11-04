@@ -104,8 +104,6 @@ public class LeaveApplication {
             int medicalLeaveBalance,
             int otherLeaveBalance
     ) {
- 
-    public LeaveApplication(Long workerId, Long adminId, LeaveType leaveType, String fileName, OffsetDateTime affectedShiftStart, OffsetDateTime affectedShiftEnd, OffsetDateTime applicationSubmitted, ApplicationStatus applicationStatus) {
         this.workerId = workerId;
         this.adminId = adminId;
         this.leaveType = leaveType;

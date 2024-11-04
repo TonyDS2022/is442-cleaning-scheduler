@@ -130,14 +130,15 @@ public class ShiftController {
         return shifts.stream().map(shift -> {
             boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(workerId)
                     .stream()
-                    .anyMatch(leave -> isOverlapping(leave.getAffectedShiftStart(), leave.getAffectedShiftEnd(), shift));
+                    .anyMatch(leave -> isOverlapping(leave.getLeaveStartDate(), leave.getLeaveStartDate(), shift));
             return new WorkerPendingLeaveDto(shift, hasPendingLeave);
         }).collect(Collectors.toList());
     }
 
-    private boolean isOverlapping(OffsetDateTime leaveStart, OffsetDateTime leaveEnd, Shift shift) {
-        OffsetDateTime shiftStart = shift.getSessionStartDate().atTime(shift.getSessionStartTime()).atOffset(OffsetDateTime.now().getOffset());
-        OffsetDateTime shiftEnd = shift.getSessionEndDate().atTime(shift.getSessionEndTime()).atOffset(OffsetDateTime.now().getOffset());
-        return (leaveStart.isBefore(shiftEnd) && leaveEnd.isAfter(shiftStart));
+    private boolean isOverlapping(LocalDate leaveStart, LocalDate leaveEnd, Shift shift) {
+        LocalDate shiftStartDate = shift.getSessionStartDate();
+        LocalDate shiftEndDate = shift.getSessionEndDate();
+        return (leaveStart.isBefore(shiftEndDate) || leaveStart.isEqual(shiftEndDate)) &&
+                (leaveEnd.isAfter(shiftStartDate) || leaveEnd.isEqual(shiftStartDate));
     }
 }
