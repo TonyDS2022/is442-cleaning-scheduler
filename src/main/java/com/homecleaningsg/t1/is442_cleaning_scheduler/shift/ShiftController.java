@@ -1,7 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,15 +17,12 @@ import java.util.stream.Collectors;
 public class ShiftController {
 
     private final ShiftService shiftService;
-    private final ShiftWorkerService shiftWorkerService;
     private final LeaveApplicationService leaveApplicationService;
 
     @Autowired
     public ShiftController(ShiftService shiftService,
-                           ShiftWorkerService shiftWorkerService,
                            LeaveApplicationService leaveApplicationService) {
         this.shiftService = shiftService;
-        this.shiftWorkerService = shiftWorkerService;
         this.leaveApplicationService = leaveApplicationService;
     }
 
@@ -99,13 +94,13 @@ public class ShiftController {
     }
 
     // http://localhost:8080/api/v0.1/shift/worker/1/last-known-location?date=2024-10-05&time=15:00
-    @GetMapping("/worker/{workerId}/last-known-location")
-    public Location getWorkerLastKnownLocation(@PathVariable("workerId") Long workerId,
-                                               @RequestParam LocalDate date,
-                                               @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
-
-        return shiftWorkerService.getWorkerLastKnownLocation(workerId, date, time);
-    }
+//    @GetMapping("/worker/{workerId}/last-known-location")
+//    public Location getWorkerLastKnownLocation(@PathVariable("workerId") Long workerId,
+//                                               @RequestParam LocalDate date,
+//                                               @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
+//
+//        return shiftWorkerService.getWorkerLastKnownLocation(workerId, date, time);
+//    }
 
     // http://localhost:8080/api/v0.1/shift/worker/5/is-worker-on-leave?shiftStartDate=2024-10-05&shiftStartTime=15:00&shiftEndDate=2024-10-05&shiftEndTime=18:00
     @GetMapping("/worker/{workerId}/is-worker-on-leave")
@@ -117,6 +112,11 @@ public class ShiftController {
             @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime shiftEndTime) {
         boolean isOnLeave = leaveApplicationService.isWorkerOnLeave(workerId, shiftStartDate, shiftStartTime, shiftEndDate, shiftEndTime);
         return ResponseEntity.ok(isOnLeave);
+    }
+
+    @GetMapping("/{shiftId}/available-workers")
+    public List<AvailableWorkerDto> getAvailableWorkers(@PathVariable("shiftId") Long shiftId) {
+        return shiftService.getAvailableWorkersForShift(shiftId);
     }
 
     // DTO for getting dynamic workerhaspendingleave status
