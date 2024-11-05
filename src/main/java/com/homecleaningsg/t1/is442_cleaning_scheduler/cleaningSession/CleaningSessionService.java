@@ -45,12 +45,44 @@ public class CleaningSessionService {
         return cleaningSessionRepository.save(cleaningSession);
     }
 
-    public CleaningSession updateCleaningSession(Long cleaningSessionId, CleaningSession updatedCleaningSession){
+    public CleaningSession updateCleaningSession(Long cleaningSessionId, CleaningSessionUpdateDto updatedSessionDto){
         if(!cleaningSessionRepository.existsById(cleaningSessionId)){
             throw new IllegalArgumentException("Cleaning session not found");
         }
-        updatedCleaningSession.setCleaningSessionId(cleaningSessionId);
-        return cleaningSessionRepository.save(updatedCleaningSession);
+        CleaningSession existingSession = cleaningSessionRepository.findById(cleaningSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
+
+        if (updatedSessionDto.getSessionStartDate() != null) {
+            existingSession.setSessionStartDate(updatedSessionDto.getSessionStartDate());
+        }
+        if (updatedSessionDto.getSessionStartDate() != null) {
+            existingSession.setSessionStartDate(updatedSessionDto.getSessionStartDate());
+        }
+        if (updatedSessionDto.getSessionStartTime() != null) {
+            existingSession.setSessionStartTime(updatedSessionDto.getSessionStartTime());
+        }
+        if (updatedSessionDto.getSessionEndDate() != null) {
+            existingSession.setSessionEndDate(updatedSessionDto.getSessionEndDate());
+        }
+        if (updatedSessionDto.getSessionEndTime() != null) {
+            existingSession.setSessionEndTime(updatedSessionDto.getSessionEndTime());
+        }
+        if (updatedSessionDto.getSessionDescription() != null) {
+            existingSession.setSessionDescription(updatedSessionDto.getSessionDescription());
+        }
+        if (updatedSessionDto.getSessionStatus() != null) {
+            existingSession.setSessionStatus(updatedSessionDto.getSessionStatus());
+        }
+        if (updatedSessionDto.getSessionRating() != null) {
+            existingSession.setSessionRating(updatedSessionDto.getSessionRating());
+        }
+        if (updatedSessionDto.getPlanningStage() != null) {
+            existingSession.setPlanningStage(updatedSessionDto.getPlanningStage());
+        }
+        if (updatedSessionDto.getSessionFeedback() != null) {
+            existingSession.setSessionFeedback(updatedSessionDto.getSessionFeedback());
+        }
+        return cleaningSessionRepository.save(existingSession);
     }
 
     public void deactivateCleaningSession(Long cleaningSessionId) {

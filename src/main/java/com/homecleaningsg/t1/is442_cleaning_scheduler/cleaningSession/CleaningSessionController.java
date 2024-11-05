@@ -41,9 +41,9 @@ public class CleaningSessionController {
 
     @PutMapping("/update-cleaning-session/{cleaningSessionId}")
     public ResponseEntity<String> updateCleaningSession(
-            @PathVariable("cleaningSessionId") Long cleaningSessionId, @RequestBody CleaningSession updatedSession) {
+            @PathVariable("cleaningSessionId") Long cleaningSessionId, @RequestBody CleaningSessionUpdateDto updatedSessionDto) {
         try {
-            CleaningSession updatedCleaningSession = cleaningSessionService.updateCleaningSession(cleaningSessionId, updatedSession);
+            CleaningSession updatedCleaningSession = cleaningSessionService.updateCleaningSession(cleaningSessionId, updatedSessionDto);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session updated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update cleaning session details.");
