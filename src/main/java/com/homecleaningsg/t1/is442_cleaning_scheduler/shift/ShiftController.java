@@ -29,7 +29,7 @@ public class ShiftController {
         return shiftService.getShiftById(shiftId);
     }
 
-    @PostMapping("/add-contract/")
+    @PostMapping("/add-shift/")
     public ResponseEntity<String> addShift(@RequestBody Shift shift) {
         try{
             shiftService.addShift(shift);

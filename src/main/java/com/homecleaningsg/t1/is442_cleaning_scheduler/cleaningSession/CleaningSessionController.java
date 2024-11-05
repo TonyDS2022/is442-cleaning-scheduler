@@ -29,11 +29,6 @@ public class CleaningSessionController {
         return cleaningSessionService.getCleaningSessionsByContractId(contractId);
     }
 
-    @GetMapping("/{contractId}/{cleaningSessionId}")
-    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(@PathVariable("contractId") Long contractId, @PathVariable("contractId") Long cleaningSessionId) {
-        return cleaningSessionService.getCleaningSessionByContractIdAndCleaningSessionId(contractId, cleaningSessionId);
-    }
-
     @PostMapping("/create-cleaning-session/")
     public ResponseEntity<String> addCleaningSession(@RequestBody CleaningSession cleaningSession) {
         try {
