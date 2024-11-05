@@ -10,6 +10,7 @@ import lombok.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @NoArgsConstructor
@@ -50,9 +51,9 @@ public class Client {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
-    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     @JsonBackReference
-    private Contract contract;
+    private List<Contract> contracts;
 
     public Client(String name,
                            String phone,

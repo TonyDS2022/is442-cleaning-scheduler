@@ -39,8 +39,8 @@ public class Contract {
     @JoinColumn(name = "locationId", nullable = false)
     private Location location;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "clientId", referencedColumnName = "clientId")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "clientId",  nullable = false)
     @JsonManagedReference
     private Client client;
 
