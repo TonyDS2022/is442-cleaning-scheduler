@@ -22,8 +22,6 @@ import java.util.List;
 @Entity
 @Table(name = "Contract")
 public class Contract {
-    private static final int MIN_DURATION = 60;
-    private static final int MAX_DURATION = 240;
 
     @Id
     @SequenceGenerator(
@@ -120,10 +118,12 @@ public class Contract {
         this.frequency = frequency;
         setSessionDurationMinutes(sessionDurationMinutes); // Use custom setter for validation
         this.contractStatus = contractStatus;
+        this.validateSessionDurationMinutes();
     }
 
-    public void setSessionDurationMinutes(int sessionDurationMinutes){
-        if(sessionDurationMinutes < 60 || sessionDurationMinutes > 240){
+    // Helper method for validation
+    public void validateSessionDurationMinutes(){
+        if(sessionDurationMinutes < ContractConfigLoader.MIN_SESSION_DURATION_MINUTES || sessionDurationMinutes > ContractConfigLoader.MAX_SESSION_DURATION_MINUTES){
             throw new IllegalArgumentException("Service hours must be between 1 and 4 hours.");
         }
     }
