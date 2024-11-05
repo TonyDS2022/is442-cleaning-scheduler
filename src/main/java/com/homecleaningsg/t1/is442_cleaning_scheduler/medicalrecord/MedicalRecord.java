@@ -1,6 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord;
 
 import jakarta.persistence.*;
+
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import lombok.*;
 
@@ -19,6 +21,26 @@ public class MedicalRecord {
     private String filename;
     private OffsetDateTime mcStartDate;
     private OffsetDateTime mcEndDate;
+    @NonNull
+    private Timestamp lastModified;
+
+    public MedicalRecord(String mcId,
+                         String blobId,
+                         String filename,
+                         OffsetDateTime mcStartDate,
+                         OffsetDateTime mcEndDate){
+        this.mcId = mcId;
+        this.blobId = blobId;
+        this.filename = filename;
+        this.mcStartDate = mcStartDate;
+        this.mcEndDate = mcEndDate;
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
+    }
 
 
 }

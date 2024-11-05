@@ -1,8 +1,10 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +29,68 @@ public class CleaningSessionService {
     public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(Long contractId, Long cleaningSessionId) {
         return cleaningSessionRepository.findByContract_ContractIdAndCleaningSessionId(contractId, cleaningSessionId);
     }
+
+    public CleaningSession addCleaningSession(CleaningSession cleaningSession){
+        Contract contract = cleaningSession.getContract();
+        Long durationMinutes = Duration.between(
+                cleaningSession.getSessionStartTime(),
+                cleaningSession.getSessionEndTime()
+        ).toMinutes();
+
+
+        if (contract.getSessionDurationMinutes() != durationMinutes) {
+            throw new IllegalArgumentException("Cleaning session duration must be same as duration set in contract.");
+        }
+
+        return cleaningSessionRepository.save(cleaningSession);
+    }
+
+    public CleaningSession updateCleaningSession(Long cleaningSessionId, CleaningSessionUpdateDto updatedSessionDto){
+        if(!cleaningSessionRepository.existsById(cleaningSessionId)){
+            throw new IllegalArgumentException("Cleaning session not found");
+        }
+        CleaningSession existingSession = cleaningSessionRepository.findById(cleaningSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
+
+        if (updatedSessionDto.getSessionStartDate() != null) {
+            existingSession.setSessionStartDate(updatedSessionDto.getSessionStartDate());
+        }
+        if (updatedSessionDto.getSessionStartDate() != null) {
+            existingSession.setSessionStartDate(updatedSessionDto.getSessionStartDate());
+        }
+        if (updatedSessionDto.getSessionStartTime() != null) {
+            existingSession.setSessionStartTime(updatedSessionDto.getSessionStartTime());
+        }
+        if (updatedSessionDto.getSessionEndDate() != null) {
+            existingSession.setSessionEndDate(updatedSessionDto.getSessionEndDate());
+        }
+        if (updatedSessionDto.getSessionEndTime() != null) {
+            existingSession.setSessionEndTime(updatedSessionDto.getSessionEndTime());
+        }
+        if (updatedSessionDto.getSessionDescription() != null) {
+            existingSession.setSessionDescription(updatedSessionDto.getSessionDescription());
+        }
+        if (updatedSessionDto.getSessionStatus() != null) {
+            existingSession.setSessionStatus(updatedSessionDto.getSessionStatus());
+        }
+        if (updatedSessionDto.getSessionRating() != null) {
+            existingSession.setSessionRating(updatedSessionDto.getSessionRating());
+        }
+        if (updatedSessionDto.getPlanningStage() != null) {
+            existingSession.setPlanningStage(updatedSessionDto.getPlanningStage());
+        }
+        if (updatedSessionDto.getSessionFeedback() != null) {
+            existingSession.setSessionFeedback(updatedSessionDto.getSessionFeedback());
+        }
+        return cleaningSessionRepository.save(existingSession);
+    }
+
+    public void deactivateCleaningSession(Long cleaningSessionId) {
+        CleaningSession cleaningSession = cleaningSessionRepository.findById(cleaningSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
+        cleaningSession.setActive(false);
+        cleaningSessionRepository.save(cleaningSession);
+    }
+
+
 }

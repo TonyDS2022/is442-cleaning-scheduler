@@ -7,6 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -21,8 +22,6 @@ import java.util.List;
 @Entity
 @Table(name = "CleaningSession")
 public class CleaningSession {
-    // refers to Contract contractId col to establish relationship
-
     // use sequence generator for sessionId
     @Id
     @SequenceGenerator(
@@ -107,8 +106,14 @@ public class CleaningSession {
     @JsonBackReference // prevent infinite recursion
     private Contract contract;
 
+    @NonNull
+    private boolean isActive = true;
+
+    @NonNull
+    private Timestamp lastModified;
+
     // New constructor
-    public CleaningSession(Contract contract,
+    public CleaningSession(Contract contract, /* Note: DO NOT remove this parameter */
                            LocalDate sessionStartDate,
                            LocalTime sessionStartTime,
                            LocalDate sessionEndDate,
@@ -116,12 +121,46 @@ public class CleaningSession {
                            String sessionDescription,
                            sessionStatus sessionStatus) {
         this.contract = contract;
-        this.location = contract.getLocation();
+        this.location = contract.getLocation(); /* Note: DO NOT remove this line */
+        setSessionStartTime(sessionStartTime);
+        setSessionEndTime(sessionEndTime);
         this.sessionStartDate = sessionStartDate;
-        this.sessionStartTime = sessionStartTime;
         this.sessionEndDate = sessionEndDate;
         this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
+        this.validateSessionTime();
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
+    }
+
+    // Helper method for validation
+    private void validateSessionTime() {
+        // Check that start time is before end time
+        if (sessionStartTime.isAfter(sessionEndTime)) {
+            throw new IllegalArgumentException("Session start time must be before session end time.");
+        }
+        // Check that session time is within 8am - 10pm
+        if (sessionStartTime.isBefore(CleaningSessionConfigLoader.MIN_START_TIME)
+                || sessionStartTime.isAfter(CleaningSessionConfigLoader.MAX_END_TIME)
+                || sessionEndTime.isBefore(CleaningSessionConfigLoader.MIN_START_TIME)
+                || sessionEndTime.isAfter(CleaningSessionConfigLoader.MAX_END_TIME)) {
+            throw new IllegalArgumentException("Session time must be between 8am - 10pm.");
+        }
+        // Check that session time does not overlap with lunch or dinner hours
+        if (sessionStartTime.isAfter(CleaningSessionConfigLoader.START_LUNCH_TIME)
+                && sessionStartTime.isBefore(CleaningSessionConfigLoader.END_LUNCH_TIME)
+                || sessionEndTime.isAfter(CleaningSessionConfigLoader.START_LUNCH_TIME)
+                && sessionEndTime.isBefore(CleaningSessionConfigLoader.END_LUNCH_TIME)
+                || sessionStartTime.isAfter(CleaningSessionConfigLoader.START_DINNER_TIME)
+                && sessionStartTime.isBefore(CleaningSessionConfigLoader.END_DINNER_TIME)
+                || sessionEndTime.isAfter(CleaningSessionConfigLoader.START_DINNER_TIME)
+                && sessionEndTime.isBefore(CleaningSessionConfigLoader.END_DINNER_TIME)) {
+            throw new IllegalArgumentException("Session time must not overlap with lunch (12pm - 1pm) or dinner (5pm - 6pm) hours.");
+        }
     }
 }

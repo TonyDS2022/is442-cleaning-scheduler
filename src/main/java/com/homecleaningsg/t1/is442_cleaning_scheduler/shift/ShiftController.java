@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,19 +29,37 @@ public class ShiftController {
         return shiftService.getShiftById(shiftId);
     }
 
-    @PostMapping
-    public void addShift(@RequestBody Shift shift) {
-        shiftService.addShift(shift);
+    @PostMapping("/add-shift/")
+    public ResponseEntity<String> addShift(@RequestBody Shift shift) {
+        try{
+            shiftService.addShift(shift);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift added successfully.");
+        } catch(IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add shift.");
+        }
     }
 
-    @PutMapping("/{shiftId}")
-    public void updateShift(@PathVariable("shiftId") Long shiftId, @RequestBody Shift shift) {
-        shiftService.updateShift(shiftId, shift);
+    // localhost:8080/api/v0.1/shift/update-shift/1
+    @PutMapping("/update-shift/{shiftId}")
+    public ResponseEntity<String> updateShift(
+            @PathVariable("shiftId") Long shiftId, @RequestBody Shift updatedShift) {
+        try{
+            shiftService.updateShift(shiftId, updatedShift);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift updated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update shift details.");
+        }
     }
 
-    @DeleteMapping("/{shiftId}")
-    public void deleteShift(@PathVariable("shiftId") Long shiftId) {
-        shiftService.deleteShift(shiftId);
+    // localhost:8080/api/v0.1/shift/deactivate-shift/2
+    @PutMapping("/deactivate-shift/{shiftId}")
+    public ResponseEntity<String> deactivateShift(@PathVariable("shiftId") Long shiftId) {
+        try{
+            shiftService.deactivateShift(shiftId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The shift has been successfully deactivated, and associated workers removed from shift.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate shift.");
+        }
     }
 
     @GetMapping("/worker/{workerId}")

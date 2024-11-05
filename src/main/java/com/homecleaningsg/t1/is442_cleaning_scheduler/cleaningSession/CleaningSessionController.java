@@ -1,6 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,8 +29,35 @@ public class CleaningSessionController {
         return cleaningSessionService.getCleaningSessionsByContractId(contractId);
     }
 
-    @GetMapping("/{contractId}/{cleaningSessionId}")
-    public Optional<CleaningSession> getCleaningSessionByContractIdAndCleaningSessionId(@PathVariable Long contractId, @PathVariable Long cleaningSessionId) {
-        return cleaningSessionService.getCleaningSessionByContractIdAndCleaningSessionId(contractId, cleaningSessionId);
+    @PostMapping("/create-cleaning-session/")
+    public ResponseEntity<String> addCleaningSession(@RequestBody CleaningSession cleaningSession) {
+        try {
+            CleaningSession createdSession = cleaningSessionService.addCleaningSession(cleaningSession);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session added successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add cleaning session.");
+        }
+    }
+
+    @PutMapping("/update-cleaning-session/{cleaningSessionId}")
+    public ResponseEntity<String> updateCleaningSession(
+            @PathVariable("cleaningSessionId") Long cleaningSessionId, @RequestBody CleaningSessionUpdateDto updatedSessionDto) {
+        try {
+            CleaningSession updatedCleaningSession = cleaningSessionService.updateCleaningSession(cleaningSessionId, updatedSessionDto);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session updated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update cleaning session details.");
+        }
+    }
+
+    // localhost:8080/api/v0.1/cleaningSession/deactivate-cleaning-session/1
+    @PutMapping("/deactivate-cleaning-session/{cleaningSessionId}")
+    public ResponseEntity<String> deactivateCleaningSession(@PathVariable("cleaningSessionId") Long cleaningSessionId) {
+        try {
+            cleaningSessionService.deactivateCleaningSession(cleaningSessionId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session deactivated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate cleaning session.");
+        }
     }
 }

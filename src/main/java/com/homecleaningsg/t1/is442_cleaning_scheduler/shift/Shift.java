@@ -7,6 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -98,6 +99,12 @@ public class Shift {
     @Column(name = "endAcknowledge")
     private byte[] endAcknowledge;
 
+    @NonNull
+    private Timestamp lastModified;
+
+    @NonNull
+    private boolean isActive = true;
+
     public Shift(CleaningSession cleaningSession) {
         this.cleaningSession = cleaningSession;
         this.location = cleaningSession.getLocation();
@@ -107,5 +114,11 @@ public class Shift {
         this.sessionEndDate = cleaningSession.getSessionEndDate();
         this.sessionEndTime = cleaningSession.getSessionEndTime();
         this.workingStatus = WorkingStatus.NOT_STARTED;
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
     }
 }

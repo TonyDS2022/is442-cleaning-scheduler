@@ -1,7 +1,9 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,20 +30,36 @@ public class WorkerController {
         return workerService.getWorkerByUsername(username);
     }
 
-    @GetMapping("/{workerId}/getResidentialAddressOfWorker")
-    public Location getResidentialAddressOfWorker(@PathVariable Long workerId) {
-        return workerService.getResidentialAddressOfWorker(workerId);
+
+    @PostMapping("/add-worker/")
+    public ResponseEntity<String> addWorker(@RequestBody Worker worker) {
+        try {
+            workerService.addWorker(worker);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker added successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add contract.");
+        }
     }
 
-    @PostMapping("/{workerId}/addResidentialAddressToWorker/{locationId}")
-    public ResponseEntity<String> addResidentialAddressToWorker(
-            @PathVariable Long workerId,
-            @PathVariable Long locationId) {
+    @PutMapping("/update-worker/{workerId}")
+    public ResponseEntity<String> updateWorker(
+            @PathVariable("workerId") Long workerId, @RequestBody Worker updatedWorker) {
         try {
-            workerService.addResidentialAddressToWorker(workerId, locationId);
-            return ResponseEntity.ok("Location added to worker successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); // Return 404 if worker or location is not found
+            workerService.updateWorker(workerId, updatedWorker);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker details updated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update worker details.");
+        }
+    }
+
+    // localhost:8080/api/v0.1/workers/deactivate-worker/2
+    @PutMapping("/deactivate-worker/{workerId}")
+    public ResponseEntity<String> deactivateWorker(@PathVariable("workerId") Long workerId) {
+        try {
+            workerService.deactivateWorker(workerId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The worker has been successfully deactivated, and removed from all associated future shifts.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate worker.");
         }
     }
 }

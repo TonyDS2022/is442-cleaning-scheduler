@@ -24,6 +24,7 @@ public class CleaningSessionConfig implements CommandLineRunner {
 
         // Attempt to retrieve the CleaningSession at index 1
         CleaningSession session1 = new CleaningSession(
+            contract,
             LocalDate.of(2024,10,5),
             LocalTime.of(8,0),
             LocalDate.of(2024,10,5),
@@ -31,19 +32,18 @@ public class CleaningSessionConfig implements CommandLineRunner {
             "Session 1",
             CleaningSession.sessionStatus.WORKING
         );
-        session1.setContract(contract);
         session1.setSessionRating(CleaningSession.Rating.AVERAGE);
         session1.setSessionFeedback("Feedback 1");
 
         CleaningSession session2 = new CleaningSession(
+            contract,
             LocalDate.of(2024,10,12),
-            LocalTime.of(16,0),
+            LocalTime.of(14,0),
             LocalDate.of(2024,10,12),
-            LocalTime.of(20,0),
+            LocalTime.of(17,0),
             "Session 2",
             CleaningSession.sessionStatus.NOT_STARTED
         );
-        session2.setContract(contract);
 
         this.cleaningSessionRepository.saveAll(List.of(session1, session2));
     }
