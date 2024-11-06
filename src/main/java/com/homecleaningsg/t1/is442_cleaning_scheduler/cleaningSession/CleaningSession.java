@@ -121,8 +121,7 @@ public class CleaningSession {
                            LocalDate sessionEndDate,
                            LocalTime sessionEndTime,
                            String sessionDescription,
-                           sessionStatus sessionStatus,
-                           int workersBudgeted
+                           sessionStatus sessionStatus
                            ) {
         this.contract = contract;
         this.location = contract.getLocation(); /* Note: DO NOT remove this line */
@@ -135,7 +134,7 @@ public class CleaningSession {
         this.sessionDescription = sessionDescription;
         this.sessionStatus = sessionStatus;
         this.validateSessionTime();
-        this.workersBudgeted = workersBudgeted;
+        this.workersBudgeted = contract.getWorkersBudgeted();
         this.location = contract.getLocation();
     }
 

@@ -4,6 +4,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.AvailableWorkerDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
@@ -166,7 +167,12 @@ public class CleaningSessionService {
 
         Map<Worker, Shift> lastShiftByWorker = new HashMap<>();
         for (Worker worker : availableWorkers) {
-            Shift lastShift = shiftRepository.findLastShiftOnDateByWorkerWorkerId(worker.getWorkerId(), session.getSessionStartDate());
+            // Shift lastShift = shiftRepository.findLastShiftOnDateByWorkerWorkerId(worker.getWorkerId(), session.getSessionStartDate());
+            Shift lastShift = shiftRepository.findLastShiftOnDateByWorkerWorkerIdAndSessionEndTimeBefore(
+                    worker.getWorkerId(),
+                    session.getSessionStartDate(),
+                    session.getSessionEndTime()
+            );
             lastShiftByWorker.put(worker, lastShift);
         }
 

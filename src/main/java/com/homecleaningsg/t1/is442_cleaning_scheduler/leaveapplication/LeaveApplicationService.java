@@ -3,7 +3,6 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.imagehandler.GoogleImageService;
 import org.apache.commons.codec.digest.DigestUtils;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.imagehandler.GoogleImageService;
 import lombok.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.http.HttpStatus;
@@ -21,24 +20,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-
+@RequiredArgsConstructor // Lombok annotation to generate constructor with required arguments.
+// Removes need for @Autowired and constructor
 public class LeaveApplicationService {
 
     private final LeaveApplicationRepository leaveApplicationRepository;
     private final GoogleImageService googleImageService;
     private final LeavePolicyService leavePolicyService;
-
-    @Autowired
-    public LeaveApplicationService(
-            LeaveApplicationRepository leaveApplicationRepository,
-            GoogleImageService googleImageService,
-            LeavePolicyService leavePolicyService
-    ) {
-        this.leaveApplicationRepository = leaveApplicationRepository;
-        this.googleImageService = googleImageService;
-        this.leavePolicyService = leavePolicyService;
-    }
 
     // Method to create a new LeaveApplication directly from the object
     public LeaveApplication createLeaveApplication(LeaveApplication leaveApplication, MultipartFile file) throws Exception {
@@ -164,10 +152,6 @@ public class LeaveApplicationService {
         return leaveApplicationRepository.findLatestApprovedLeaveBalanceByAdminId(adminId);
     }
 
-    String computeImageHash(MultipartFile file) throws IOException {
-        return DigestUtils.sha256Hex(file.getInputStream());
-    }
-
     // // Method to create a new LeaveApplication directly from the object
     // public LeaveApplication createLeaveApplication(LeaveApplication leaveApplication) {
     //
@@ -217,7 +201,7 @@ public class LeaveApplicationService {
 
     //
     public void updateLeaveBalance(LeaveApplication leaveApplication) {
-        if (leaveApplication.getApplicationStatus() == ApplicationStatus.APPROVED) {
+        if (leaveApplication.getApplicationStatus() == LeaveApplication.ApplicationStatus.APPROVED) {
             if (leaveApplication.getLeaveType() == LeaveType.MEDICAL) {
                 leaveApplication.setMedicalLeaveBalance(leaveApplication.getMedicalLeaveBalance() - 1);
             } else if (leaveApplication.getLeaveType() == LeaveType.OTHERS) {
@@ -226,7 +210,7 @@ public class LeaveApplicationService {
         }
     }
 
-    private String computeImageHash(MultipartFile file) throws IOException {
+    public String computeImageHash(MultipartFile file) throws IOException {
         return DigestUtils.sha256Hex(file.getInputStream());
     }
 }

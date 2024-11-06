@@ -58,11 +58,11 @@ public class ContractController {
     //     "sessionDurationMinutes": 180,
     //     "ongoing": true
     // }
-    @PutMapping("/{id}")
-    public ResponseEntity<Contract> updateContract(@PathVariable Long id, @RequestBody Contract contract) {
-        Contract updatedContract = contractService.updateContract(id, contract);
-        return new ResponseEntity<>(updatedContract, HttpStatus.OK);
-    }
+    // @PutMapping("/{id}")
+    // public ResponseEntity<Contract> updateContract(@PathVariable Long id, @RequestBody Contract contract) {
+    //     Contract updatedContract = contractService.updateContract(id, contract);
+    //     return new ResponseEntity<>(updatedContract, HttpStatus.OK);
+    // }
 
     // delete contract
     // URL: DELETE /api/v0.1/contract/1

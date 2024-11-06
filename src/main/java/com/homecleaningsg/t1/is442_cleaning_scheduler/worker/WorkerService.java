@@ -54,7 +54,7 @@ public class WorkerService {
             Worker worker = workerOptional.get();
             Location location = locationOptional.get();
             // Set the location to the worker
-            worker.setLocation(location);
+            worker.setHomeLocation(location);
             // Save the updated worker
             workerRepository.save(worker);
         } else {
@@ -65,7 +65,7 @@ public class WorkerService {
 
     public Location getResidentialAddressOfWorker(Long workerId) {
         return workerRepository.findById(workerId)
-                .map(Worker::getLocation)
+                .map(Worker::getHomeLocation)
                 .orElse(null); // Return null if worker not found
     }
 

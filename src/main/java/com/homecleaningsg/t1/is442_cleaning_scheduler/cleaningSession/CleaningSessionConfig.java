@@ -55,13 +55,13 @@ public class CleaningSessionConfig implements CommandLineRunner {
 
         // create a session on 11-07-2024 to test leaveApplication clash
         CleaningSession session3 = new CleaningSession(
-                contract,
-                LocalDate.of(2024,11,7),
-                LocalTime.of(8,0),
-                LocalDate.of(2024,11,7),
-                LocalTime.of(12,0),
-                "Session 3",
-                CleaningSession.sessionStatus.NOT_STARTED
+            contract,
+            LocalDate.of(2024,11,7),
+            LocalTime.of(8,0),
+            LocalDate.of(2024,11,7),
+            LocalTime.of(12,0),
+            "Session 3",
+            CleaningSession.sessionStatus.NOT_STARTED
         );
 
         // Save CleaningSession instances

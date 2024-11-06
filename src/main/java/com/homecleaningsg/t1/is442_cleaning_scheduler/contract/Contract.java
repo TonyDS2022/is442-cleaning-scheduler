@@ -129,7 +129,7 @@ public class Contract {
         this.price = price;
         this.workersBudgeted = workersBudgeted;
         this.rooms = rooms;
-        this.frequency = frequency;
+        this.frequency = Frequency.valueOf(frequency);
         setSessionDurationMinutes(sessionDurationMinutes); // Use custom setter for validation
         this.contractStatus = contractStatus;
         this.validateSessionDurationMinutes();
