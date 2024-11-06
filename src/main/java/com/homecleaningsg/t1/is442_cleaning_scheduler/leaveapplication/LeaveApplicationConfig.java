@@ -44,9 +44,10 @@ public class LeaveApplicationConfig implements CommandLineRunner {
                 LeaveType.OTHERS,
                 null,  // fileName
                 "hash2",  // imageHash
-                LocalDate.now().plusDays(2),
+                LocalDate.of(2024, 10, 5),  // leaveStartDate
                 LocalTime.MIDNIGHT,
-                LocalDate.now().plusDays(7),
+                // LocalDate.now().plusDays(7),
+                LocalDate.of(2024, 10, 6),
                 LocalTime.MIDNIGHT,
                 LocalDate.now(),
                 LocalTime.now(),
@@ -61,9 +62,9 @@ public class LeaveApplicationConfig implements CommandLineRunner {
                 LeaveType.OTHERS,
                 null,  // fileName
                 "hash3",  // imageHash
-                LocalDate.now().minusDays(3),
+                LocalDate.of(2024, 11, 6),  // leaveStartDate
                 LocalTime.MIDNIGHT,
-                LocalDate.now().minusDays(1),
+                LocalDate.of(2024, 11, 13),  // leaveEndDate
                 LocalTime.MIDNIGHT,
                 LocalDate.now().minusDays(4),
                 LocalTime.now().minusHours(4),

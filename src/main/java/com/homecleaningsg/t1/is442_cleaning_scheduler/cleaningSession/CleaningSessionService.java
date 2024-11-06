@@ -203,7 +203,7 @@ public class CleaningSessionService {
     }
 
     // // try to calculate workerhaspendingleave dynamically
-    @Transactional // get the changes are properly committed to the database.
+    // @Transactional // get the changes are properly committed to the database.
     public void updateWorkerHasPendingLeave(CleaningSession cleaningSession) {
         for (Shift shift : cleaningSession.getShifts()) {
             if (shift.getWorker() != null) {
@@ -217,7 +217,7 @@ public class CleaningSessionService {
                 shiftRepository.save(shift);
             }
         }
-        shiftRepository.flush(); // Ensure changes are flushed / persist to the database
+        // shiftRepository.flush(); // Ensure changes are flushed / persist to the database
     }
 
     private boolean isOverlapping(LocalDate leaveStart, LocalDate leaveEnd, Shift shift) {
