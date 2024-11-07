@@ -18,8 +18,8 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
     @Query("SELECT SUM(s.duration) FROM Shift s WHERE s.worker.workerId = :workerId AND EXTRACT(YEAR FROM s.actualStartDate) = :year AND EXTRACT(MONTH FROM s.actualStartDate) = :month")
     Long getWorkerTotalHoursWorkedInMonth(@Param("workerId") Long workerId, @Param("year") int year, @Param("month") int month);
 
-    @Query("SELECT SUM(s.duration) FROM Shift s WHERE s.worker.workerId = :workerId AND s.actualStartDate >= :startOfWeek AND s.actualStartDate < :endOfWeek")
-    Long getWorkerTotalHoursWorkedInWeek(
+    @Query("SELECT s.duration FROM Shift s WHERE s.worker.workerId = :workerId AND s.actualStartDate >= :startOfWeek AND s.actualStartDate < :endOfWeek")
+    List<Long> getWorkerTotalHoursWorkedInWeek(
             @Param("workerId") Long workerId,
             @Param("startOfWeek") LocalDate startOfWeek,
             @Param("endOfWeek") LocalDate endOfWeek

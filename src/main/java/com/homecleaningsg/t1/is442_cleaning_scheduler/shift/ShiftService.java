@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.WorkerHoursDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import java.util.Optional;
 
 @Service
 public class ShiftService {
+
+    private static final int WEEKLY_OVERTIME_THRESHOLD_HOURS = 44;
 
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
@@ -76,15 +79,54 @@ public class ShiftService {
         shiftRepository.save(shift);
     }
 
-    public Long getYearlyHoursOfWorker(Long workerId, int year){
-        return shiftRepository.getWorkerTotalHoursWorkedInYear(workerId, year);
+    public WorkerHoursDto getYearlyHoursOfWorker(Long workerId, int year){
+        Long totalHours = shiftRepository.getWorkerTotalHoursWorkedInYear(workerId, year);
+        long totalOverTimeHours = calculateYearlyOverTime(workerId, year);
+        return new WorkerHoursDto(totalHours, totalOverTimeHours);
     }
 
-    public Long getMonthlyHoursOfWorker(Long workerId, int year, int month){
-        return shiftRepository.getWorkerTotalHoursWorkedInMonth(workerId, year, month);
+    public WorkerHoursDto getMonthlyHoursOfWorker(Long workerId, int year, int month){
+        Long totalHours = shiftRepository.getWorkerTotalHoursWorkedInMonth(workerId, year, month);
+        Long totalOverTimeHours = calculateMonthlyOverTime(workerId, year, month);
+        return new WorkerHoursDto(totalHours, totalOverTimeHours);
     }
 
-    public Long getWeeklyHoursOfWorker(Long workerId, LocalDate startOfWeek, LocalDate endOfWeek){
-        return shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
+    public WorkerHoursDto getWeeklyHoursOfWorker(Long workerId, LocalDate startOfWeek, LocalDate endOfWeek){
+        List<Long> weeklyHours =  shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
+        long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
+        long overTimeHours = Math.max(0, totalHours - WEEKLY_OVERTIME_THRESHOLD_HOURS);
+        return new WorkerHoursDto(totalHours, overTimeHours);
+    }
+
+    public Long calculateYearlyOverTime(Long workerId, int year){
+        long totalOvertimeHours = 0;
+        LocalDate startOfWeek = LocalDate.of(year, 1, 1);
+        LocalDate endOfWeek = startOfWeek.plusDays(7);
+
+        while (startOfWeek.getYear() == year) {
+            List<Long> weeklyHours = shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
+            long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
+            totalOvertimeHours += Math.max(0, totalHours - WEEKLY_OVERTIME_THRESHOLD_HOURS);
+            startOfWeek = endOfWeek;
+            endOfWeek = startOfWeek.plusDays(7);
+        }
+
+        return totalOvertimeHours;
+    }
+
+    public Long calculateMonthlyOverTime(Long workerId, int year, int month){
+        long totalOvertimeHours = 0;
+        LocalDate startOfWeek = LocalDate.of(year, month, 1);
+        LocalDate endOfWeek = startOfWeek.plusDays(7);
+
+        while (startOfWeek.getMonthValue() == month) {
+            List<Long> weeklyHours = shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
+            long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
+            totalOvertimeHours += Math.max(0, totalHours - WEEKLY_OVERTIME_THRESHOLD_HOURS);
+            startOfWeek = endOfWeek;
+            endOfWeek = startOfWeek.plusDays(7);
+        }
+
+        return totalOvertimeHours;
     }
 }

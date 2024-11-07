@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,13 +35,13 @@ public class AdminController {
 
     // localhost:8080/api/v0.1/admins/worker-yearly-hours/1/2024
     @GetMapping("/worker-yearly-hours/{workerId}/{year}")
-    public Long getYearlyHoursOfWorker(@PathVariable("workerId") Long workerId, @PathVariable("year") int year){
+    public WorkerHoursDto getYearlyHoursOfWorker(@PathVariable("workerId") Long workerId, @PathVariable("year") int year){
         return shiftService.getYearlyHoursOfWorker(workerId, year);
     }
 
 //    localhost:8080/api/v0.1/admins/worker-monthly-hours/1/2024/3
     @GetMapping("/worker-monthly-hours/{workerId}/{year}/{month}")
-    public Long getMonthlyHoursOfWorker(
+    public WorkerHoursDto getMonthlyHoursOfWorker(
             @PathVariable("workerId") Long workerId,
             @PathVariable("year") int year,
             @PathVariable("month") int month) {
@@ -49,7 +50,7 @@ public class AdminController {
 
     //    localhost:8080/api/v0.1/admins/worker-weekly-hours/1/2024-01-01/2024-01-07
     @GetMapping("/worker-weekly-hours/{workerId}/{startOfWeek}/{endOfWeek}")
-    public Long getWeeklyHoursOfWorker(
+    public WorkerHoursDto getWeeklyHoursOfWorker(
             @PathVariable("workerId") Long workerId,
             @PathVariable("startOfWeek") LocalDate startOfWeek,
             @PathVariable("endOfWeek") LocalDate endOfWeek) {
