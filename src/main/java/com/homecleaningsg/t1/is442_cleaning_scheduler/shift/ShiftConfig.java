@@ -7,6 +7,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Component
@@ -37,6 +39,10 @@ public class ShiftConfig implements CommandLineRunner {
 
      Shift shift1 = new Shift(session1);
      shift1.setWorker(worker1);
+     shift1.setActualStartDate(LocalDate.of(2024, 1, 1));
+     shift1.setActualStartTime(LocalTime.of(9, 0));
+     shift1.setActualEndDate(LocalDate.of(2024, 1, 1));
+     shift1.setActualEndTime(LocalTime.of(12, 0));
 
      Shift shift2 = new Shift(session1);
      shift2.setWorker(worker6);
@@ -45,7 +51,11 @@ public class ShiftConfig implements CommandLineRunner {
      shift3.setWorker(worker7);
 
      Shift shift4 = new Shift(session2);
-     shift4.setWorker(worker2);
+     shift4.setWorker(worker1);
+     shift4.setActualStartDate(LocalDate.of(2024, 3, 4));
+     shift4.setActualStartTime(LocalTime.of(13, 0));
+     shift4.setActualEndDate(LocalDate.of(2024, 3, 4));
+     shift4.setActualEndTime(LocalTime.of(17, 0));
 
      Shift shift5 = new Shift(session2);
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,5 +74,17 @@ public class ShiftService {
 
         shift.setWorker(worker);
         shiftRepository.save(shift);
+    }
+
+    public Long getYearlyHoursOfWorker(Long workerId, int year){
+        return shiftRepository.getWorkerTotalHoursWorkedInYear(workerId, year);
+    }
+
+    public Long getMonthlyHoursOfWorker(Long workerId, int year, int month){
+        return shiftRepository.getWorkerTotalHoursWorkedInMonth(workerId, year, month);
+    }
+
+    public Long getWeeklyHoursOfWorker(Long workerId, LocalDate startOfWeek, LocalDate endOfWeek){
+        return shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
     }
 }
