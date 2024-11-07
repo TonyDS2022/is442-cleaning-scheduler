@@ -67,10 +67,6 @@ public class Worker {
     @NonNull
     private Timestamp lastModified;
 
-    public void setIsActive(boolean isActive){
-        this.isActive = isActive;
-    }
-
     public Worker(String name,
                   String username,
                   String password,

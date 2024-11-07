@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -30,8 +31,8 @@ public class ContractConfig implements CommandLineRunner {
         Location location1 = this.locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location with ID 1 not found"));
         Location location2 = this.locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location with ID 2 not found"));
 
-        Client client1 = new Client("Amy Santiago", "98472094", true, location1);
-        Client client2 = new Client("Jake Peralta", "92384923", true, location2);
+        Client client1 = new Client("Amy Santiago", "98472094", true, location1, LocalDate.of(2024,10,4));
+        Client client2 = new Client("Jake Peralta", "92384923", true, location2, LocalDate.of(2024,11,30));
 
         Contract contract1 = new Contract();
         contract1.setContractStart(Timestamp.valueOf(LocalDateTime.parse("01 Oct 2024 00:00:00", this.dateTimeFormatter)));

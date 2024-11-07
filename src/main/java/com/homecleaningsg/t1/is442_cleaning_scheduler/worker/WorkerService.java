@@ -67,7 +67,7 @@ public class WorkerService {
             }
         }
 
-        worker.setIsActive(false);
+        worker.setActive(false);
         workerRepository.save(worker);
     }
 }

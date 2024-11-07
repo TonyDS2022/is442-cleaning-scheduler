@@ -1,5 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,15 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     private final ShiftService shiftService;
+    private final ClientService clientService;
 
     @Autowired
     public AdminController(AdminService adminService,
-                           ShiftService shiftService) {
+                           ShiftService shiftService,
+                           ClientService clientService) {
         this.adminService = adminService;
         this.shiftService = shiftService;
+        this.clientService = clientService;
     }
 
     @GetMapping
@@ -55,5 +60,11 @@ public class AdminController {
             @PathVariable("startOfWeek") LocalDate startOfWeek,
             @PathVariable("endOfWeek") LocalDate endOfWeek) {
         return shiftService.getWeeklyHoursOfWorker(workerId, startOfWeek, endOfWeek);
+    }
+
+    // localhost:8080/api/v0.1/admins/client-monthly-report/2024/11
+    @GetMapping("/client-monthly-report/{year}/{month}")
+    public ClientReportDto getMonthlyClientReport(@PathVariable int year, @PathVariable int month) {
+        return clientService.getMonthlyClientReport(year, month);
     }
 }

@@ -47,6 +47,9 @@ public class Client {
     @NonNull
     private Timestamp lastModified;
 
+    @NonNull
+    private LocalDate joinDate;
+
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
@@ -58,14 +61,20 @@ public class Client {
     public Client(String name,
                            String phone,
                            boolean isActive,
-                           Location location) {
+                           Location location,
+                            LocalDate joinDate) {
         this.name = name;
         this.phone = phone;
         this.isActive = isActive;
         this.location = location;
+        this.joinDate = joinDate;
     }
 
     @PrePersist
+    protected void onCreate() {
+        this.joinDate = LocalDate.now();
+        this.lastModified = new Timestamp(System.currentTimeMillis());
+    }
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());

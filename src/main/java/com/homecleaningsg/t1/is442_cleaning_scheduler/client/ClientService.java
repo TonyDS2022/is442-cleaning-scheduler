@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.ClientReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +41,7 @@ public class ClientService {
     }
 
     public Client addClient(Client client){
+        client.setJoinDate(LocalDate.now());
         return clientRepository.save(client);
     }
 
@@ -65,4 +68,15 @@ public class ClientService {
         }
         client.setActive(false);
         clientRepository.save(client);
-    }}
+    }
+
+    public ClientReportDto getMonthlyClientReport(int year, int month) {
+        LocalDate startOfMonth = YearMonth.of(year, month).atDay(1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        Long newClients = clientRepository.countNewClientsByMonth(startOfMonth, endOfMonth);
+        Long existingClients = clientRepository.countExistingClientsByMonth(startOfMonth);
+
+        return new ClientReportDto(newClients, existingClients);
+    }
+}
