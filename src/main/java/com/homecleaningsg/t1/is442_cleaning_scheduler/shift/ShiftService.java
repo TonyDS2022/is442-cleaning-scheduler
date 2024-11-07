@@ -14,8 +14,6 @@ import java.util.Optional;
 @Service
 public class ShiftService {
 
-    private static final int WEEKLY_OVERTIME_THRESHOLD_HOURS = 44;
-
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
 
@@ -94,7 +92,7 @@ public class ShiftService {
     public WorkerHoursDto getWeeklyHoursOfWorker(Long workerId, LocalDate startOfWeek, LocalDate endOfWeek){
         List<Long> weeklyHours =  shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
         long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
-        long overTimeHours = Math.max(0, totalHours - WEEKLY_OVERTIME_THRESHOLD_HOURS);
+        long overTimeHours = Math.max(0, totalHours - ShiftConfigLoader.WEEKLY_OVERTIME_THRESHOLD_HOURS);
         return new WorkerHoursDto(totalHours, overTimeHours);
     }
 
@@ -106,7 +104,7 @@ public class ShiftService {
         while (startOfWeek.getYear() == year) {
             List<Long> weeklyHours = shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
             long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
-            totalOvertimeHours += Math.max(0, totalHours - WEEKLY_OVERTIME_THRESHOLD_HOURS);
+            totalOvertimeHours += Math.max(0, totalHours - ShiftConfigLoader.WEEKLY_OVERTIME_THRESHOLD_HOURS);
             startOfWeek = endOfWeek;
             endOfWeek = startOfWeek.plusDays(7);
         }
@@ -122,7 +120,7 @@ public class ShiftService {
         while (startOfWeek.getMonthValue() == month) {
             List<Long> weeklyHours = shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
             long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
-            totalOvertimeHours += Math.max(0, totalHours - WEEKLY_OVERTIME_THRESHOLD_HOURS);
+            totalOvertimeHours += Math.max(0, totalHours - ShiftConfigLoader.WEEKLY_OVERTIME_THRESHOLD_HOURS);
             startOfWeek = endOfWeek;
             endOfWeek = startOfWeek.plusDays(7);
         }
