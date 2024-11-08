@@ -7,6 +7,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepositor
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,18 +24,21 @@ public class AdminController {
     private final ClientService clientService;
     private final CleaningSessionService cleaningSessionService;
     private final ContractService contractService;
+    private final WorkerService workerService;
 
     @Autowired
     public AdminController(AdminService adminService,
                            ShiftService shiftService,
                            ClientService clientService,
                            CleaningSessionService cleaningSessionService,
-                           ContractService contractService) {
+                           ContractService contractService,
+                           WorkerService workerService) {
         this.adminService = adminService;
         this.shiftService = shiftService;
         this.clientService = clientService;
         this.cleaningSessionService = cleaningSessionService;
         this.contractService = contractService;
+        this.workerService = workerService;
     }
 
     @GetMapping
@@ -87,5 +92,11 @@ public class AdminController {
     @GetMapping("/contract-monthly-report/{year}/{month}")
     public ContractReportDto getMonthlyContractReport(@PathVariable int year, @PathVariable int month) {
         return contractService.getMonthlyContractReport(year, month);
+    }
+
+    // localhost:8080/api/v0.1/admins/worker-monthly-report/2024/11
+    @GetMapping("/worker-monthly-report/{year}/{month}")
+    public WorkerReportDto getMonthlyWorkerReport(@PathVariable int year, @PathVariable int month) {
+        return workerService.getMonthlyWorkerReport(year, month);
     }
 }

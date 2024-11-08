@@ -8,6 +8,7 @@ import lombok.*;
 import org.springframework.cglib.core.Local;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -67,6 +68,11 @@ public class Worker {
     @NonNull
     private Timestamp lastModified;
 
+    private LocalDate deactivatedAt;
+
+    @NonNull
+    private LocalDate joinDate;
+
     public Worker(String name,
                   String username,
                   String password,
@@ -86,6 +92,10 @@ public class Worker {
     }
 
     @PrePersist
+    protected void onCreate() {
+        this.joinDate = LocalDate.now();
+        this.lastModified = new Timestamp(System.currentTimeMillis());
+    }
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());

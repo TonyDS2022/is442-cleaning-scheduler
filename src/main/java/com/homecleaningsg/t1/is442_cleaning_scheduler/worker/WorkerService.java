@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.WorkerReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,6 +70,18 @@ public class WorkerService {
         }
 
         worker.setActive(false);
+        worker.setDeactivatedAt(LocalDate.now());
         workerRepository.save(worker);
+    }
+
+    public WorkerReportDto getMonthlyWorkerReport(int year, int month) {
+        LocalDate startOfMonth = YearMonth.of(year, month).atDay(1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        Long newWorkers = workerRepository.countNewWorkersByMonth(startOfMonth, endOfMonth);
+        Long existingWorkers = workerRepository.countExistingWorkersByMonth(startOfMonth);
+        Long terminatedWorkers = workerRepository.countTerminatedWorkersByMonth(startOfMonth, endOfMonth);
+
+        return new WorkerReportDto(newWorkers, existingWorkers, terminatedWorkers);
     }
 }
