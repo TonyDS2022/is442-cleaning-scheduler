@@ -12,17 +12,17 @@ import java.time.LocalTime;
 @Getter
 @PropertySource("classpath:cleaningSession.properties")
 public class CleaningSessionConfigLoader {
-    @Value("${cleaningSession.minStartTime}")
+    @Value("${cleaning-session.min-start-time}")
     private String minStartTime;
-    @Value("${cleaningSession.maxEndTime}")
+    @Value("${cleaning-session.max-end-time}")
     private String maxEndTime;
-    @Value("${cleaningSession.startLunchTime}")
+    @Value("${cleaning-session.start-lunch-time}")
     private String startLunchTime;
-    @Value("${cleaningSession.endLunchTime}")
+    @Value("${cleaning-session.end-lunch-time}")
     private String endLunchTime;
-    @Value("${cleaningSession.startDinnerTime}")
+    @Value("${cleaning-session.start-dinner-time}")
     private String startDinnerTime;
-    @Value("${cleaningSession.endDinnerTime}")
+    @Value("${cleaning-session.end-dinner-time}")
     private String endDinnerTime;
 
     protected static LocalTime MIN_START_TIME;
