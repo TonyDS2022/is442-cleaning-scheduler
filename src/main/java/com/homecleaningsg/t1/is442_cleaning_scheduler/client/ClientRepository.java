@@ -17,4 +17,8 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.joinDate < :startOfMonth")
     Long countExistingClientsByMonth(@Param("startOfMonth") LocalDate startOfMonth);
+
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.deactivatedAt IS NOT NULL AND c.deactivatedAt BETWEEN :startOfMonth AND :endOfMonth")
+    Long countTerminatedClientsByMonth(@Param("startOfMonth") LocalDate startOfMonth,
+                                       @Param("endOfMonth") LocalDate endOfMonth);
 }

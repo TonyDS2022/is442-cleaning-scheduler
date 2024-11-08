@@ -12,4 +12,5 @@ import java.time.LocalDate;
 public class ClientReportDto {
     private Long newClients;
     private Long existingClients;
+    private Long terminatedClients;
 }

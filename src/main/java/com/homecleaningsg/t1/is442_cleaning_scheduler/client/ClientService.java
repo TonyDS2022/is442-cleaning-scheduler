@@ -67,6 +67,7 @@ public class ClientService {
             }
         }
         client.setActive(false);
+        client.setDeactivatedAt(LocalDate.now());
         clientRepository.save(client);
     }
 
@@ -76,7 +77,8 @@ public class ClientService {
 
         Long newClients = clientRepository.countNewClientsByMonth(startOfMonth, endOfMonth);
         Long existingClients = clientRepository.countExistingClientsByMonth(startOfMonth);
+        Long terminatedClients = clientRepository.countTerminatedClientsByMonth(startOfMonth, endOfMonth);
 
-        return new ClientReportDto(newClients, existingClients);
+        return new ClientReportDto(newClients, existingClients, terminatedClients);
     }
 }

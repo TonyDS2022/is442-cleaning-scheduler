@@ -47,6 +47,8 @@ public class Client {
     @NonNull
     private Timestamp lastModified;
 
+    private LocalDate deactivatedAt;
+
     @NonNull
     private LocalDate joinDate;
 
