@@ -3,6 +3,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +21,19 @@ public class AdminController {
     private final ShiftService shiftService;
     private final ClientService clientService;
     private final CleaningSessionService cleaningSessionService;
+    private final ContractService contractService;
 
     @Autowired
     public AdminController(AdminService adminService,
                            ShiftService shiftService,
                            ClientService clientService,
-                           CleaningSessionService cleaningSessionService) {
+                           CleaningSessionService cleaningSessionService,
+                           ContractService contractService) {
         this.adminService = adminService;
         this.shiftService = shiftService;
         this.clientService = clientService;
         this.cleaningSessionService = cleaningSessionService;
+        this.contractService = contractService;
     }
 
     @GetMapping
@@ -76,5 +81,11 @@ public class AdminController {
     @GetMapping("/session-monthly-report/{year}/{month}")
     public Long getMonthlySessionReport(@PathVariable int year, @PathVariable int month) {
         return cleaningSessionService.getMonthlySessionReport(year, month);
+    }
+
+    // localhost:8080/api/v0.1/admins/contract-monthly-report/2024/11
+    @GetMapping("/contract-monthly-report/{year}/{month}")
+    public ContractReportDto getMonthlyContractReport(@PathVariable int year, @PathVariable int month) {
+        return contractService.getMonthlyContractReport(year, month);
     }
 }

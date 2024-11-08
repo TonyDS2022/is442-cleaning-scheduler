@@ -1,5 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.ClientReportDto;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.ContractReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,4 +105,13 @@ public class ContractService {
         contractRepository.save(contract);
     }
 
+    public ContractReportDto getMonthlyContractReport(int year, int month) {
+        LocalDate startOfMonth = YearMonth.of(year, month).atDay(1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        Long newContracts = contractRepository.countNewContractsByMonth(startOfMonth, endOfMonth);
+        Long existingOngoingContracts = contractRepository.countExistingOngoingContractsByMonth(startOfMonth);
+
+        return new ContractReportDto(newContracts, existingOngoingContracts);
+    }
 }

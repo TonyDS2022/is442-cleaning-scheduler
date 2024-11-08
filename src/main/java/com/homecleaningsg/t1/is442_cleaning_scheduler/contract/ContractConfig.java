@@ -45,6 +45,7 @@ public class ContractConfig implements CommandLineRunner {
         contract1.setFrequency("Weekly");
         contract1.setSessionDurationMinutes(60);
         contract1.setClient(client1);
+        contract1.setCreationDate(LocalDate.of(2024,11,3));
 
         Contract contract2 = new Contract();
         contract2.setContractStart(new Timestamp(System.currentTimeMillis()));
@@ -57,6 +58,7 @@ public class ContractConfig implements CommandLineRunner {
         contract2.setFrequency("Bi-weekly");
         contract2.setSessionDurationMinutes(120);
         contract2.setClient(client2);
+        contract1.setCreationDate(LocalDate.of(2024,10,23));
 
         // Log hourly rates
         System.out.println("Contract 1 Rate: " + contract1.getRate());

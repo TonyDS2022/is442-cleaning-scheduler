@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 @NoArgsConstructor
@@ -73,6 +74,9 @@ public class Contract {
     @NonNull
     private Timestamp lastModified;
 
+    @NonNull
+    private LocalDate creationDate;
+
     // Derived field: getRate = price / sessionDurationMinutes
     public float getRate() {
         return price / sessionDurationMinutes;
@@ -129,6 +133,10 @@ public class Contract {
     }
 
     @PrePersist
+    protected void onCreate() {
+        creationDate = LocalDate.now();
+        lastModified = new Timestamp(System.currentTimeMillis());
+    }
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());
