@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
@@ -17,14 +18,17 @@ public class AdminController {
     private final AdminService adminService;
     private final ShiftService shiftService;
     private final ClientService clientService;
+    private final CleaningSessionService cleaningSessionService;
 
     @Autowired
     public AdminController(AdminService adminService,
                            ShiftService shiftService,
-                           ClientService clientService) {
+                           ClientService clientService,
+                           CleaningSessionService cleaningSessionService) {
         this.adminService = adminService;
         this.shiftService = shiftService;
         this.clientService = clientService;
+        this.cleaningSessionService = cleaningSessionService;
     }
 
     @GetMapping
@@ -66,5 +70,11 @@ public class AdminController {
     @GetMapping("/client-monthly-report/{year}/{month}")
     public ClientReportDto getMonthlyClientReport(@PathVariable int year, @PathVariable int month) {
         return clientService.getMonthlyClientReport(year, month);
+    }
+
+    // localhost:8080/api/v0.1/admins/session-monthly-report/2024/11
+    @GetMapping("/session-monthly-report/{year}/{month}")
+    public Long getMonthlySessionReport(@PathVariable int year, @PathVariable int month) {
+        return cleaningSessionService.getMonthlySessionReport(year, month);
     }
 }
