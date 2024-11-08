@@ -4,6 +4,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,22 @@ public class WorkerController {
         return workerService.getWorkerByUsername(username);
     }
 
+    @GetMapping("/{workerId}/getResidentialAddressOfWorker")
+    public Location getResidentialAddressOfWorker(@PathVariable Long workerId) {
+        return workerService.getResidentialAddressOfWorker(workerId);
+    }
+
+    @PostMapping("/{workerId}/addResidentialAddressToWorker/{locationId}")
+    public ResponseEntity<String> addResidentialAddressToWorker(
+            @PathVariable Long workerId,
+            @PathVariable Long locationId) {
+        try {
+            workerService.addResidentialAddressToWorker(workerId, locationId);
+            return ResponseEntity.ok("Location added to worker successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage()); // Return 404 if worker or location is not found
+        }
+    }
 
     @PostMapping("/add-worker/")
     public ResponseEntity<String> addWorker(@RequestBody Worker worker) {

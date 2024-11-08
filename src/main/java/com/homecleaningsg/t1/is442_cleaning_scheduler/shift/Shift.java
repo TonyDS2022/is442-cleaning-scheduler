@@ -1,7 +1,12 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
@@ -10,6 +15,8 @@ import lombok.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +27,7 @@ import java.time.LocalTime;
 @ToString
 @Entity
 @Table(name = "Shift")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "shiftId")
 public class Shift {
     // reuse sequence generator of sessionId
     @Id
@@ -42,6 +50,7 @@ public class Shift {
     // refers to workerId col to establish relationship
     @ManyToOne
     @JoinColumn(name = "workerId")
+    @JsonManagedReference
     private Worker worker;
 
     // refers to cleaningSession to establish relationship
@@ -88,6 +97,7 @@ public class Shift {
         WORKING,
         FINISHED
     }
+
 
     private boolean workerHasPendingLeave;
 

@@ -60,4 +60,11 @@ public class CleaningSessionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate cleaning session.");
         }
     }
+
+    @GetMapping("/cleaningSessionId/{id}")
+    public CleaningSession getPlanningStage(@PathVariable Long id) {
+        return cleaningSessionService.getCleaningSessionById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
+    }
+
 }
