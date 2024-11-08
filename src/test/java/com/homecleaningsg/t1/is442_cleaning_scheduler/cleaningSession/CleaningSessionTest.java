@@ -30,14 +30,16 @@ public class CleaningSessionTest {
         MockitoAnnotations.openMocks(this);
         Contract contract = new Contract();
         contract.setWorkersBudgeted(2);
-        LocalDate nowDate = LocalDate.now();
-        LocalTime nowTime = LocalTime.now();
+        LocalDate startDate = LocalDate.now();
+        LocalTime startTime = LocalTime.of(15, 0);
+        LocalDate endDate = LocalDate.now();
+        LocalTime endTime = LocalTime.of(17, 0);
         cleaningSession = new CleaningSession(
                 contract,
-                nowDate,
-                nowTime,
-                nowDate,
-                nowTime,
+                startDate,
+                startTime,
+                endDate,
+                endTime,
                 "Test Session",
                 CleaningSession.sessionStatus.NOT_STARTED
         );
