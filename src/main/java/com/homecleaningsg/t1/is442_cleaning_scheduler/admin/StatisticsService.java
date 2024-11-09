@@ -16,12 +16,15 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
+import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class StatisticsService {
 
     private final WorkerRepository workerRepository;
@@ -90,5 +93,37 @@ public class StatisticsService {
         }
 
         return new WeeklyStatisticsDto(startOfWeek, endOfWeek, workerWeeklyHours);
+    }
+
+    public StatisticsReportDto getStatisticsByYear(int year) {
+        LocalDate today = LocalDate.now();
+
+        // If it's the current year, stop at the current date; otherwise, go until the end of the year
+        boolean isCurrentYear = (year == today.getYear());
+        LocalDate endDate = isCurrentYear ? today : LocalDate.of(year, 12, 31);
+
+        // Yearly statistics
+        YearlyStatisticsDto yearlyStats = getYearlyStatistics(year);
+
+        // Monthly statistics up to the current month if it's the current year, otherwise for all months
+        List<MonthlyStatisticsDto> monthlyStats = new ArrayList<>();
+        int lastMonth = isCurrentYear ? today.getMonthValue() : 12;
+        for (int month = 1; month <= lastMonth; month++) {
+            monthlyStats.add(getMonthlyStatistics(year, month));
+        }
+
+        // Weekly statistics up to the current week if it's the current year, otherwise for all weeks
+        List<WeeklyStatisticsDto> weeklyStats = new ArrayList<>();
+
+        LocalDate startOfYear = LocalDate.of(year, 1, 1);
+        LocalDate endOfWeek = startOfYear.with(DayOfWeek.SUNDAY);
+
+        while (!endOfWeek.isAfter(endDate)) {
+            LocalDate startOfWeek = endOfWeek.minusDays(6);
+            weeklyStats.add(getWeeklyStatistics(startOfWeek, endOfWeek));
+            endOfWeek = endOfWeek.plusWeeks(1);
+        }
+
+        return new StatisticsReportDto(year, yearlyStats, monthlyStats, weeklyStats);
     }
 }
