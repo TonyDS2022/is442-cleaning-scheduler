@@ -91,12 +91,18 @@ public class ShiftService {
 
     public WorkerHoursDto getYearlyHoursOfWorker(Long workerId, int year){
         Long totalHours = shiftRepository.getWorkerTotalHoursWorkedInYear(workerId, year);
+        if (totalHours == null) {
+            totalHours = 0L;
+        }
         long totalOverTimeHours = calculateYearlyOverTime(workerId, year);
         return new WorkerHoursDto(totalHours, totalOverTimeHours);
     }
 
     public WorkerHoursDto getMonthlyHoursOfWorker(Long workerId, int year, int month){
         Long totalHours = shiftRepository.getWorkerTotalHoursWorkedInMonth(workerId, year, month);
+        if (totalHours == null) {
+            totalHours = 0L;
+        }
         Long totalOverTimeHours = calculateMonthlyOverTime(workerId, year, month);
         return new WorkerHoursDto(totalHours, totalOverTimeHours);
     }
