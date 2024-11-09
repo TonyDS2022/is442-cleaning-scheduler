@@ -1,22 +1,13 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.WorkerReportDto;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class WorkerService {

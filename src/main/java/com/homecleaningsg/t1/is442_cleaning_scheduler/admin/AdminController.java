@@ -1,14 +1,13 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.SessionReportDto;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

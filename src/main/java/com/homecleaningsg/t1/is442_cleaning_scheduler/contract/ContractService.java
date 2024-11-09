@@ -1,16 +1,11 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.ClientReportDto;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.ContractReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;

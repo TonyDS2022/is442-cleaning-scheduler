@@ -1,4 +1,4 @@
-package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
+package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

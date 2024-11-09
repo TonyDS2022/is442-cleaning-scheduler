@@ -1,10 +1,8 @@
-package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
+package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor

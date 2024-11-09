@@ -1,6 +1,5 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.SessionReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

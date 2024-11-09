@@ -1,10 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.ClientReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
