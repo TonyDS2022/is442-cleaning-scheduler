@@ -73,7 +73,8 @@ public class CleaningSession {
     public enum sessionStatus {
         NOT_STARTED,
         WORKING,
-        FINISHED
+        FINISHED,
+        CANCELLED
     }
 
     @Enumerated(EnumType.STRING)
@@ -105,9 +106,6 @@ public class CleaningSession {
     @JoinColumn(name = "contractId", nullable = false)
     @JsonBackReference // prevent infinite recursion
     private Contract contract;
-
-    @NonNull
-    private boolean isActive = true;
 
     @NonNull
     private Timestamp lastModified;

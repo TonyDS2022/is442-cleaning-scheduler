@@ -90,9 +90,22 @@ public class CleaningSessionService {
     public void cancelCleaningSession(Long cleaningSessionId) {
         CleaningSession cleaningSession = cleaningSessionRepository.findById(cleaningSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
-        cleaningSession.setActive(false);
-        cleaningSession.setCancelledAt(LocalDate.now());
-        cleaningSessionRepository.save(cleaningSession);
+
+        if(cleaningSession.getSessionStatus() == CleaningSession.sessionStatus.CANCELLED){
+            throw new IllegalArgumentException("Cleaning session has already been cancelled");
+        }
+        else if(cleaningSession.getSessionStatus() == CleaningSession.sessionStatus.WORKING){
+            throw new IllegalArgumentException("Cleaning session cannot be cancelled as it is ongoing");
+        }
+        else if(cleaningSession.getSessionStatus() == CleaningSession.sessionStatus.FINISHED){
+            throw new IllegalArgumentException("Cleaning session cannot be cancelled because it has already been finished.");
+        }
+        // sessionStatus == NOT_STARTED
+        else{
+            cleaningSession.setSessionStatus(CleaningSession.sessionStatus.CANCELLED);
+            cleaningSession.setCancelledAt(LocalDate.now());
+            cleaningSessionRepository.save(cleaningSession);
+        }
     }
 
     public SessionReportDto getMonthlySessionReport(int year, int month) {
