@@ -35,8 +35,8 @@ public class ContractConfig implements CommandLineRunner {
         Client client2 = new Client("Jake Peralta", "92384923", true, location2, LocalDate.of(2024,11,30));
 
         Contract contract1 = new Contract();
-        contract1.setContractStart(Timestamp.valueOf(LocalDateTime.parse("01 Oct 2024 00:00:00", this.dateTimeFormatter)));
-        contract1.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("01 Jan 2025 00:00:00", this.dateTimeFormatter)));
+        contract1.setContractStart(LocalDate.of(2024,11,3));
+        contract1.setContractEnd(LocalDate.of(2024,12,3));
         contract1.setContractComment("Contract 1");
         contract1.setLocation(location1);
         contract1.setPrice(60.0f);
@@ -48,8 +48,8 @@ public class ContractConfig implements CommandLineRunner {
         contract1.setCreationDate(LocalDate.of(2024,11,3));
 
         Contract contract2 = new Contract();
-        contract2.setContractStart(new Timestamp(System.currentTimeMillis()));
-        contract2.setContractEnd(new Timestamp(System.currentTimeMillis()));
+        contract2.setContractStart(LocalDate.of(2024,9,3));
+        contract2.setContractEnd(LocalDate.of(2024,10,3));
         contract2.setContractComment("Contract 2");
         contract2.setLocation(location2);
         contract2.setPrice(250.0f);
@@ -58,7 +58,7 @@ public class ContractConfig implements CommandLineRunner {
         contract2.setFrequency("Bi-weekly");
         contract2.setSessionDurationMinutes(120);
         contract2.setClient(client2);
-        contract1.setCreationDate(LocalDate.of(2024,10,23));
+        contract1.setCreationDate(LocalDate.of(2024,9,1));
 
         // Log hourly rates
         System.out.println("Contract 1 Rate: " + contract1.getRate());

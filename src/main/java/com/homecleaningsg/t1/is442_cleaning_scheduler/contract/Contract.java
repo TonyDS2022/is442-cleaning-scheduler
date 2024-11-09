@@ -47,11 +47,11 @@ public class Contract {
 
     @NonNull
     @Column(name = "contractStart")
-    private Timestamp contractStart;
+    private LocalDate contractStart;
 
     @NonNull
     @Column(name = "contractEnd")
-    private Timestamp contractEnd;
+    private LocalDate contractEnd;
 
     @Column(name = "contractComment")
     private String contractComment;
@@ -102,8 +102,8 @@ public class Contract {
 
     public Contract(Location location,
                     Client client,
-                    @NonNull Timestamp contractStart,
-                    @NonNull Timestamp contractEnd,
+                    @NonNull LocalDate contractStart,
+                    @NonNull LocalDate contractEnd,
                     String contractComment,
                     float price,
                     int workersBudgeted,

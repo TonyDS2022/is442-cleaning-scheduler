@@ -58,7 +58,7 @@ public class ClientService {
         if(!contracts.isEmpty()){
             for(Contract contract: contracts){
                 // deactivate linked contract, cleaning session and shift that has not occurred yet
-                if(contract.getContractStart().toLocalDateTime().toLocalDate().isAfter(LocalDate.now())){
+                if(contract.getContractStart().isAfter(LocalDate.now())){
                     Long contractId = contract.getContractId();
                     contractService.deactivateContract(contractId);
                 }
