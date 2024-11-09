@@ -112,6 +112,8 @@ public class CleaningSession {
     @NonNull
     private Timestamp lastModified;
 
+    private LocalDate cancelledAt;
+
     // New constructor
     public CleaningSession(Contract contract, /* Note: DO NOT remove this parameter */
                            LocalDate sessionStartDate,

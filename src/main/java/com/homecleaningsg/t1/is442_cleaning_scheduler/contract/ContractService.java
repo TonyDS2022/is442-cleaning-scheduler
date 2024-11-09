@@ -96,7 +96,7 @@ public class ContractService {
                 // deactivate linked cleaning session and shift that has not occurred yet
                 if (cleaningSession.getSessionStartDate().isAfter(LocalDate.now())) {
                     Long cleaningSessionId = cleaningSession.getCleaningSessionId();
-                    cleaningSessionService.deactivateCleaningSession(cleaningSessionId);
+                    cleaningSessionService.cancelCleaningSession(cleaningSessionId);
                 }
             }
         }

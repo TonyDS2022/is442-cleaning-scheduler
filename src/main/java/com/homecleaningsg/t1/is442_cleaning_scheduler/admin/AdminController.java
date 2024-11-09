@@ -84,7 +84,7 @@ public class AdminController {
 
     // localhost:8080/api/v0.1/admins/session-monthly-report/2024/11
     @GetMapping("/session-monthly-report/{year}/{month}")
-    public Long getMonthlySessionReport(@PathVariable int year, @PathVariable int month) {
+    public SessionReportDto getMonthlySessionReport(@PathVariable int year, @PathVariable int month) {
         return cleaningSessionService.getMonthlySessionReport(year, month);
     }
 

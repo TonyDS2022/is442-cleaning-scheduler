@@ -17,4 +17,8 @@ public interface CleaningSessionRepository extends JpaRepository<CleaningSession
     @Query("SELECT COUNT(DISTINCT cs.cleaningSessionId) FROM CleaningSession cs WHERE cs.sessionStartDate BETWEEN :startOfMonth AND :endOfMonth")
     Long countNoOfMonthSessions(@Param("startOfMonth") LocalDate startOfMonth,
                                      @Param("endOfMonth") LocalDate endOfMonth);
+
+    @Query("SELECT COUNT(DISTINCT cs.cleaningSessionId) FROM CleaningSession cs WHERE cs.cancelledAt IS NOT NULL AND cs.cancelledAt BETWEEN :startOfMonth AND :endOfMonth")
+    Long countNoOfMonthCancelledSessions(@Param("startOfMonth") LocalDate startOfMonth,
+                                       @Param("endOfMonth") LocalDate endOfMonth);
 }

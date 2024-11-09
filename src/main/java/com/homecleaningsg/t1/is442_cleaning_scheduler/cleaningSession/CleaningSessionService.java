@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.SessionReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,18 +88,22 @@ public class CleaningSessionService {
         return cleaningSessionRepository.save(existingSession);
     }
 
-    public void deactivateCleaningSession(Long cleaningSessionId) {
+    public void cancelCleaningSession(Long cleaningSessionId) {
         CleaningSession cleaningSession = cleaningSessionRepository.findById(cleaningSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
         cleaningSession.setActive(false);
+        cleaningSession.setCancelledAt(LocalDate.now());
         cleaningSessionRepository.save(cleaningSession);
     }
 
-    public Long getMonthlySessionReport(int year, int month) {
+    public SessionReportDto getMonthlySessionReport(int year, int month) {
         LocalDate startOfMonth = YearMonth.of(year, month).atDay(1);
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
-        return cleaningSessionRepository.countNoOfMonthSessions(startOfMonth, endOfMonth);
+        Long noSessions = cleaningSessionRepository.countNoOfMonthSessions(startOfMonth, endOfMonth);
+        Long noCancelledSessions = cleaningSessionRepository.countNoOfMonthCancelledSessions(startOfMonth, endOfMonth);
+
+        return new SessionReportDto(noSessions, noCancelledSessions);
     }
 
 }
