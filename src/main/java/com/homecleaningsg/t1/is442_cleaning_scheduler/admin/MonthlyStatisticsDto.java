@@ -16,8 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MonthlyStatisticsDto {
-    private LocalDate startOfMonth;
-    private LocalDate endOfMonth;
+    private int year;
+    private int month;
     private List<WorkerHoursDto> workerMonthlyHours; //list of hours per worker
     private ClientReportDto clientMonthlyReport;
     private SessionReportDto sessionMonthlyReport;
