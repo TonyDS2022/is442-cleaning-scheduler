@@ -82,6 +82,11 @@ public class AdminController {
         return clientService.getMonthlyClientReport(year, month);
     }
 
+    @GetMapping("/client-yearly-report/{year}")
+    public ClientReportDto getYearlyClientReport(@PathVariable int year) {
+        return clientService.getYearlyClientReport(year);
+    }
+
     // localhost:8080/api/v0.1/admins/session-monthly-report/2024/11
     @GetMapping("/session-monthly-report/{year}/{month}")
     public SessionReportDto getMonthlySessionReport(@PathVariable int year, @PathVariable int month) {

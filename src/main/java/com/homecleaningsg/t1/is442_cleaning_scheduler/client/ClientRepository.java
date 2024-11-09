@@ -15,10 +15,19 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Long countNewClientsByMonth(@Param("startOfMonth") LocalDate startOfMonth,
                                 @Param("endOfMonth") LocalDate endOfMonth);
 
-    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.joinDate < :startOfMonth")
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.joinDate < :startOfMonth AND c.isActive")
     Long countExistingClientsByMonth(@Param("startOfMonth") LocalDate startOfMonth);
 
     @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.deactivatedAt IS NOT NULL AND c.deactivatedAt BETWEEN :startOfMonth AND :endOfMonth")
     Long countTerminatedClientsByMonth(@Param("startOfMonth") LocalDate startOfMonth,
                                        @Param("endOfMonth") LocalDate endOfMonth);
+
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE EXTRACT(YEAR FROM c.joinDate) = :year")
+    Long countNewClientsByYear(@Param("year") int year);
+
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE EXTRACT(YEAR FROM c.joinDate) < :year AND c.isActive")
+    Long countExistingClientsByYear(@Param("year") int year);
+
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.deactivatedAt IS NOT NULL AND EXTRACT(YEAR FROM c.deactivatedAt) = :year")
+    Long countTerminatedClientsByYear(@Param("year") int year);
 }

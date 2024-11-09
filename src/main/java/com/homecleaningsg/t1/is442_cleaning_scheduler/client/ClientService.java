@@ -79,4 +79,12 @@ public class ClientService {
 
         return new ClientReportDto(newClients, existingClients, terminatedClients);
     }
+
+    public ClientReportDto getYearlyClientReport(int year) {
+        Long newClients = clientRepository.countNewClientsByYear(year);
+        Long existingClients = clientRepository.countExistingClientsByYear(year);
+        Long terminatedClients = clientRepository.countTerminatedClientsByYear(year);
+
+        return new ClientReportDto(newClients, existingClients, terminatedClients);
+    }
 }
