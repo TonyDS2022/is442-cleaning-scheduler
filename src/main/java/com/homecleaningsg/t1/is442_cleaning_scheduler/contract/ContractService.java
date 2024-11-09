@@ -105,7 +105,14 @@ public class ContractService {
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
         Long newContracts = contractRepository.countNewContractsByMonth(startOfMonth, endOfMonth);
-        Long existingOngoingContracts = contractRepository.countExistingOngoingContractsByMonth(startOfMonth);
+        Long existingOngoingContracts = contractRepository.countExistingContractsByMonth(startOfMonth);
+
+        return new ContractReportDto(newContracts, existingOngoingContracts);
+    }
+
+    public ContractReportDto getYearlyContractReport(int year) {
+        Long newContracts = contractRepository.countNewContractsByYear(year);
+        Long existingOngoingContracts = contractRepository.countExistingContractsByYear(year);
 
         return new ContractReportDto(newContracts, existingOngoingContracts);
     }

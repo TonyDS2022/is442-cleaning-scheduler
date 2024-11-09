@@ -13,12 +13,22 @@ import java.util.List;
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<Contract> findByClient(Client client);
 
-    @Query("SELECT COUNT(DISTINCT ct.contractId) FROM Contract ct WHERE ct.creationDate BETWEEN :startOfMonth AND :endOfMonth")
+    @Query("SELECT COUNT(DISTINCT ct.contractId) FROM Contract ct " +
+            "WHERE ct.contractStart BETWEEN :startOfMonth AND :endOfMonth")
     Long countNewContractsByMonth(@Param("startOfMonth") LocalDate startOfMonth,
                                   @Param("endOfMonth") LocalDate endOfMonth);
 
-    // contracts that have been created before startOfMonth
+    // contracts that have started before startOfMonth
     // and has not yet ended by startOfMonth
-    @Query("SELECT COUNT(DISTINCT ct.contractId) FROM Contract ct WHERE ct.creationDate < :startOfMonth AND ct.contractEnd > :startOfMonth")
-    Long countExistingOngoingContractsByMonth(@Param("startOfMonth") LocalDate startOfMonth);
+    @Query("SELECT COUNT(DISTINCT ct.contractId) FROM Contract ct " +
+            "WHERE ct.contractEnd >= :startOfMonth")
+    Long countExistingContractsByMonth(@Param("startOfMonth") LocalDate startOfMonth);
+
+    @Query("SELECT COUNT(DISTINCT ct.contractId) FROM Contract ct " +
+            "WHERE EXTRACT (YEAR FROM ct.contractStart) = :year")
+    Long countNewContractsByYear(@Param("year") int year);
+
+    @Query("SELECT COUNT(DISTINCT ct.contractId) FROM Contract ct " +
+            "WHERE EXTRACT(YEAR FROM ct.contractEnd) >= :year")
+    Long countExistingContractsByYear(@Param("year") int year);
 }

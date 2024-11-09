@@ -104,6 +104,11 @@ public class AdminController {
         return contractService.getMonthlyContractReport(year, month);
     }
 
+    @GetMapping("/contract-yearly-report/{year}")
+    public ContractReportDto getYearlyContractReport(@PathVariable int year) {
+        return contractService.getYearlyContractReport(year);
+    }
+
     // localhost:8080/api/v0.1/admins/worker-monthly-report/2024/11
     @GetMapping("/worker-monthly-report/{year}/{month}")
     public WorkerReportDto getMonthlyWorkerReport(@PathVariable int year, @PathVariable int month) {
