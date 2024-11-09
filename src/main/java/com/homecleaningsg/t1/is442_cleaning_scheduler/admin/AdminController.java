@@ -7,6 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.WorkerHoursDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

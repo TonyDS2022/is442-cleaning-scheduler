@@ -1,6 +1,5 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerHoursDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
