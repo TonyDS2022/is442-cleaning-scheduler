@@ -75,4 +75,12 @@ public class WorkerService {
 
         return new WorkerReportDto(newWorkers, existingWorkers, terminatedWorkers);
     }
+
+    public WorkerReportDto getYearlyWorkerReport(int year) {
+        Long newWorkers = workerRepository.countNewWorkersByYear(year);
+        Long existingWorkers = workerRepository.countExistingWorkersByYear(year);
+        Long terminatedWorkers = workerRepository.countTerminatedWorkersByYear(year);
+
+        return new WorkerReportDto(newWorkers, existingWorkers, terminatedWorkers);
+    }
 }

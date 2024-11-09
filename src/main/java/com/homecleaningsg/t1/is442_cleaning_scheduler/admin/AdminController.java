@@ -114,4 +114,9 @@ public class AdminController {
     public WorkerReportDto getMonthlyWorkerReport(@PathVariable int year, @PathVariable int month) {
         return workerService.getMonthlyWorkerReport(year, month);
     }
+
+    @GetMapping("/worker-yearly-report/{year}")
+    public WorkerReportDto getYearlyWorkerReport(@PathVariable int year) {
+        return workerService.getYearlyWorkerReport(year);
+    }
 }
