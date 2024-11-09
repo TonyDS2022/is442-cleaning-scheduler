@@ -112,10 +112,17 @@ public class CleaningSessionService {
         LocalDate startOfMonth = YearMonth.of(year, month).atDay(1);
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
-        Long noSessions = cleaningSessionRepository.countNoOfMonthSessions(startOfMonth, endOfMonth);
-        Long noCancelledSessions = cleaningSessionRepository.countNoOfMonthCancelledSessions(startOfMonth, endOfMonth);
+        Long numFinishedSessions = cleaningSessionRepository.countNoOfMonthFinishedSessions(startOfMonth, endOfMonth);
+        Long numCancelledSessions = cleaningSessionRepository.countNoOfMonthCancelledSessions(startOfMonth, endOfMonth);
 
-        return new SessionReportDto(noSessions, noCancelledSessions);
+        return new SessionReportDto(numFinishedSessions, numCancelledSessions);
+    }
+
+    public SessionReportDto getYearlySessionReport(int year) {
+        Long numFinishedSessions = cleaningSessionRepository.countNoOfYearFinishedSessions(year);
+        Long numCancelledSessions = cleaningSessionRepository.countNoOfYearCancelledSessions(year);
+
+        return new SessionReportDto(numFinishedSessions, numCancelledSessions);
     }
 
 }

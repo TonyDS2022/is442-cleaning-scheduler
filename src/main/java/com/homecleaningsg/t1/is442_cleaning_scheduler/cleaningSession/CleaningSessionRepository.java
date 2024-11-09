@@ -14,11 +14,31 @@ public interface CleaningSessionRepository extends JpaRepository<CleaningSession
     List<CleaningSession> findByContract_ContractId(Long contractId);
     Optional<CleaningSession> findByContract_ContractIdAndCleaningSessionId(Long contractId, Long cleaningSessionId);
 
-    @Query("SELECT COUNT(DISTINCT cs.cleaningSessionId) FROM CleaningSession cs WHERE cs.sessionStartDate BETWEEN :startOfMonth AND :endOfMonth")
-    Long countNoOfMonthSessions(@Param("startOfMonth") LocalDate startOfMonth,
-                                     @Param("endOfMonth") LocalDate endOfMonth);
+    @Query("SELECT COUNT(DISTINCT cs.cleaningSessionId) " +
+            "FROM CleaningSession cs " +
+            "WHERE cs.sessionStatus = 'FINISHED' " +
+            "AND cs.sessionEndDate BETWEEN :startOfMonth AND :endOfMonth")
+    Long countNoOfMonthFinishedSessions(@Param("startOfMonth") LocalDate startOfMonth,
+                                        @Param("endOfMonth") LocalDate endOfMonth);
 
-    @Query("SELECT COUNT(DISTINCT cs.cleaningSessionId) FROM CleaningSession cs WHERE cs.cancelledAt IS NOT NULL AND cs.cancelledAt BETWEEN :startOfMonth AND :endOfMonth")
+    @Query("SELECT COUNT(DISTINCT cs.cleaningSessionId) " +
+            "FROM CleaningSession cs " +
+            "WHERE cs.sessionStatus = 'CANCELLED' " +
+            "AND cs.cancelledAt IS NOT NULL " +
+            "AND cs.cancelledAt BETWEEN :startOfMonth AND :endOfMonth")
     Long countNoOfMonthCancelledSessions(@Param("startOfMonth") LocalDate startOfMonth,
-                                       @Param("endOfMonth") LocalDate endOfMonth);
+                                         @Param("endOfMonth") LocalDate endOfMonth);
+
+    @Query("SELECT COUNT(DISTINCT cs.cleaningSessionId) " +
+            "FROM CleaningSession cs " +
+            "WHERE cs.sessionStatus = 'FINISHED' " +
+            "AND EXTRACT(YEAR FROM cs.sessionEndDate) = :year")
+    Long countNoOfYearFinishedSessions(@Param("year") int year);
+
+    @Query("SELECT COUNT(DISTINCT cs.cleaningSessionId) " +
+            "FROM CleaningSession cs " +
+            "WHERE cs.sessionStatus = 'CANCELLED' " +
+            "AND cs.cancelledAt IS NOT NULL " +
+            "AND EXTRACT(YEAR FROM cs.cancelledAt) = :year")
+    Long countNoOfYearCancelledSessions(@Param("year") int year);
 }

@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SessionReportDto {
-    private Long noSessions;
-    private Long noCancelledSessions;
+    private Long numFinishedSessions;
+    private Long numCancelledSessions;
 }

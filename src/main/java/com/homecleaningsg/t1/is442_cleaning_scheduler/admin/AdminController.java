@@ -93,6 +93,11 @@ public class AdminController {
         return cleaningSessionService.getMonthlySessionReport(year, month);
     }
 
+    @GetMapping("/session-yearly-report/{year}")
+    public SessionReportDto getYearlySessionReport(@PathVariable int year) {
+        return cleaningSessionService.getYearlySessionReport(year);
+    }
+
     // localhost:8080/api/v0.1/admins/contract-monthly-report/2024/11
     @GetMapping("/contract-monthly-report/{year}/{month}")
     public ContractReportDto getMonthlyContractReport(@PathVariable int year, @PathVariable int month) {
