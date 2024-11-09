@@ -12,6 +12,8 @@ import java.util.List;
 public interface ShiftRepository extends JpaRepository<Shift, Long> {
     List<Shift> findByWorkerWorkerId(Long workerId);
 
+    List<Shift> findByCleaningSession_CleaningSessionId(Long cleaningSessionId);
+
     @Query("SELECT SUM(s.duration) FROM Shift s WHERE s.worker.workerId = :workerId AND EXTRACT(YEAR FROM s.actualStartDate) = :year")
     Long getWorkerTotalHoursWorkedInYear(@Param("workerId") Long workerId, @Param("year") int year);
 

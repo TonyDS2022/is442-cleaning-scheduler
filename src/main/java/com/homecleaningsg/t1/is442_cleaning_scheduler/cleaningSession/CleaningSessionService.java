@@ -1,6 +1,9 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +17,16 @@ import java.util.Optional;
 public class CleaningSessionService {
 
     private final CleaningSessionRepository cleaningSessionRepository;
+    private final ShiftRepository shiftRepository;
+    private final ShiftService shiftService;
 
     @Autowired
-    public CleaningSessionService(CleaningSessionRepository cleaningSessionRepository) {
+    public CleaningSessionService(CleaningSessionRepository cleaningSessionRepository,
+                                  ShiftRepository shiftRepository,
+                                  ShiftService shiftService) {
         this.cleaningSessionRepository = cleaningSessionRepository;
+        this.shiftRepository = shiftRepository;
+        this.shiftService = shiftService;
     }
 
     public List<CleaningSession> getAllCleaningSessions() {
@@ -104,6 +113,17 @@ public class CleaningSessionService {
         else{
             cleaningSession.setSessionStatus(CleaningSession.sessionStatus.CANCELLED);
             cleaningSession.setCancelledAt(LocalDate.now());
+            // cancel linked shift that has not occurred yet
+            List<Shift> shifts = shiftRepository.findByCleaningSession_CleaningSessionId(cleaningSessionId);
+            if(!shifts.isEmpty()){
+                for(Shift shift : shifts) {
+                    // cancel linked shifts has not occurred yet
+                    if (shift.getSessionStartDate().isAfter(LocalDate.now())) {
+                        Long shiftId = shift.getShiftId();
+                        shiftService.cancelShift(shiftId);
+                    }
+                }
+            }
             cleaningSessionRepository.save(cleaningSession);
         }
     }

@@ -91,7 +91,8 @@ public class Shift {
     public enum WorkingStatus {
         NOT_STARTED,
         WORKING,
-        FINISHED
+        FINISHED,
+        CANCELLED
     }
 
     private boolean workerHasPendingLeave;
@@ -107,8 +108,7 @@ public class Shift {
     @NonNull
     private Timestamp lastModified;
 
-    @NonNull
-    private boolean isActive = true;
+    private LocalDate cancelledAt;
 
     public Shift(CleaningSession cleaningSession) {
         this.cleaningSession = cleaningSession;

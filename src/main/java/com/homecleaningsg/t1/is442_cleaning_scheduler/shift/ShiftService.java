@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +43,28 @@ public class ShiftService {
         return shiftRepository.save(updatedShift);
     }
 
-    public void deactivateShift(Long shiftId) {
+    public void cancelShift(Long shiftId) {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
         Worker worker = shift.getWorker();
         if(worker != null){
             shift.setWorker(null);
         }
-        shift.setActive(false);
-        shiftRepository.save(shift);
+        if(shift.getWorkingStatus() == Shift.WorkingStatus.CANCELLED){
+            throw new IllegalArgumentException("Shift has already been cancelled");
+        }
+        else if(shift.getWorkingStatus() == Shift.WorkingStatus.WORKING){
+            throw new IllegalArgumentException("Shift cannot be cancelled as it is ongoing");
+        }
+        else if(shift.getWorkingStatus() == Shift.WorkingStatus.FINISHED){
+            throw new IllegalArgumentException("Shift cannot be cancelled because it has already been finished.");
+        }
+        // workingStatus == NOT_STARTED
+        else{
+            shift.setWorkingStatus(Shift.WorkingStatus.CANCELLED);
+            shift.setCancelledAt(LocalDate.now());
+            shiftRepository.save(shift);
+        }
     }
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {
