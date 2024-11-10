@@ -95,7 +95,7 @@ public class ShiftService {
             totalHours = 0L;
         }
         long totalOverTimeHours = calculateYearlyOverTime(workerId, year);
-        return new WorkerHoursDto(totalHours, totalOverTimeHours);
+        return new WorkerHoursDto(workerId, totalHours, totalOverTimeHours);
     }
 
     public WorkerHoursDto getMonthlyHoursOfWorker(Long workerId, int year, int month){
@@ -104,14 +104,14 @@ public class ShiftService {
             totalHours = 0L;
         }
         Long totalOverTimeHours = calculateMonthlyOverTime(workerId, year, month);
-        return new WorkerHoursDto(totalHours, totalOverTimeHours);
+        return new WorkerHoursDto(workerId, totalHours, totalOverTimeHours);
     }
 
     public WorkerHoursDto getWeeklyHoursOfWorker(Long workerId, LocalDate startOfWeek, LocalDate endOfWeek){
         List<Long> weeklyHours =  shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
         long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
         long overTimeHours = Math.max(0, totalHours - ShiftConfigLoader.WEEKLY_OVERTIME_THRESHOLD_HOURS);
-        return new WorkerHoursDto(totalHours, overTimeHours);
+        return new WorkerHoursDto(workerId, totalHours, overTimeHours);
     }
 
     public Long calculateYearlyOverTime(Long workerId, int year){

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkerHoursDto {
+    private Long workerId;
     private Long totalHours;
     private Long overTimeHours;
 }
