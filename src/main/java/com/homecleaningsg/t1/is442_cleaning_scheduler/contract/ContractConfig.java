@@ -34,34 +34,35 @@ public class ContractConfig implements CommandLineRunner {
         Client client2 = new Client("Jake Peralta", "92384923", true, location2);
 
         Contract contract1 = new Contract();
-        contract1.setContractStart(Timestamp.valueOf(LocalDateTime.parse("01 Oct 2024 00:00:00", this.dateTimeFormatter)));
-        contract1.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("01 Jan 2025 00:00:00", this.dateTimeFormatter)));
+        contract1.setContractStart(Timestamp.valueOf(LocalDateTime.parse("01 Oct 2024 10:00:00", this.dateTimeFormatter)));
+        contract1.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("01 Jan 2025 10:00:00", this.dateTimeFormatter)));
         contract1.setContractComment("Contract 1");
         contract1.setLocation(location1);
         contract1.setPrice(60.0f);
         contract1.setWorkersBudgeted(1);
         contract1.setRooms(1);
-        contract1.setFrequency(Contract.Frequency.WEEKLY);
+        contract1.setFrequency(Contract.Frequency.MONTHLY);
         contract1.setSessionDurationMinutes(60);
         contract1.setClient(client1);
 
-        Contract contract2 = new Contract();
-        contract2.setContractStart(Timestamp.valueOf(LocalDateTime.parse("11 Oct 2024 00:00:00", this.dateTimeFormatter)));
-        contract2.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("20 Dec 2025 00:00:00", this.dateTimeFormatter)));
-        contract2.setContractComment("Contract 2");
-        contract2.setLocation(location2);
-        contract2.setPrice(250.0f);
-        contract2.setWorkersBudgeted(3);
-        contract2.setRooms(2);
-        contract2.setFrequency(Contract.Frequency.BIWEEKLY);
-        contract2.setSessionDurationMinutes(120);
-        contract2.setClient(client2);
+        // Contract contract2 = new Contract();
+        // contract2.setContractStart(Timestamp.valueOf(LocalDateTime.parse("11 Oct 2024 00:00:00", this.dateTimeFormatter)));
+        // contract2.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("20 Dec 2025 00:00:00", this.dateTimeFormatter)));
+        // contract2.setContractComment("Contract 2");
+        // contract2.setLocation(location2);
+        // contract2.setPrice(250.0f);
+        // contract2.setWorkersBudgeted(3);
+        // contract2.setRooms(2);
+        // contract2.setFrequency(Contract.Frequency.BIWEEKLY);
+        // contract2.setSessionDurationMinutes(120);
+        // contract2.setClient(client2);
 
         // Log hourly rates
         System.out.println("Contract 1 Rate: " + contract1.getRate());
-        System.out.println("Contract 2 Rate: " + contract2.getRate());
+        // System.out.println("Contract 2 Rate: " + contract2.getRate());
 
-        this.contractRepository.saveAll(List.of(contract1, contract2));
+        this.contractRepository.save(contract1);
+        // this.contractRepository.saveAll(List.of(contract1, contract2));
     }
 
     @Override

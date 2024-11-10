@@ -24,6 +24,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "Contract")
+@EntityListeners(ContractListener.class) // triggers ContractListener on Contract events
 public class Contract {
     @Id
     @SequenceGenerator(

@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.devConfig;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractListener;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionConfig;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 
 // TODO: Move dev-specific configurations eventually to test
 @Configuration
@@ -53,18 +55,26 @@ public class DevelopmentConfig {
     }
 
     @Bean
+    public ClientConfig clientConfig(ClientRepository clientRepository,
+                                     LocationRepository locationRepository){
+        return new ClientConfig(clientRepository, locationRepository);
+    }
+
+    @Bean
     public WorkerConfig workerConfig(WorkerRepository workerRepository, LocationRepository locationRepository) {
         return new WorkerConfig(workerRepository, locationRepository);
     }
 
     @Bean
-    @DependsOn({"workerConfig", "locationConfig"})
-    public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository, ClientRepository clientRepository) {
+    @DependsOn({"clientConfig", "locationConfig"})
+    public ContractConfig contractConfig(ContractRepository contractRepository,
+                                         LocationRepository locationRepository,
+                                         ClientRepository clientRepository) {
         return new ContractConfig(contractRepository, locationRepository, clientRepository);
     }
 
     @Bean
-    @DependsOn({"workerConfig", "contractConfig", "locationConfig"})
+    @DependsOn({"contractConfig", "locationConfig"})
     public CleaningSessionConfig cleaningSessionConfig(ContractRepository contractRepository,
                                                        CleaningSessionRepository cleaningSessionRepository) {
         return new CleaningSessionConfig(contractRepository, cleaningSessionRepository);
@@ -74,8 +84,7 @@ public class DevelopmentConfig {
     @DependsOn({"workerConfig", "contractConfig", "locationConfig", "cleaningSessionConfig"})
     public ShiftConfig shiftConfig(CleaningSessionRepository cleaningSessionRepository,
                                    ShiftRepository shiftRepository,
-                                   WorkerRepository workerRepository
-) {
+                                   WorkerRepository workerRepository) {
         return new ShiftConfig(cleaningSessionRepository, shiftRepository, workerRepository);
     }
 
@@ -98,8 +107,9 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    public ClientConfig clientConfig(ClientRepository clientRepository,
-                                     LocationRepository locationRepository){
-        return new ClientConfig(clientRepository, locationRepository);
+    @DependsOn({"contractConfig", "CleaningSessionRepository", "ShiftRepository"})
+    public ContractListener contractListener(@Lazy CleaningSessionRepository cleaningSessionRepository,
+                                             @Lazy ShiftRepository shiftRepository) {
+        return new ContractListener(cleaningSessionRepository, shiftRepository);
     }
 }
