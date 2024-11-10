@@ -34,7 +34,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     // and have not ended before the beginning of the year
     @Query("SELECT COUNT(DISTINCT ct.contractId) FROM Contract ct " +
             "WHERE EXTRACT(YEAR FROM ct.contractStart) <= :year " +
-            "AND (ct.contractEnd IS NULL OR EXTRACT(YEAR FROM ct.contractEnd) >= :year)")
+            "AND ct.contractStatus != 'COMPLETED' ")
     Long countExistingContractsByYear(@Param("year") int year);
 
     // New query for counting completed contracts per month
