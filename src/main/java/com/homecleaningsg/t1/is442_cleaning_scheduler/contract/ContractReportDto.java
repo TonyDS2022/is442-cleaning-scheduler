@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class ContractReportDto {
     private Long newContracts;
     private Long existingOngoingContracts;
+    private Long completedContracts;
 }

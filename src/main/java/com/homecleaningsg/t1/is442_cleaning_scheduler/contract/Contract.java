@@ -134,8 +134,15 @@ public class Contract {
 
     @PrePersist
     protected void onCreate() {
-        creationDate = LocalDate.now();
         lastModified = new Timestamp(System.currentTimeMillis());
+        LocalDate today = LocalDate.now();
+        if (this.contractEnd.isBefore(today)) {
+            this.contractStatus = ContractStatus.COMPLETED;
+        } else if (this.contractStart.isBefore(today) || this.contractStart.isEqual(today)) {
+            this.contractStatus = ContractStatus.IN_PROGRESS;
+        } else {
+            this.contractStatus = ContractStatus.NOT_STARTED;
+        }
     }
     @PreUpdate
     protected void onUpdate() {

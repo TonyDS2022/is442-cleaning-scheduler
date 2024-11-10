@@ -27,6 +27,7 @@ public class CSVExporter {
                     "TotalCancelledSessions",
                     "TotalNewContracts",
                     "TotalExistingOngoingContracts",
+                    "TotalCompletedContracts",
                     "TotalNewWorkers",
                     "TotalExistingWorkers",
                     "TotalTerminatedWorkers"});
@@ -40,6 +41,7 @@ public class CSVExporter {
                     String.valueOf(yearlyData.getSessionYearlyReport().getNumCancelledSessions()),
                     String.valueOf(yearlyData.getContractYearlyReport().getNewContracts()),
                     String.valueOf(yearlyData.getContractYearlyReport().getExistingOngoingContracts()),
+                    String.valueOf(yearlyData.getContractYearlyReport().getCompletedContracts()),
                     String.valueOf(yearlyData.getWorkerYearlyReport().getNewWorkers()),
                     String.valueOf(yearlyData.getWorkerYearlyReport().getExistingWorkers()),
                     String.valueOf(yearlyData.getWorkerYearlyReport().getTerminatedWorkers())
@@ -74,6 +76,7 @@ public class CSVExporter {
                     "TotalCancelledSessions",
                     "TotalNewContracts",
                     "TotalExistingOngoingContracts",
+                    "TotalCompletedContracts",
                     "TotalNewWorkers",
                     "TotalExistingWorkers",
                     "TotalTerminatedWorkers"});
@@ -89,6 +92,7 @@ public class CSVExporter {
                         String.valueOf(monthlyStat.getSessionMonthlyReport().getNumCancelledSessions()),
                         String.valueOf(monthlyStat.getContractMonthlyReport().getNewContracts()),
                         String.valueOf(monthlyStat.getContractMonthlyReport().getExistingOngoingContracts()),
+                        String.valueOf(monthlyStat.getContractMonthlyReport().getCompletedContracts()),
                         String.valueOf(monthlyStat.getWorkerMonthlyReport().getNewWorkers()),
                         String.valueOf(monthlyStat.getWorkerMonthlyReport().getExistingWorkers()),
                         String.valueOf(monthlyStat.getWorkerMonthlyReport().getTerminatedWorkers())
