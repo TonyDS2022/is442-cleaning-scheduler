@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 
+@NoArgsConstructor
 @EqualsAndHashCode
 @Getter
 @Setter
@@ -25,10 +27,12 @@ public class ClientSite {
             strategy = GenerationType.SEQUENCE,
             generator = "client_site_sequence"
     )
+    @JsonIgnore
     private Long clientSiteId;
 
     @JsonBackReference("client-clientSite")
     @ManyToOne
+    @JsonIgnore
     private Client client;
 
     @NonNull
@@ -46,6 +50,7 @@ public class ClientSite {
     private Location location;
 
     @NonNull
+    @JsonIgnore
     private Timestamp lastModified;
 
     @PrePersist

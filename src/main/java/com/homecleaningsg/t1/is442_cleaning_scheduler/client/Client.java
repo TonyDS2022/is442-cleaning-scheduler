@@ -75,4 +75,9 @@ public class Client {
         contract.setClient(this);
     }
 
+    public void addClientSite(ClientSite clientSite) {
+        clientSites.add(clientSite);
+        clientSite.setClient(this);
+    }
+
 }

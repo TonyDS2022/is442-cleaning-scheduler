@@ -44,12 +44,13 @@ public class LocationService {
                 .then();
     }
 
-    public Location getOrCreateLocation(String postalCode) {
+    public Location getOrCreateLocation(String postalCode, String address) {
         return locationRepository.findByPostalCode(postalCode)
                 .orElseGet(() -> {
-                    Location location = new Location();
-                    location.setPostalCode(postalCode);
-                    return locationRepository.save(location);
+                    Location newLocation = new Location(address, postalCode);
+                    newLocation = geoCode(newLocation);
+                    newLocation.setSubzone(subzoneRepository);
+                    return locationRepository.save(newLocation);
                 });
     }
 
