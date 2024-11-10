@@ -43,4 +43,22 @@ public class LocationService {
                         }))
                 .then();
     }
+
+    public Location getOrCreateLocation(String postalCode) {
+        return locationRepository.findByPostalCode(postalCode)
+                .orElseGet(() -> {
+                    Location location = new Location();
+                    location.setPostalCode(postalCode);
+                    return locationRepository.save(location);
+                });
+    }
+
+    public Location geoCode(Location location) {
+        return geocodingService.getCoordinates(location.getPostalCode())
+                .map(geocodingResult -> {
+                    location.setLatitude(geocodingResult.getLatitude());
+                    location.setLongitude(geocodingResult.getLongitude());
+                    return locationRepository.save(location);
+                }).block();
+    }
 }

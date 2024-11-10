@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -18,20 +19,24 @@ public class ContractConfig implements CommandLineRunner {
     private final ContractRepository contractRepository;
     private final LocationRepository locationRepository;
     private final ClientRepository clientRepository;
+    private final ClientService clientService;
+
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
 
     public ContractConfig(ContractRepository contractRepository,
                           LocationRepository locationRepository,
-                          ClientRepository clientRepository) {
+                          ClientRepository clientRepository,
+                          ClientService clientService) {
         this.contractRepository = contractRepository;
         this.locationRepository = locationRepository;
         this.clientRepository = clientRepository;
+        this.clientService = clientService;
 
         Location location1 = this.locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location with ID 1 not found"));
         Location location2 = this.locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location with ID 2 not found"));
 
-        Client client1 = new Client("Amy Santiago", "98472094", true, location1);
-        Client client2 = new Client("Jake Peralta", "92384923", true, location2);
+        Client client1 = new Client("Amy Santiago", "98472094", true);
+        Client client2 = new Client("Jake Peralta", "92384923", true);
 
         Contract contract1 = new Contract();
         contract1.setContractStart(Timestamp.valueOf(LocalDateTime.parse("01 Oct 2024 00:00:00", this.dateTimeFormatter)));
@@ -43,7 +48,6 @@ public class ContractConfig implements CommandLineRunner {
         contract1.setRooms(1);
         contract1.setFrequency(Contract.Frequency.WEEKLY);
         contract1.setSessionDurationMinutes(60);
-        contract1.setClient(client1);
 
         Contract contract2 = new Contract();
         contract2.setContractStart(new Timestamp(System.currentTimeMillis()));
@@ -55,12 +59,15 @@ public class ContractConfig implements CommandLineRunner {
         contract2.setRooms(2);
         contract2.setFrequency(Contract.Frequency.BIWEEKLY);
         contract2.setSessionDurationMinutes(120);
-        contract2.setClient(client2);
+
+        client1.addContract(contract1);
+        client2.addContract(contract2);
 
         // Log hourly rates
         System.out.println("Contract 1 Rate: " + contract1.getRate());
         System.out.println("Contract 2 Rate: " + contract2.getRate());
 
+        this.clientRepository.saveAll(List.of(client1, client2));
         this.contractRepository.saveAll(List.of(contract1, contract2));
     }
 

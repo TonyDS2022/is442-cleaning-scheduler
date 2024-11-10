@@ -105,7 +105,7 @@ public class CleaningSession {
 
     @ManyToOne
     @JoinColumn(name = "contractId", nullable = false)
-    @JsonBackReference // prevent infinite recursion
+    @JsonBackReference("contract-cleaningSession") // prevent infinite recursion
     private Contract contract;
 
     @NonNull

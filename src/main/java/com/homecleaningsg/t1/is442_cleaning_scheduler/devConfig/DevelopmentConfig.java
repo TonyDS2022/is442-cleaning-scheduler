@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.devConfig;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionConfig;
@@ -59,8 +60,8 @@ public class DevelopmentConfig {
 
     @Bean
     @DependsOn({"workerConfig", "locationConfig"})
-    public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository, ClientRepository clientRepository) {
-        return new ContractConfig(contractRepository, locationRepository, clientRepository);
+    public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository, ClientRepository clientRepository, ClientService clientService) {
+        return new ContractConfig(contractRepository, locationRepository, clientRepository, clientService);
     }
 
     @Bean

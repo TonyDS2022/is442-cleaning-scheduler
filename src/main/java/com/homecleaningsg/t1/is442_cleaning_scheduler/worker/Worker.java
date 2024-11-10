@@ -71,11 +71,11 @@ public class Worker {
     // establish relationship with leaveApplications
     @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
     // @JsonIgnore
-    @JsonBackReference // prevent infinite recursion when serializing
+    @JsonBackReference("leaveApplications-worker") // prevent infinite recursion when serializing
     private List<LeaveApplication> leaveApplications;
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @JsonManagedReference("worker-shift")
     private List<Shift> shifts;
 
     @NonNull

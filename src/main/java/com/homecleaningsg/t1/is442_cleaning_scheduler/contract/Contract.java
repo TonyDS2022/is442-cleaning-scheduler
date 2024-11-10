@@ -13,6 +13,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -41,9 +42,9 @@ public class Contract {
     @JoinColumn(name = "locationId", nullable = false)
     private Location location;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "clientId",  nullable = false)
-    @JsonManagedReference
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "clientId",  nullable = true)
+    @JsonBackReference("client-contract")
     private Client client;
 
     @NonNull
@@ -107,8 +108,8 @@ public class Contract {
     // temp for retrieving all contracts by cleaningSessionIds
     @Getter
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<CleaningSession> cleaningSessions;
+    @JsonManagedReference("contract-cleaningSession")
+    private List<CleaningSession> cleaningSessions = new ArrayList<>();
 
     public Contract(Location location,
                     Client client,

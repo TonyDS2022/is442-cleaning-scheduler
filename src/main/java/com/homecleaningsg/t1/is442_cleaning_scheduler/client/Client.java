@@ -1,17 +1,15 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -47,28 +45,34 @@ public class Client {
     @NonNull
     private Timestamp lastModified;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "location_id", nullable = false)
-    private Location location;
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClientSite> clientSites;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @JsonManagedReference("client-contract")
     private List<Contract> contracts;
 
-    public Client(String name,
-                           String phone,
-                           boolean isActive,
-                           Location location) {
+    public Client(
+            String name,
+            String phone,
+            boolean isActive
+    ) {
         this.name = name;
         this.phone = phone;
         this.isActive = isActive;
-        this.location = location;
+        this.contracts = new ArrayList<>();
+        this.clientSites = new ArrayList<>();
     }
 
     @PrePersist
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());
+    }
+
+    public void addContract(Contract contract) {
+        contracts.add(contract);
+        contract.setClient(this);
     }
 
 }
