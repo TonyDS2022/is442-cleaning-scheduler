@@ -92,10 +92,6 @@ public class Worker {
     }
 
     @PrePersist
-    protected void onCreate() {
-        this.joinDate = LocalDate.now();
-        this.lastModified = new Timestamp(System.currentTimeMillis());
-    }
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());

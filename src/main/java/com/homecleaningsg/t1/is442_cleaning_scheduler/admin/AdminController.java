@@ -35,11 +35,11 @@ public class AdminController {
     }
 
     // localhost:8080/api/v0.1/admins/yearly-statistics/2024
-//    @GetMapping("/yearly-statistics/{year}")
-//    public StatisticsReportDto getStatisticsByYear(
-//            @PathVariable("year") int year) {
-//        return statisticsService.getStatisticsByYear(year);
-//    }
+    @GetMapping("/yearly-statistics/{year}")
+    public StatisticsReportDto getStatisticsByYear(
+            @PathVariable("year") int year) {
+        return statisticsService.getStatisticsByYear(year);
+    }
 
 //    localhost:8080/api/v0.1/admins/download-statistics/2024
     @GetMapping("/download-statistics/{year}")

@@ -66,6 +66,7 @@ public class CSVExporter {
             writer.writeNext(new String[]{"Monthly Data"});
             writer.writeNext(new String[]{
                     "Year",
+                    "Month",
                     "TotalNewClients",
                     "TotalExistingClients",
                     "TotalTerminatedClients",

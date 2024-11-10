@@ -4,6 +4,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class WorkerConfig implements CommandLineRunner{
                 "Hello, I am a sincere cleaner specialised in wooden floors",
                 LocalTime.of(8,0),
                 LocalTime.of(17,0));
+        worker1.setJoinDate(LocalDate.of(2024,5,3));
+
         Worker worker2 = new Worker(
                 "John",
                 "john",
@@ -34,7 +37,8 @@ public class WorkerConfig implements CommandLineRunner{
                 "Cleaner with 20 years experience in cleaning bungalows/landed properties",
                 LocalTime.of(13,0),
                 LocalTime.of(22, 0));
-
+        worker2.setJoinDate(LocalDate.of(2024,10,3));
+        
         Worker worker3 = new Worker(
                 "Alice Tan",
                 "alice",
@@ -45,6 +49,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(7, 0),
                 LocalTime.of(16, 0)
         );
+        worker3.setJoinDate(LocalDate.of(2024,1,3));
 
         Worker worker4 = new Worker(
                 "Michael Lee",
@@ -56,6 +61,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(9, 0),
                 LocalTime.of(18, 0)
         );
+        worker4.setJoinDate(LocalDate.of(2024,10,3));
 
         Worker worker5 = new Worker(
                 "Sarah Lim",
@@ -67,6 +73,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(10, 0),
                 LocalTime.of(19, 0)
         );
+        worker5.setJoinDate(LocalDate.of(2024,3,3));
 
         Worker worker6 = new Worker(
                 "Ravi Kumar",
@@ -78,6 +85,8 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(6, 0),
                 LocalTime.of(15, 0)
         );
+        worker6.setJoinDate(LocalDate.of(2024,1,4));
+        worker6.setDeactivatedAt(LocalDate.of(2024,2,4));
 
         Worker worker7 = new Worker(
                 "Maria Garcia",
@@ -89,6 +98,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(12, 0),
                 LocalTime.of(21, 0)
         );
+        worker7.setJoinDate(LocalDate.of(2024,8,3));
 
         Worker worker8 = new Worker(
                 "Tommy Wu",
@@ -100,6 +110,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(14, 0),
                 LocalTime.of(23, 0)
         );
+        worker8.setJoinDate(LocalDate.of(2024,9,2));
 
         Worker worker9 = new Worker(
                 "Lucy Wang",
@@ -111,6 +122,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(8, 0),
                 LocalTime.of(17, 0)
         );
+        worker9.setJoinDate(LocalDate.of(2024,9,3));
 
         Worker worker10 = new Worker(
                 "David Ong",
@@ -122,6 +134,8 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(5, 0),
                 LocalTime.of(14, 0)
         );
+        worker10.setJoinDate(LocalDate.of(2024,10,3));
+        worker10.setDeactivatedAt(LocalDate.now());
 
         workerRepository.saveAll(List.of(worker1, worker2, worker3, worker4, worker5, worker6, worker7, worker8, worker9, worker10));
 

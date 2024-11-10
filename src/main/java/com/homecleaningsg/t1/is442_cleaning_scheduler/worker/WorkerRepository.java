@@ -18,9 +18,9 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
                                 @Param("endOfMonth") LocalDate endOfMonth);
 
     @Query("SELECT COUNT(DISTINCT w.workerId) FROM Worker w " +
-            "WHERE w.joinDate < :startOfMonth " +
-            "AND w.isActive")
-    Long countExistingWorkersByMonth(@Param("startOfMonth") LocalDate startOfMonth);
+            "WHERE w.joinDate <= :endOfMonth " +
+            "AND (w.deactivatedAt IS NULL OR w.deactivatedAt > :endOfMonth)")
+    Long countExistingWorkersByMonth(@Param("endOfMonth") LocalDate endOfMonth);
 
     @Query("SELECT COUNT(DISTINCT w.workerId) FROM Worker w " +
             "WHERE w.deactivatedAt IS NOT NULL " +
@@ -34,8 +34,9 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
     Long countNewWorkersByYear(@Param("year") int year);
 
     @Query("SELECT COUNT(DISTINCT w.workerId) FROM Worker w " +
-            "WHERE EXTRACT(YEAR FROM w.joinDate) < :year " +
-            "AND w.isActive")
+            "WHERE EXTRACT(YEAR FROM w.joinDate) <= :year " +
+            "AND w.isActive " +
+            "AND w.deactivatedAt IS NULL")
     Long countExistingWorkersByYear(@Param("year") int year);
 
     @Query("SELECT COUNT(DISTINCT w.workerId) FROM Worker w " +

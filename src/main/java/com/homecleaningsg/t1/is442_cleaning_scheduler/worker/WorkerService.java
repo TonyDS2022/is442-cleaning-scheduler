@@ -30,6 +30,7 @@ public class WorkerService {
     }
 
     public Worker addWorker(Worker worker){
+        worker.setJoinDate(LocalDate.now());
         return workerRepository.save(worker);
     }
 
@@ -70,7 +71,7 @@ public class WorkerService {
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
         Long newWorkers = workerRepository.countNewWorkersByMonth(startOfMonth, endOfMonth);
-        Long existingWorkers = workerRepository.countExistingWorkersByMonth(startOfMonth);
+        Long existingWorkers = workerRepository.countExistingWorkersByMonth(endOfMonth);
         Long terminatedWorkers = workerRepository.countTerminatedWorkersByMonth(startOfMonth, endOfMonth);
 
         return new WorkerReportDto(newWorkers, existingWorkers, terminatedWorkers);
