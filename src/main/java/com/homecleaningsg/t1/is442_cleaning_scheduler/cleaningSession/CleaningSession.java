@@ -65,12 +65,11 @@ public class CleaningSession {
     @Column(name = "sessionDescription")
     private String sessionDescription;
 
-    @NonNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "sessionStatus")
-    private sessionStatus sessionStatus;
+    @Column(name = "sessionStatus", nullable = false)
+    private SessionStatus sessionStatus = SessionStatus.NOT_STARTED;
 
-    public enum sessionStatus {
+    public enum SessionStatus {
         NOT_STARTED,
         WORKING,
         FINISHED,
@@ -118,8 +117,7 @@ public class CleaningSession {
                            LocalTime sessionStartTime,
                            LocalDate sessionEndDate,
                            LocalTime sessionEndTime,
-                           String sessionDescription,
-                           sessionStatus sessionStatus) {
+                           String sessionDescription) {
         this.contract = contract;
         this.location = contract.getLocation(); /* Note: DO NOT remove this line */
         setSessionStartTime(sessionStartTime);
@@ -128,11 +126,23 @@ public class CleaningSession {
         this.sessionEndDate = sessionEndDate;
         this.sessionEndTime = sessionEndTime;
         this.sessionDescription = sessionDescription;
-        this.sessionStatus = sessionStatus;
         this.validateSessionTime();
     }
 
     @PrePersist
+    protected void onCreate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
+        LocalDate today = LocalDate.now();
+        if (this.sessionEndDate.isBefore(today)) {
+            if(this.sessionStatus != SessionStatus.CANCELLED){
+                this.sessionStatus = CleaningSession.SessionStatus.FINISHED;
+            }
+        } else if (this.sessionStartDate.isBefore(today) || this.sessionStartDate.isEqual(today)) {
+            this.sessionStatus = CleaningSession.SessionStatus.WORKING;
+        } else {
+            this.sessionStatus = CleaningSession.SessionStatus.NOT_STARTED;
+        }
+    }
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());

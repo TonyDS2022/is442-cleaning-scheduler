@@ -81,9 +81,6 @@ public class CleaningSessionService {
         if (updatedSessionDto.getSessionDescription() != null) {
             existingSession.setSessionDescription(updatedSessionDto.getSessionDescription());
         }
-        if (updatedSessionDto.getSessionStatus() != null) {
-            existingSession.setSessionStatus(updatedSessionDto.getSessionStatus());
-        }
         if (updatedSessionDto.getSessionRating() != null) {
             existingSession.setSessionRating(updatedSessionDto.getSessionRating());
         }
@@ -100,18 +97,18 @@ public class CleaningSessionService {
         CleaningSession cleaningSession = cleaningSessionRepository.findById(cleaningSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
 
-        if(cleaningSession.getSessionStatus() == CleaningSession.sessionStatus.CANCELLED){
+        if(cleaningSession.getSessionStatus() == CleaningSession.SessionStatus.CANCELLED){
             throw new IllegalArgumentException("Cleaning session has already been cancelled");
         }
-        else if(cleaningSession.getSessionStatus() == CleaningSession.sessionStatus.WORKING){
+        else if(cleaningSession.getSessionStatus() == CleaningSession.SessionStatus.WORKING){
             throw new IllegalArgumentException("Cleaning session cannot be cancelled as it is ongoing");
         }
-        else if(cleaningSession.getSessionStatus() == CleaningSession.sessionStatus.FINISHED){
+        else if(cleaningSession.getSessionStatus() == CleaningSession.SessionStatus.FINISHED){
             throw new IllegalArgumentException("Cleaning session cannot be cancelled because it has already been finished.");
         }
         // sessionStatus == NOT_STARTED
         else{
-            cleaningSession.setSessionStatus(CleaningSession.sessionStatus.CANCELLED);
+            cleaningSession.setSessionStatus(CleaningSession.SessionStatus.CANCELLED);
             cleaningSession.setCancelledAt(LocalDate.now());
             // cancel linked shift that has not occurred yet
             List<Shift> shifts = shiftRepository.findByCleaningSession_CleaningSessionId(cleaningSessionId);

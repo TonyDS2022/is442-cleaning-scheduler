@@ -15,7 +15,6 @@ public class CleaningSessionUpdateDto {
     private LocalDate sessionEndDate;
     private LocalTime sessionEndTime;
     private String sessionDescription;
-    private CleaningSession.sessionStatus sessionStatus;
     private CleaningSession.Rating sessionRating;
     private CleaningSession.PlanningStage planningStage;
     private String sessionFeedback;
