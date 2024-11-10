@@ -113,6 +113,7 @@ public class Shift {
     public Shift(CleaningSession cleaningSession) {
         this.cleaningSession = cleaningSession;
         this.location = cleaningSession.getLocation();
+        // Shifts share the same startDate, endDate, startTime, endTime as the cleaning session they are linked to
         this.sessionDescription = cleaningSession.getSessionDescription();
         this.sessionStartDate = cleaningSession.getSessionStartDate();
         this.sessionStartTime = cleaningSession.getSessionStartTime();

@@ -82,7 +82,7 @@ public class WorkerConfig implements CommandLineRunner{
                 "ravi.kumar@example.com",
                 "94567890",
                 "Specializes in cleaning kitchens and commercial food preparation areas.",
-                LocalTime.of(6, 0),
+                LocalTime.of(9, 0),
                 LocalTime.of(15, 0)
         );
         worker6.setJoinDate(LocalDate.of(2024,1,4));

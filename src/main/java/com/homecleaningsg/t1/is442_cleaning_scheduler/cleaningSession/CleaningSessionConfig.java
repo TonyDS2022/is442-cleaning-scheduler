@@ -26,7 +26,7 @@ public class CleaningSessionConfig implements CommandLineRunner {
         CleaningSession session1 = new CleaningSession(
             contract,
             LocalDate.of(2024,10,5),
-            LocalTime.of(8,0),
+            LocalTime.of(9,0),
             LocalDate.of(2024,10,5),
             LocalTime.of(12,0),
             "Session 1"
