@@ -28,6 +28,10 @@ public class WorkerConfig implements CommandLineRunner{
                 "Hello, I am a sincere cleaner specialised in wooden floors",
                 LocalTime.of(8,0),
                 LocalTime.of(17,0));
+        Location loc1 = locationRepository.findByPostalCode("649823")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker1.setHomeLocation(loc1);
+
         Worker worker2 = new Worker(
                 "John",
                 "john",
@@ -37,6 +41,9 @@ public class WorkerConfig implements CommandLineRunner{
                 "Cleaner with 20 years experience in cleaning bungalows/landed properties",
                 LocalTime.of(13,0),
                 LocalTime.of(22, 0));
+        Location loc2 = locationRepository.findByPostalCode("438181")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker2.setHomeLocation(loc2);
 
         Worker worker3 = new Worker(
                 "Alice Tan",
@@ -48,6 +55,9 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(7, 0),
                 LocalTime.of(16, 0)
         );
+        Location loc3 = locationRepository.findByPostalCode("238830")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker3.setHomeLocation(loc3);
 
         Worker worker4 = new Worker(
                 "Michael Lee",
@@ -59,6 +69,9 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(9, 0),
                 LocalTime.of(18, 0)
         );
+        Location loc4 = locationRepository.findByPostalCode("049213")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker4.setHomeLocation(loc4);
 
         Worker worker5 = new Worker(
                 "Sarah Lim",
@@ -71,7 +84,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(19, 0)
         );
 
-        Location loc5 = locationRepository.findByPostalCode("438181")
+        Location loc5 = locationRepository.findByPostalCode("018956")
                 .orElseThrow(() -> new IllegalArgumentException("Location not found"));
         worker5.setHomeLocation(loc5);
 
@@ -85,6 +98,9 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(9, 0),
                 LocalTime.of(15, 0)
         );
+        Location loc6 = locationRepository.findByPostalCode("039803")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker6.setHomeLocation(loc6);
 
         Worker worker7 = new Worker(
                 "Maria Garcia",
@@ -96,6 +112,9 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(12, 0),
                 LocalTime.of(21, 0)
         );
+        Location loc7 = locationRepository.findByPostalCode("729826")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker7.setHomeLocation(loc7);
 
         Worker worker8 = new Worker(
                 "Tommy Wu",
@@ -107,8 +126,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(14, 0),
                 LocalTime.of(22, 0)
         );
-
-        Location loc8 = locationRepository.findByPostalCode("238830")
+        Location loc8 = locationRepository.findByPostalCode("018953")
                 .orElseThrow(() -> new IllegalArgumentException("Location not found"));
         worker8.setHomeLocation(loc8);
 
@@ -122,6 +140,9 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(8, 0),
                 LocalTime.of(17, 0)
         );
+        Location loc9 = locationRepository.findByPostalCode("039594")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker9.setHomeLocation(loc9);
 
         Worker worker10 = new Worker(
                 "David Ong",
@@ -133,13 +154,64 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(8, 0),
                 LocalTime.of(14, 0)
         );
+        Location loc10 = locationRepository.findByPostalCode("098269")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker10.setHomeLocation(loc10);
 
-        workerRepository.saveAll(List.of(worker1, worker2, worker3, worker4, worker5, worker6, worker7, worker8, worker9, worker10));
-        // save loc instances
-        locationRepository.saveAll(List.of(
-                loc8, loc5
-        ));
+        Worker worker11 = new Worker(
+                "Stephen Hawking",
+                "Einstein",
+                "blackhole",
+                "hawking@gmail.com",
+                "99999999",
+                "Hello, I am a sincere cleaner specialised in wooden floors",
+                LocalTime.of(8,0),
+                LocalTime.of(17,0));
+        Location loc11 = locationRepository.findByPostalCode("259569")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker11.setHomeLocation(loc11);
 
+        Worker worker12 = new Worker(
+                "Alan Turing",
+                "turing",
+                "124321",
+                "alanturns@gmail.com",
+                "99999999",
+                "I've had to help my parents since I was 14, my role was to carry a 20 kg bucket, keep giving the machine clean water, and throw dirty water in the restroom. When we finished working, my father paid me 1 USD per hour.",
+                LocalTime.of(8,0),
+                LocalTime.of(17,0));
+        Location loc12 = locationRepository.findByPostalCode("238801")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker12.setHomeLocation(loc12);
+
+        Worker worker13 = new Worker(
+                "Ada Lovelace",
+                "ada",
+                "ada123",
+                "livelove@hotmail.com",
+                "99999999",
+                "I have experience in cleaning houses.I also do massages for women.",
+                LocalTime.of(13,0),
+                LocalTime.of(22, 0));
+        Location loc13 = locationRepository.findByPostalCode("189673")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker13.setHomeLocation(loc13);
+
+        Worker worker14 = new Worker(
+                "Grace Hopper",
+                "grace",
+                "grace123",
+                "gracethyearth@gmail.com",
+                "99999999",
+                "House cleaning is an intimate encounter that demands respect from the cleaner. I felt that my position was privileged.",
+                LocalTime.of(7, 0),
+                LocalTime.of(16, 0));
+        Location loc14 = locationRepository.findByPostalCode("038981")
+                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
+        worker14.setHomeLocation(loc14);
+
+        workerRepository.saveAll(List.of(worker1, worker2, worker3, worker4, worker5,
+                worker6, worker7, worker8, worker9, worker10, worker11, worker12, worker13, worker14));
     }
 
     @Override

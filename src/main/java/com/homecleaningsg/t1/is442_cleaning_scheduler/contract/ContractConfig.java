@@ -27,8 +27,8 @@ public class ContractConfig implements CommandLineRunner {
         this.locationRepository = locationRepository;
         this.clientRepository = clientRepository;
 
-        Location location1 = this.locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location with ID 1 not found"));
-        Location location2 = this.locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location with ID 2 not found"));
+        Location location1 = this.locationRepository.findById(15L).orElseThrow(() -> new IllegalStateException("Location with ID 1 not found"));
+        Location location2 = this.locationRepository.findById(16L).orElseThrow(() -> new IllegalStateException("Location with ID 2 not found"));
 
         Client client1 = new Client("Amy Santiago", "98472094", true, location1);
         Client client2 = new Client("Jake Peralta", "92384923", true, location2);
@@ -46,8 +46,8 @@ public class ContractConfig implements CommandLineRunner {
         contract1.setClient(client1);
 
         Contract contract2 = new Contract();
-        contract2.setContractStart(new Timestamp(System.currentTimeMillis()));
-        contract2.setContractEnd(new Timestamp(System.currentTimeMillis()));
+        contract2.setContractStart(Timestamp.valueOf(LocalDateTime.parse("11 Oct 2024 00:00:00", this.dateTimeFormatter)));
+        contract2.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("20 Dec 2025 00:00:00", this.dateTimeFormatter)));
         contract2.setContractComment("Contract 2");
         contract2.setLocation(location2);
         contract2.setPrice(250.0f);
