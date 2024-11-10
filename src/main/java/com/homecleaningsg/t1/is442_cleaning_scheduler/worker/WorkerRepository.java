@@ -36,7 +36,7 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
     @Query("SELECT COUNT(DISTINCT w.workerId) FROM Worker w " +
             "WHERE EXTRACT(YEAR FROM w.joinDate) <= :year " +
             "AND w.isActive " +
-            "AND w.deactivatedAt IS NULL")
+            "AND (w.deactivatedAt IS NULL OR EXTRACT(YEAR FROM w.deactivatedAt) > :year)")
     Long countExistingWorkersByYear(@Param("year") int year);
 
     @Query("SELECT COUNT(DISTINCT w.workerId) FROM Worker w " +

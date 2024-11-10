@@ -38,7 +38,7 @@ public class WorkerConfig implements CommandLineRunner{
                 LocalTime.of(13,0),
                 LocalTime.of(22, 0));
         worker2.setJoinDate(LocalDate.of(2024,10,3));
-        
+
         Worker worker3 = new Worker(
                 "Alice Tan",
                 "alice",
@@ -87,6 +87,7 @@ public class WorkerConfig implements CommandLineRunner{
         );
         worker6.setJoinDate(LocalDate.of(2024,1,4));
         worker6.setDeactivatedAt(LocalDate.of(2024,2,4));
+        worker6.setActive(false);
 
         Worker worker7 = new Worker(
                 "Maria Garcia",
@@ -136,6 +137,7 @@ public class WorkerConfig implements CommandLineRunner{
         );
         worker10.setJoinDate(LocalDate.of(2024,10,3));
         worker10.setDeactivatedAt(LocalDate.now());
+        worker10.setActive(false);
 
         workerRepository.saveAll(List.of(worker1, worker2, worker3, worker4, worker5, worker6, worker7, worker8, worker9, worker10));
 
