@@ -55,6 +55,7 @@ public class ShiftServiceTest {
         Location shiftLocation = new Location();
         shiftLocation.setAddress("Shift Location");
         ClientSite clientSite = new ClientSite();
+        clientSite.setStreetAddress(shiftLocation.getAddress());
         clientSite.setLocation(shiftLocation);
         testShift.setClientSite(clientSite);
 
