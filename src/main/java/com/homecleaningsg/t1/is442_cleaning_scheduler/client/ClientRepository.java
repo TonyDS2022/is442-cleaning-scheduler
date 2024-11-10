@@ -11,23 +11,34 @@ import java.time.LocalDate;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Client findByName(String name);
 
-    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.joinDate BETWEEN :startOfMonth AND :endOfMonth")
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c " +
+            "WHERE c.joinDate BETWEEN :startOfMonth AND :endOfMonth")
     Long countNewClientsByMonth(@Param("startOfMonth") LocalDate startOfMonth,
                                 @Param("endOfMonth") LocalDate endOfMonth);
 
-    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.joinDate < :startOfMonth AND c.isActive")
-    Long countExistingClientsByMonth(@Param("startOfMonth") LocalDate startOfMonth);
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c " +
+            "WHERE c.joinDate <= :endOfMonth " +
+            "AND (c.deactivatedAt IS NULL OR c.deactivatedAt > :endOfMonth)")
+    Long countExistingClientsByMonth(@Param("endOfMonth") LocalDate endOfMonth);
 
-    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.deactivatedAt IS NOT NULL AND c.deactivatedAt BETWEEN :startOfMonth AND :endOfMonth")
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c " +
+            "WHERE c.deactivatedAt IS NOT NULL " +
+            "AND c.deactivatedAt BETWEEN :startOfMonth AND :endOfMonth")
     Long countTerminatedClientsByMonth(@Param("startOfMonth") LocalDate startOfMonth,
                                        @Param("endOfMonth") LocalDate endOfMonth);
 
-    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE EXTRACT(YEAR FROM c.joinDate) = :year")
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c " +
+            "WHERE EXTRACT(YEAR FROM c.joinDate) = :year")
     Long countNewClientsByYear(@Param("year") int year);
 
-    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE EXTRACT(YEAR FROM c.joinDate) < :year AND c.isActive")
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c " +
+            "WHERE EXTRACT(YEAR FROM c.joinDate) <= :year " +
+            "AND c.isActive " +
+            "AND (c.deactivatedAt IS NULL OR EXTRACT(YEAR FROM c.deactivatedAt) > :year)")
     Long countExistingClientsByYear(@Param("year") int year);
 
-    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c WHERE c.deactivatedAt IS NOT NULL AND EXTRACT(YEAR FROM c.deactivatedAt) = :year")
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c " +
+            "WHERE c.deactivatedAt IS NOT NULL " +
+            "AND EXTRACT(YEAR FROM c.deactivatedAt) = :year")
     Long countTerminatedClientsByYear(@Param("year") int year);
 }

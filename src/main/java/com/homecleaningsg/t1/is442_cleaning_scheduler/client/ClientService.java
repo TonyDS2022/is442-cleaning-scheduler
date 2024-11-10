@@ -74,7 +74,7 @@ public class ClientService {
         LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
         Long newClients = clientRepository.countNewClientsByMonth(startOfMonth, endOfMonth);
-        Long existingClients = clientRepository.countExistingClientsByMonth(startOfMonth);
+        Long existingClients = clientRepository.countExistingClientsByMonth(endOfMonth);
         Long terminatedClients = clientRepository.countTerminatedClientsByMonth(startOfMonth, endOfMonth);
 
         return new ClientReportDto(newClients, existingClients, terminatedClients);
