@@ -21,7 +21,7 @@ import java.util.Optional;
 @Setter
 @ToString
 @Entity
-@Table
+@Table(name = "Client")
 public class Client {
     @Id
     @SequenceGenerator(
@@ -56,8 +56,8 @@ public class Client {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @Getter
+    @OneToMany(mappedBy = "client")
     private List<Contract> contracts;
 
     public Client(String name,
@@ -73,10 +73,6 @@ public class Client {
     }
 
     @PrePersist
-    protected void onCreate() {
-        this.joinDate = LocalDate.now();
-        this.lastModified = new Timestamp(System.currentTimeMillis());
-    }
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());

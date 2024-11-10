@@ -40,9 +40,9 @@ public class Contract {
     @JoinColumn(name = "locationId", nullable = false)
     private Location location;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "clientId",  nullable = false)
-    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "clientId", nullable = false)
+    @JsonBackReference // prevent infinite recursion
     private Client client;
 
     @NonNull

@@ -56,7 +56,7 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn({"workerConfig", "locationConfig"})
+    @DependsOn({"workerConfig", "locationConfig", "clientConfig"})
     public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository, ClientRepository clientRepository) {
         return new ContractConfig(contractRepository, locationRepository, clientRepository);
     }
@@ -84,6 +84,7 @@ public class DevelopmentConfig {
     }
 
     @Bean
+    @DependsOn({"locationConfig"})
     public ClientConfig clientConfig(ClientRepository clientRepository,
                                      LocationRepository locationRepository){
         return new ClientConfig(clientRepository, locationRepository);

@@ -31,8 +31,8 @@ public class ContractConfig implements CommandLineRunner {
         Location location1 = this.locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location with ID 1 not found"));
         Location location2 = this.locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location with ID 2 not found"));
 
-        Client client1 = new Client("Amy Santiago", "98472094", true, location1, LocalDate.of(2024,10,4));
-        Client client2 = new Client("Jake Peralta", "92384923", true, location2, LocalDate.of(2024,11,30));
+        Client client1 = this.clientRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Client with ID 1 not found"));
+        Client client2 = this.clientRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Client with ID 2 not found"));
 
         Contract contract1 = new Contract();
         contract1.setContractStart(LocalDate.of(2024,11,3));
@@ -44,7 +44,7 @@ public class ContractConfig implements CommandLineRunner {
         contract1.setRooms(1);
         contract1.setFrequency("Weekly");
         contract1.setSessionDurationMinutes(60);
-        contract1.setClient(client1);
+        contract1.setClient(client2);
         contract1.setCreationDate(LocalDate.of(2024,11,3));
 
         Contract contract2 = new Contract();
@@ -57,8 +57,8 @@ public class ContractConfig implements CommandLineRunner {
         contract2.setRooms(2);
         contract2.setFrequency("Bi-weekly");
         contract2.setSessionDurationMinutes(120);
-        contract2.setClient(client2);
-        contract1.setCreationDate(LocalDate.of(2024,9,1));
+        contract2.setClient(client1);
+        contract2.setCreationDate(LocalDate.of(2024,9,1));
 
         // Log hourly rates
         System.out.println("Contract 1 Rate: " + contract1.getRate());
