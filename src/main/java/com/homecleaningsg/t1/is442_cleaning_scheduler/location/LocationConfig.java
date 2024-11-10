@@ -43,7 +43,7 @@ public class LocationConfig implements CommandLineRunner {
         loc13.setUnitNumber("13-13");
         Location loc14 = new Location("1 Esplanade Drive", "038981");
         loc14.setUnitNumber("14-14");
-        Location loc15 = new Location("10 Bayfront Avenue", "018956");
+        Location loc15 = new Location("303 Serangoon Avw 2", "550303");
         loc15.setUnitNumber("15-15");
         Location loc16 = new Location("1 Harbourfront Walk", "098585");
         loc16.setUnitNumber("16-16");
