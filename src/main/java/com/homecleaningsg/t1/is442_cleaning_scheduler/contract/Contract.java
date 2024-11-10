@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
@@ -39,8 +40,8 @@ public class Contract {
     private Long contractId;
 
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "locationId", nullable = false)
-    private Location location;
+    @JoinColumn(name = "clientSiteId", nullable = true)
+    ClientSite clientSite;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "clientId",  nullable = true)
@@ -111,7 +112,7 @@ public class Contract {
     @JsonManagedReference("contract-cleaningSession")
     private List<CleaningSession> cleaningSessions = new ArrayList<>();
 
-    public Contract(Location location,
+    public Contract(ClientSite clientSite,
                     Client client,
                     @NonNull Timestamp contractStart,
                     @NonNull Timestamp contractEnd,
@@ -122,7 +123,7 @@ public class Contract {
                     String frequency,
                     int sessionDurationMinutes,
                     ContractStatus contractStatus) {
-        this.location = location;
+        this.clientSite = clientSite;
         this.client = client;
         this.contractStart = contractStart;
         this.contractEnd = contractEnd;

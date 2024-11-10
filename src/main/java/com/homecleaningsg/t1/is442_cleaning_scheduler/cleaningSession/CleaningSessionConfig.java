@@ -40,9 +40,6 @@ public class CleaningSessionConfig implements CommandLineRunner {
         session1.setSessionFeedback("Feedback 1");
         session1.setPlanningStage(CleaningSession.PlanningStage.GREEN);
 
-        // Ensure the location is set correctly
-        session1.setLocation(contract.getLocation());
-
         CleaningSession session2 = new CleaningSession(
             contract,
             LocalDate.of(2024,10,12),

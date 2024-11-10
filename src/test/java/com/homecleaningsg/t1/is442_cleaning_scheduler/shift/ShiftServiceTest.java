@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
@@ -53,7 +54,9 @@ public class ShiftServiceTest {
         testShift.setSessionStartDate(LocalDate.now());
         Location shiftLocation = new Location();
         shiftLocation.setAddress("Shift Location");
-        testShift.setLocation(shiftLocation);
+        ClientSite clientSite = new ClientSite();
+        clientSite.setLocation(shiftLocation);
+        testShift.setClientSite(clientSite);
 
         // Define workers
         Worker worker1 = new Worker();

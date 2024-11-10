@@ -3,6 +3,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -38,11 +39,14 @@ public class ContractConfig implements CommandLineRunner {
         Client client1 = new Client("Amy Santiago", "98472094", true);
         Client client2 = new Client("Jake Peralta", "92384923", true);
 
+        ClientSite clientSite1 = new ClientSite(client1, location1.getAddress(), location1.getPostalCode(), "#01-01", location1);
+        ClientSite clientSite2 = new ClientSite(client2, location2.getAddress(), location2.getPostalCode(), "#02-02", location2);
+
         Contract contract1 = new Contract();
         contract1.setContractStart(Timestamp.valueOf(LocalDateTime.parse("01 Oct 2024 00:00:00", this.dateTimeFormatter)));
         contract1.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("01 Jan 2025 00:00:00", this.dateTimeFormatter)));
         contract1.setContractComment("Contract 1");
-        contract1.setLocation(location1);
+        contract1.setClientSite(clientSite1);
         contract1.setPrice(60.0f);
         contract1.setWorkersBudgeted(1);
         contract1.setRooms(1);
@@ -53,7 +57,7 @@ public class ContractConfig implements CommandLineRunner {
         contract2.setContractStart(new Timestamp(System.currentTimeMillis()));
         contract2.setContractEnd(new Timestamp(System.currentTimeMillis()));
         contract2.setContractComment("Contract 2");
-        contract2.setLocation(location2);
+        contract2.setClientSite(clientSite2);
         contract2.setPrice(250.0f);
         contract2.setWorkersBudgeted(3);
         contract2.setRooms(2);

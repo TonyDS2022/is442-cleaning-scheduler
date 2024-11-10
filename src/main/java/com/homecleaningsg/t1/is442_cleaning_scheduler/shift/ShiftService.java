@@ -215,14 +215,14 @@ public class ShiftService {
         Map<Worker, Location> workerOrigins = new HashMap<>();
         for (Worker worker : availableWorkers) {
             Shift lastShift = lastShiftByWorkerBeforeShift.get(worker);
-            Location origin = (lastShift != null) ? lastShift.getLocation() : worker.getHomeLocation();
+            Location origin = (lastShift != null) ? lastShift.getClientSite().getLocation() : worker.getHomeLocation();
             workerOrigins.put(worker, origin);
         }
 
         Map<Worker, Trip> workerTrip = new HashMap<>();
         for (Worker worker : availableWorkers) {
             Location origin = workerOrigins.get(worker);
-            Location destination = shift.getLocation();
+            Location destination = shift.getClientSite().getLocation();
             Trip trip = tripRepository.findTripByOriginAndDestination(origin, destination);
             workerTrip.put(worker, trip);
         }
@@ -232,7 +232,7 @@ public class ShiftService {
                         worker.getWorkerId(),
                         worker.getName(),
                         workerOrigins.get(worker).getAddress(),
-                        shift.getLocation().getAddress(),
+                        shift.getClientSite().getStreetAddress(),
                         workerTrip.get(worker).getTripDurationSeconds(),
                         workerTrip.get(worker).getTripDistanceMeters())
                 ).toList();

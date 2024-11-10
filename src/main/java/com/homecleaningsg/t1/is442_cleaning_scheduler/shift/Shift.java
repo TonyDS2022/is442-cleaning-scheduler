@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
@@ -43,7 +44,7 @@ public class Shift {
     private Long shiftId;
 
     @ManyToOne(cascade = CascadeType.DETACH)
-    private Location location;
+    private ClientSite clientSite;
 
     private String sessionDescription;
 
@@ -117,7 +118,7 @@ public class Shift {
 
     public Shift(CleaningSession cleaningSession) {
         this.cleaningSession = cleaningSession;
-        this.location = cleaningSession.getLocation();
+        this.clientSite = cleaningSession.getClientSite();
         this.sessionDescription = cleaningSession.getSessionDescription();
         this.sessionStartDate = cleaningSession.getSessionStartDate();
         this.sessionStartTime = cleaningSession.getSessionStartTime();

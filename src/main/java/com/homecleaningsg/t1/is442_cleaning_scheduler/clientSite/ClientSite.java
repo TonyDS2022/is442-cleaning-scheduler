@@ -71,6 +71,7 @@ public class ClientSite {
         this.postalCode = postalCode;
         this.unitNumber = unitNumber;
         this.location = location;
+        client.addClientSite(this);
     }
 }
 
