@@ -13,7 +13,7 @@ public class WorkerPendingLeaveDto extends Shift {
     public WorkerPendingLeaveDto(Shift shift, boolean workerHasPendingLeave) {
         super(shift.getCleaningSession());
         this.setShiftId(shift.getShiftId());
-        this.setLocation(shift.getLocation());
+        this.setClientSite(shift.getClientSite());
         this.setSessionDescription(shift.getSessionDescription());
         this.setWorker(shift.getWorker());
         this.setSessionStartDate(shift.getSessionStartDate());

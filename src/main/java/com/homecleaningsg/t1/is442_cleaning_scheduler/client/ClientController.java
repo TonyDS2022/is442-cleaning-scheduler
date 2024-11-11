@@ -39,6 +39,21 @@ public class ClientController {
         }
     }
 
+    @PostMapping("/{clientId}/add-client-site/")
+    public ResponseEntity<String> addClientSite(@PathVariable("clientId") Long clientId, @RequestBody ClientSiteDto clientSiteDto) {
+        try {
+            clientService.addClientSiteToClient(
+                    clientId,
+                    clientSiteDto.getStreetAddress(),
+                    clientSiteDto.getPostalCode(),
+                    clientSiteDto.getUnitNumber()
+            );
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client site added successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add client site.");
+        }
+    }
+
     @PutMapping("/update-client/{clientId}")
     public ResponseEntity<String> updateClient(
             @PathVariable("clientId") Long clientId, @RequestBody Client updatedClient) {

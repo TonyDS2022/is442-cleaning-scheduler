@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -35,12 +36,12 @@ public class Contract {
     private Long contractId;
 
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "locationId", nullable = false)
-    private Location location;
+    @JoinColumn(name = "clientSiteId", nullable = true)
+    ClientSite clientSite;
 
-    @ManyToOne
-    @JoinColumn(name = "clientId", nullable = false)
-    @JsonBackReference // prevent infinite recursion
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "clientId",  nullable = true)
+    @JsonBackReference("client-contract")
     private Client client;
 
     @NonNull
@@ -107,10 +108,10 @@ public class Contract {
     // temp for retrieving all contracts by cleaningSessionIds
     @Getter
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<CleaningSession> cleaningSessions;
+    @JsonManagedReference("contract-cleaningSession")
+    private List<CleaningSession> cleaningSessions = new ArrayList<>();
 
-    public Contract(Location location,
+    public Contract(ClientSite clientSite,
                     Client client,
                     @NonNull LocalDate contractStart,
                     @NonNull LocalDate contractEnd,
@@ -121,7 +122,7 @@ public class Contract {
                     String frequency,
                     int sessionDurationMinutes,
                     ContractStatus contractStatus) {
-        this.location = location;
+        this.clientSite = clientSite;
         this.client = client;
         this.contractStart = contractStart;
         this.contractEnd = contractEnd;

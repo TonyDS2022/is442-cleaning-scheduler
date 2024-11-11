@@ -1,9 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,20 +38,20 @@ public class Shift {
     private Long shiftId;
 
     @ManyToOne(cascade = CascadeType.DETACH)
-    private Location location;
+    private ClientSite clientSite;
 
     private String sessionDescription;
 
     // refers to workerId col to establish relationship
     @ManyToOne
     @JoinColumn(name = "workerId")
-    @JsonManagedReference
+    @JsonBackReference("worker-shift")
     private Worker worker;
 
     // refers to cleaningSession to establish relationship
     @NonNull
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("cleaningSession-shift")
     private CleaningSession cleaningSession;
 
     @NonNull
@@ -116,8 +115,7 @@ public class Shift {
 
     public Shift(CleaningSession cleaningSession) {
         this.cleaningSession = cleaningSession;
-        this.location = cleaningSession.getLocation();
-        // Shifts share the same startDate, endDate, startTime, endTime as the cleaning session they are linked to
+        this.clientSite = cleaningSession.getClientSite();
         this.sessionDescription = cleaningSession.getSessionDescription();
         this.sessionStartDate = cleaningSession.getSessionStartDate();
         this.sessionStartTime = cleaningSession.getSessionStartTime();

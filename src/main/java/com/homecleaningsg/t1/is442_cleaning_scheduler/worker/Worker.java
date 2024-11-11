@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
@@ -10,6 +11,7 @@ import lombok.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -70,12 +72,12 @@ public class Worker {
     // establish relationship with leaveApplications
     @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
     // @JsonIgnore
-    @JsonBackReference // prevent infinite recursion when serializing
-    private List<LeaveApplication> leaveApplications;
+    @JsonBackReference("leaveApplications-worker") // prevent infinite recursion when serializing
+    private List<LeaveApplication> leaveApplications = new ArrayList<>();
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
-    private List<Shift> shifts;
+    @JsonManagedReference("worker-shift")
+    private List<Shift> shifts = new ArrayList<>();
 
     @NonNull
     private boolean isActive = true;

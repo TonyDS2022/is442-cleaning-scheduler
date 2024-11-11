@@ -70,7 +70,7 @@ public class LeaveApplication {
     @Enumerated(EnumType.STRING)
     private ApplicationStatus applicationStatus;
 
-    enum ApplicationStatus {
+    public enum ApplicationStatus {
         PENDING,
         APPROVED,
         REJECTED

@@ -1,8 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,7 +40,7 @@ public class CleaningSession {
     private List<Shift> shifts;
 
     @ManyToOne
-    private Location location;
+    private ClientSite clientSite;
 
     @Column(name = "workersBudgeted")
     private int workersBudgeted;
@@ -105,7 +105,7 @@ public class CleaningSession {
 
     @ManyToOne
     @JoinColumn(name = "contractId", nullable = false)
-    @JsonBackReference // prevent infinite recursion
+    @JsonBackReference("contract-cleaningSession") // prevent infinite recursion
     private Contract contract;
 
     @NonNull
@@ -123,7 +123,7 @@ public class CleaningSession {
                            SessionStatus sessionStatus
                            ) {
         this.contract = contract;
-        this.location = contract.getLocation(); /* Note: DO NOT remove this line */
+        this.clientSite = contract.getClientSite(); /* Note: DO NOT remove this line */
         setSessionStartTime(sessionStartTime);
         setSessionEndTime(sessionEndTime);
         this.sessionStartDate = sessionStartDate;
@@ -133,7 +133,6 @@ public class CleaningSession {
         this.sessionDescription = sessionDescription;
         this.validateSessionTime();
         this.workersBudgeted = contract.getWorkersBudgeted();
-        this.location = contract.getLocation();
     }
 
     // Update PlanningStage based on the shift's number of workers assigned and pending leave

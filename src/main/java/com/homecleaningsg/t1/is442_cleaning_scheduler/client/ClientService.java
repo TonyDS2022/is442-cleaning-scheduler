@@ -1,8 +1,12 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSiteRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +20,19 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final ContractRepository contractRepository;
     private final ContractService contractService;
-
+    private final LocationService locationService;
+    private final ClientSiteRepository clientSiteRepository;
     @Autowired
     public ClientService(ClientRepository clientRepository,
                          ContractRepository contractRepository,
-                         ContractService contractService){
+                         ContractService contractService,
+                         LocationService locationService,
+                         ClientSiteRepository clientSiteRepository) {
         this.clientRepository = clientRepository;
         this.contractRepository = contractRepository;
         this.contractService = contractService;
+        this.locationService = locationService;
+        this.clientSiteRepository = clientSiteRepository;
     }
 
     public List<Client> getAllClients(){
@@ -38,9 +47,9 @@ public class ClientService {
         return clientRepository.findByName(name);
     }
 
-    public Client addClient(Client client){
+    public void addClient(Client client){
         client.setJoinDate(LocalDate.now());
-        return clientRepository.save(client);
+        clientRepository.save(client);
     }
 
     public Client updateClient(Long clientId, Client updatedClient) {
@@ -87,4 +96,40 @@ public class ClientService {
 
         return new ClientReportDto(newClients, existingClients, terminatedClients);
     }
+
+    public void addContractToClient(Long clientId, Contract contract){
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+        contract.setClient(client);
+        contractRepository.save(contract);
+    }
+
+    public void addContractToClient(Client client, Contract contract){
+        contract.setClient(client);
+        clientRepository.save(client);
+        contractRepository.save(contract);
+    }
+
+    public void addClientSiteToClient(
+            Client client,
+            String streetAddress,
+            String postalCode,
+            String unitNumber
+    ) {
+        Location clientLocation = locationService.getOrCreateLocation(postalCode, streetAddress);
+        ClientSite clientSite = new ClientSite(client, streetAddress, postalCode, unitNumber, clientLocation);
+        clientSiteRepository.save(clientSite);
+    }
+
+    public void addClientSiteToClient(
+            Long clientId,
+            String streetAddress,
+            String postalCode,
+            String unitNumber
+    ) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+        addClientSiteToClient(client, streetAddress, postalCode, unitNumber);
+    }
+
 }

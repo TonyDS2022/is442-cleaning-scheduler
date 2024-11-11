@@ -1,12 +1,14 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -48,23 +50,24 @@ public class Client {
     @NonNull
     private LocalDate joinDate;
 
-    @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "location_id", nullable = false)
-    private Location location;
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClientSite> clientSites = new ArrayList<>();
 
-    @Getter
-    @OneToMany(mappedBy = "client")
-    private List<Contract> contracts;
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference("client-contract")
+    private List<Contract> contracts = new ArrayList<>();
 
-    public Client(String name,
-                           String phone,
-                           boolean isActive,
-                           Location location,
-                            LocalDate joinDate) {
+    public Client(
+            String name,
+            String phone,
+            boolean isActive,
+            LocalDate joinDate
+    ) {
         this.name = name;
         this.phone = phone;
         this.isActive = isActive;
-        this.location = location;
+        this.contracts = new ArrayList<>();
+        this.clientSites = new ArrayList<>();
         this.joinDate = joinDate;
     }
 
@@ -72,6 +75,16 @@ public class Client {
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());
+    }
+
+    public void addContract(Contract contract) {
+        contracts.add(contract);
+        contract.setClient(this);
+    }
+
+    public void addClientSite(ClientSite clientSite) {
+        clientSites.add(clientSite);
+        clientSite.setClient(this);
     }
 
 }
