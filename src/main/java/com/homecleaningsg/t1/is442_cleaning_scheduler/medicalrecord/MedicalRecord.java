@@ -1,10 +1,10 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
-import lombok.*;
 
 @Entity
 @Table

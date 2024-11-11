@@ -1,15 +1,14 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
-import com.fasterxml.jackson.annotation.*;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

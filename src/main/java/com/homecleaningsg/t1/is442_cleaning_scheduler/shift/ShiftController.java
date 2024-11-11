@@ -1,16 +1,14 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

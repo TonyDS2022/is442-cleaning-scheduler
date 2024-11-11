@@ -1,13 +1,12 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.cglib.core.Local;
 
 import java.sql.Timestamp;
 import java.time.LocalTime;

@@ -1,6 +1,5 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
