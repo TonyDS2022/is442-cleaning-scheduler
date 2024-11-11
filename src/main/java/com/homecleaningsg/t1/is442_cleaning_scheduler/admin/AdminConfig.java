@@ -1,8 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

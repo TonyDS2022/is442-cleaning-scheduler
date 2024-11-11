@@ -1,27 +1,22 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.AvailableWorkerDto;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

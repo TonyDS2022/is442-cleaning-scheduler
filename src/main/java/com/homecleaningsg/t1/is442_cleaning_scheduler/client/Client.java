@@ -1,7 +1,5 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
@@ -9,9 +7,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @NoArgsConstructor
 @RequiredArgsConstructor

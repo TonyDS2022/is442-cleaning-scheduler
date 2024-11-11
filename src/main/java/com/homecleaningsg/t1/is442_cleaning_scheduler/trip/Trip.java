@@ -1,9 +1,9 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.trip;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 
 @NoArgsConstructor
 @AllArgsConstructor

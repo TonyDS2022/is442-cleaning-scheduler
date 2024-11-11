@@ -4,9 +4,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSe
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.SessionReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractReportDto;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.WorkerHoursDto;
@@ -15,12 +13,10 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 

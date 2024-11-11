@@ -7,9 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepositor
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 

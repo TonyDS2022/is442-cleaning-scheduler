@@ -1,21 +1,14 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.imagehandler.GoogleImageService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
-import lombok.*;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
