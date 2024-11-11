@@ -51,11 +51,11 @@ public class Client {
     private LocalDate joinDate;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ClientSite> clientSites;
+    private List<ClientSite> clientSites = new ArrayList<>();
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference("client-contract")
-    private List<Contract> contracts;
+    private List<Contract> contracts = new ArrayList<>();
 
     public Client(
             String name,

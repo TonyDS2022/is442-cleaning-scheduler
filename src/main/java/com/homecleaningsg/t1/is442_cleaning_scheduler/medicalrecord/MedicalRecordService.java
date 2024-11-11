@@ -51,7 +51,7 @@ public class MedicalRecordService {
         return savedMedicalRecord.getMcId();  // Return mcId after successful save
     }
 
-    String generateCustomMcId() {
+    public String generateCustomMcId() {
         // Use the current timestamp and convert to Base36 (numbers + lowercase letters)
         long timestamp = System.currentTimeMillis();
         String uniqueId = Long.toString(timestamp, 36).toUpperCase(); // Converts timestamp to Base36 and makes it uppercase

@@ -11,6 +11,7 @@ import lombok.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -72,11 +73,11 @@ public class Worker {
     @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
     // @JsonIgnore
     @JsonBackReference("leaveApplications-worker") // prevent infinite recursion when serializing
-    private List<LeaveApplication> leaveApplications;
+    private List<LeaveApplication> leaveApplications = new ArrayList<>();
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("worker-shift")
-    private List<Shift> shifts;
+    private List<Shift> shifts = new ArrayList<>();
 
     @NonNull
     private boolean isActive = true;
