@@ -4,11 +4,15 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+@Configuration
+@EnableTransactionManagement
 @Component
 public class CleaningSessionConfig implements CommandLineRunner {
 
@@ -22,17 +26,22 @@ public class CleaningSessionConfig implements CommandLineRunner {
 
         Contract contract = this.contractRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Contract not found"));
 
-        // Attempt to retrieve the CleaningSession at index 1
+        // Create CleaningSession instances
         CleaningSession session1 = new CleaningSession(
             contract,
             LocalDate.of(2024,10,5),
             LocalTime.of(9,0),
             LocalDate.of(2024,10,5),
             LocalTime.of(12,0),
-            "Session 1"
+            "Session 1",
+            CleaningSession.SessionStatus.WORKING
         );
         session1.setSessionRating(CleaningSession.Rating.AVERAGE);
         session1.setSessionFeedback("Feedback 1");
+        session1.setPlanningStage(CleaningSession.PlanningStage.GREEN);
+
+        // Ensure the location is set correctly
+        session1.setLocation(contract.getLocation());
 
         CleaningSession session2 = new CleaningSession(
             contract,
@@ -40,7 +49,8 @@ public class CleaningSessionConfig implements CommandLineRunner {
             LocalTime.of(14,0),
             LocalDate.of(2024,10,12),
             LocalTime.of(17,0),
-            "Session 2"
+            "Session 2",
+            CleaningSession.SessionStatus.NOT_STARTED
         );
         session2.setSessionRating(CleaningSession.Rating.GOOD);
         session2.setSessionFeedback("Feedback 2");
@@ -51,7 +61,8 @@ public class CleaningSessionConfig implements CommandLineRunner {
                 LocalTime.of(9,0),
                 LocalDate.of(2024,11,3),
                 LocalTime.of(12,0),
-                "Session 3"
+                "Session 3",
+                CleaningSession.SessionStatus.NOT_STARTED
         );
         session3.setSessionStatus(CleaningSession.SessionStatus.CANCELLED);
         session3.setCancelledAt(LocalDate.of(2024,11,1));

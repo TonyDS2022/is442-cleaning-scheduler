@@ -4,13 +4,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalTime;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface WorkerRepository extends JpaRepository<Worker, Long> {
     Optional<Worker> findByUsername(String username);
 
     Worker findByName(String name);
+
+    List<Worker> findByStartWorkingHoursAfterAndEndWorkingHoursBefore(LocalTime startWorkingHours, LocalTime endWorkingHours);
 
     @Query("SELECT COUNT(DISTINCT w.workerId) FROM Worker w " +
             "WHERE w.joinDate BETWEEN :startOfMonth AND :endOfMonth")

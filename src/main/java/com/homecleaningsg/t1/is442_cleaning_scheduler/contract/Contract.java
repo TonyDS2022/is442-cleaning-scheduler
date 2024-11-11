@@ -3,9 +3,12 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +26,6 @@ import java.util.List;
 @Entity
 @Table(name = "Contract")
 public class Contract {
-
     @Id
     @SequenceGenerator(
             name = "contract_sequence",
@@ -65,8 +67,19 @@ public class Contract {
     @Column(name = "rooms")
     private int rooms;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "frequency")
-    private String frequency;
+    private Frequency frequency;
+
+    public enum Frequency {
+        DAILY,
+        WEEKLY,
+        BIWEEKLY,
+        MONTHLY,
+        BIMONTHLY,
+        QUARTERLY,
+        ANNUALLY
+    }
 
     @Column(name = "sessionDurationMinutes")
     private int sessionDurationMinutes;
@@ -97,7 +110,8 @@ public class Contract {
 
     // temp for retrieving all contracts by cleaningSessionIds
     @Getter
-    @OneToMany(mappedBy = "contract")
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<CleaningSession> cleaningSessions;
 
     public Contract(Location location,
@@ -119,7 +133,7 @@ public class Contract {
         this.price = price;
         this.workersBudgeted = workersBudgeted;
         this.rooms = rooms;
-        this.frequency = frequency;
+        this.frequency = Frequency.valueOf(frequency);
         setSessionDurationMinutes(sessionDurationMinutes); // Use custom setter for validation
         this.contractStatus = contractStatus;
         this.validateSessionDurationMinutes();
