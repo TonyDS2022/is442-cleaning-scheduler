@@ -1,5 +1,9 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,7 +19,6 @@ public class CleaningSessionUpdateDto {
     private LocalDate sessionEndDate;
     private LocalTime sessionEndTime;
     private String sessionDescription;
-    private CleaningSession.sessionStatus sessionStatus;
     private CleaningSession.Rating sessionRating;
     private CleaningSession.PlanningStage planningStage;
     private String sessionFeedback;

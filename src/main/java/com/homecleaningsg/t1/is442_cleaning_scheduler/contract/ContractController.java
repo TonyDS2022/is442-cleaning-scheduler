@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/v0.1/contract")
@@ -99,7 +98,7 @@ public class ContractController {
     public ResponseEntity<String> deactivateContract(@PathVariable("contractId") Long contractId) {
         try {
             contractService.deactivateContract(contractId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The contract has been successfully deactivated, along with all associated future cleaning sessions and shifts.");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The contract has been successfully deactivated, all associated future cleaning sessions and shifts will be cancelled.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate contract.");
         }

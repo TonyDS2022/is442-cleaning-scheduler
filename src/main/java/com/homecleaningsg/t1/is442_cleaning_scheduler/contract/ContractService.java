@@ -4,17 +4,12 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSe
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
-
-// temp for retrieving all contracts by cleaningSessionIds
 import java.util.stream.Collectors;
 
 
@@ -35,15 +30,14 @@ public class ContractService {
     // updates contractStatus automatically when all contracts are retrieved
     // based on current date and contractStart and contractEnd dates
     public List<Contract> getContract() {
-        Instant now = Instant.now();
         List<Contract> contracts = contractRepository.findAll();
 
         for (Contract contract : contracts) {
-            if (contract.getContractEnd().toInstant().isBefore(now) &&
+            if (contract.getContractEnd().isBefore(LocalDate.now()) &&
                     contract.getContractStatus() != Contract.ContractStatus.COMPLETED) {
                 contract.setContractStatus(Contract.ContractStatus.COMPLETED);
                 contractRepository.save(contract);
-            } else if (contract.getContractStart().toInstant().isBefore(now) &&
+            } else if (contract.getContractStart().isBefore(LocalDate.now()) &&
                     contract.getContractStatus() == Contract.ContractStatus.NOT_STARTED) {
                 contract.setContractStatus(Contract.ContractStatus.IN_PROGRESS);
                 contractRepository.save(contract);
@@ -107,10 +101,10 @@ public class ContractService {
         List<CleaningSession> cleaningSessions = cleaningSessionRepository.findByContract_ContractId(contractId);
         if(!cleaningSessions.isEmpty()){
             for(CleaningSession cleaningSession : cleaningSessions) {
-                // deactivate linked cleaning session and shift that has not occurred yet
+                // cancel linked cleaning session and shift that has not occurred yet
                 if (cleaningSession.getSessionStartDate().isAfter(LocalDate.now())) {
                     Long cleaningSessionId = cleaningSession.getCleaningSessionId();
-                    cleaningSessionService.deactivateCleaningSession(cleaningSessionId);
+                    cleaningSessionService.cancelCleaningSession(cleaningSessionId);
                 }
             }
         }
@@ -119,4 +113,22 @@ public class ContractService {
         contractRepository.save(contract);
     }
 
+    public ContractReportDto getMonthlyContractReport(int year, int month) {
+        LocalDate startOfMonth = YearMonth.of(year, month).atDay(1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        Long newContracts = contractRepository.countNewContractsByMonth(startOfMonth, endOfMonth);
+        Long existingOngoingContracts = contractRepository.countExistingContractsByMonth(startOfMonth, endOfMonth);
+        Long completedContracts = contractRepository.countCompletedContractsByMonth(startOfMonth, endOfMonth);
+
+        return new ContractReportDto(newContracts, existingOngoingContracts, completedContracts);
+    }
+
+    public ContractReportDto getYearlyContractReport(int year) {
+        Long newContracts = contractRepository.countNewContractsByYear(year);
+        Long existingOngoingContracts = contractRepository.countExistingContractsByYear(year);
+        Long completedContracts = contractRepository.countCompletedContractsByYear(year);
+
+        return new ContractReportDto(newContracts, existingOngoingContracts, completedContracts);
+    }
 }

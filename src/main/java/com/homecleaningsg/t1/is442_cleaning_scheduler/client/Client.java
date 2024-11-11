@@ -1,7 +1,5 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
@@ -9,9 +7,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -21,7 +17,7 @@ import java.util.Optional;
 @Setter
 @ToString
 @Entity
-@Table
+@Table(name = "Client")
 public class Client {
     @Id
     @SequenceGenerator(
@@ -47,22 +43,29 @@ public class Client {
     @NonNull
     private Timestamp lastModified;
 
+    private LocalDate deactivatedAt;
+
+    @NonNull
+    private LocalDate joinDate;
+
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    @JsonBackReference
+    @Getter
+    @OneToMany(mappedBy = "client")
     private List<Contract> contracts;
 
     public Client(String name,
                            String phone,
                            boolean isActive,
-                           Location location) {
+                           Location location,
+                            LocalDate joinDate) {
         this.name = name;
         this.phone = phone;
         this.isActive = isActive;
         this.location = location;
+        this.joinDate = joinDate;
     }
 
     @PrePersist

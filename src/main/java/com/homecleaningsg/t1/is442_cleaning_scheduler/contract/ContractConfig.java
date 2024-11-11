@@ -7,8 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepositor
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -30,12 +29,12 @@ public class ContractConfig implements CommandLineRunner {
         Location location1 = this.locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location with ID 1 not found"));
         Location location2 = this.locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location with ID 2 not found"));
 
-        Client client1 = new Client("Amy Santiago", "98472094", true, location1);
-        Client client2 = new Client("Jake Peralta", "92384923", true, location2);
+        Client client1 = this.clientRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Client with ID 1 not found"));
+        Client client2 = this.clientRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Client with ID 2 not found"));
 
         Contract contract1 = new Contract();
-        contract1.setContractStart(Timestamp.valueOf(LocalDateTime.parse("01 Oct 2024 00:00:00", this.dateTimeFormatter)));
-        contract1.setContractEnd(Timestamp.valueOf(LocalDateTime.parse("01 Jan 2025 00:00:00", this.dateTimeFormatter)));
+        contract1.setContractStart(LocalDate.of(2024,11,3));
+        contract1.setContractEnd(LocalDate.of(2024,12,3));
         contract1.setContractComment("Contract 1");
         contract1.setLocation(location1);
         contract1.setPrice(60.0f);
@@ -43,11 +42,12 @@ public class ContractConfig implements CommandLineRunner {
         contract1.setRooms(1);
         contract1.setFrequency(Contract.Frequency.WEEKLY);
         contract1.setSessionDurationMinutes(60);
-        contract1.setClient(client1);
+        contract1.setClient(client2);
+        contract1.setCreationDate(LocalDate.of(2024,11,3));
 
         Contract contract2 = new Contract();
-        contract2.setContractStart(new Timestamp(System.currentTimeMillis()));
-        contract2.setContractEnd(new Timestamp(System.currentTimeMillis()));
+        contract2.setContractStart(LocalDate.of(2024,9,3));
+        contract2.setContractEnd(LocalDate.of(2024,10,3));
         contract2.setContractComment("Contract 2");
         contract2.setLocation(location2);
         contract2.setPrice(250.0f);
@@ -55,7 +55,8 @@ public class ContractConfig implements CommandLineRunner {
         contract2.setRooms(2);
         contract2.setFrequency(Contract.Frequency.BIWEEKLY);
         contract2.setSessionDurationMinutes(120);
-        contract2.setClient(client2);
+        contract2.setClient(client1);
+        contract2.setCreationDate(LocalDate.of(2024,9,1));
 
         // Log hourly rates
         System.out.println("Contract 1 Rate: " + contract1.getRate());

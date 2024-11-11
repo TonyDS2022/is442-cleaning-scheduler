@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/v0.1/cleaningSession")
@@ -50,14 +49,14 @@ public class CleaningSessionController {
         }
     }
 
-    // localhost:8080/api/v0.1/cleaningSession/deactivate-cleaning-session/1
-    @PutMapping("/deactivate-cleaning-session/{cleaningSessionId}")
-    public ResponseEntity<String> deactivateCleaningSession(@PathVariable("cleaningSessionId") Long cleaningSessionId) {
+    // localhost:8080/api/v0.1/cleaningSession/cancel-cleaning-session/1
+    @PutMapping("/cancel-cleaning-session/{cleaningSessionId}")
+    public ResponseEntity<String> cancelCleaningSession(@PathVariable("cleaningSessionId") Long cleaningSessionId) {
         try {
-            cleaningSessionService.deactivateCleaningSession(cleaningSessionId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session deactivated successfully.");
+            cleaningSessionService.cancelCleaningSession(cleaningSessionId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session cancelled successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate cleaning session.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to cancel cleaning session.");
         }
     }
 

@@ -1,22 +1,18 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -87,6 +83,9 @@ public class Shift {
     @Column(name = "actualEndTime")
     private LocalTime actualEndTime;
 
+    @Column(name = "duration")
+    private Long duration;
+
     @NonNull
     @Enumerated(EnumType.STRING)
     @Column(name = "workingStatus")
@@ -95,7 +94,8 @@ public class Shift {
     public enum WorkingStatus {
         NOT_STARTED,
         WORKING,
-        FINISHED
+        FINISHED,
+        CANCELLED
     }
 
 
@@ -112,12 +112,12 @@ public class Shift {
     @NonNull
     private Timestamp lastModified;
 
-    @NonNull
-    private boolean isActive = true;
+    private LocalDate cancelledAt;
 
     public Shift(CleaningSession cleaningSession) {
         this.cleaningSession = cleaningSession;
         this.location = cleaningSession.getLocation();
+        // Shifts share the same startDate, endDate, startTime, endTime as the cleaning session they are linked to
         this.sessionDescription = cleaningSession.getSessionDescription();
         this.sessionStartDate = cleaningSession.getSessionStartDate();
         this.sessionStartTime = cleaningSession.getSessionStartTime();
@@ -128,7 +128,14 @@ public class Shift {
 
     @PrePersist
     @PreUpdate
-    protected void onUpdate() {
-        lastModified = new Timestamp(System.currentTimeMillis());
+    private void onUpdate() {
+        this.lastModified = new Timestamp(System.currentTimeMillis());
+        if (actualStartDate != null && actualStartTime != null && actualEndDate != null && actualEndTime != null) {
+            LocalDateTime startDateTime = LocalDateTime.of(actualStartDate, actualStartTime);
+            LocalDateTime endDateTime = LocalDateTime.of(actualEndDate, actualEndTime);
+            this.duration = Duration.between(startDateTime, endDateTime).toHours();
+        } else {
+            this.duration = 0L;
+        }
     }
 }

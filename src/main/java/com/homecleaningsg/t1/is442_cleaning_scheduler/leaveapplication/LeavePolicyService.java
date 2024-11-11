@@ -1,6 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

@@ -2,11 +2,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.devConfig;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.AdminRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftConfig;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractConfig;
@@ -19,6 +16,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftConfig;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripConfig;
@@ -58,7 +57,7 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn({"workerConfig", "locationConfig"})
+    @DependsOn({"workerConfig", "locationConfig", "clientConfig"})
     public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository, ClientRepository clientRepository) {
         return new ContractConfig(contractRepository, locationRepository, clientRepository);
     }
@@ -98,6 +97,7 @@ public class DevelopmentConfig {
     }
 
     @Bean
+    @DependsOn({"locationConfig"})
     public ClientConfig clientConfig(ClientRepository clientRepository,
                                      LocationRepository locationRepository){
         return new ClientConfig(clientRepository, locationRepository);

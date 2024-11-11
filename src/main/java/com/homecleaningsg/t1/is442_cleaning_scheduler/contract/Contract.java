@@ -2,17 +2,14 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 @NoArgsConstructor
@@ -41,18 +38,18 @@ public class Contract {
     @JoinColumn(name = "locationId", nullable = false)
     private Location location;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "clientId",  nullable = false)
-    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "clientId", nullable = false)
+    @JsonBackReference // prevent infinite recursion
     private Client client;
 
     @NonNull
     @Column(name = "contractStart")
-    private Timestamp contractStart;
+    private LocalDate contractStart;
 
     @NonNull
     @Column(name = "contractEnd")
-    private Timestamp contractEnd;
+    private LocalDate contractEnd;
 
     @Column(name = "contractComment")
     private String contractComment;
@@ -86,6 +83,9 @@ public class Contract {
     @NonNull
     private Timestamp lastModified;
 
+    @NonNull
+    private LocalDate creationDate;
+
     // Derived field: getRate = price / sessionDurationMinutes
     public float getRate() {
         return price / sessionDurationMinutes;
@@ -112,8 +112,8 @@ public class Contract {
 
     public Contract(Location location,
                     Client client,
-                    @NonNull Timestamp contractStart,
-                    @NonNull Timestamp contractEnd,
+                    @NonNull LocalDate contractStart,
+                    @NonNull LocalDate contractEnd,
                     String contractComment,
                     float price,
                     int workersBudgeted,
@@ -143,6 +143,17 @@ public class Contract {
     }
 
     @PrePersist
+    protected void onCreate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
+        LocalDate today = LocalDate.now();
+        if (this.contractEnd.isBefore(today)) {
+            this.contractStatus = ContractStatus.COMPLETED;
+        } else if (this.contractStart.isBefore(today) || this.contractStart.isEqual(today)) {
+            this.contractStatus = ContractStatus.IN_PROGRESS;
+        } else {
+            this.contractStatus = ContractStatus.NOT_STARTED;
+        }
+    }
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());
