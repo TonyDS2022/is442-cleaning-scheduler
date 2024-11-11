@@ -7,6 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSe
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSiteRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractConfig;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationConfig;
@@ -58,7 +59,7 @@ public class DevelopmentConfig {
     }
 
     @Bean
-    @DependsOn({"workerConfig", "locationConfig"})
+    @DependsOn({"workerConfig", "locationConfig", "clientConfig"})
     public ContractConfig contractConfig(ContractRepository contractRepository, LocationRepository locationRepository, ClientRepository clientRepository, ClientService clientService) {
         return new ContractConfig(contractRepository, locationRepository, clientRepository, clientService);
     }
@@ -98,8 +99,10 @@ public class DevelopmentConfig {
     }
 
     @Bean
+    @DependsOn({"locationConfig"})
     public ClientConfig clientConfig(ClientRepository clientRepository,
-                                     LocationRepository locationRepository){
-        return new ClientConfig(clientRepository, locationRepository);
+                                     LocationRepository locationRepository,
+                                     ClientSiteRepository clientSiteRepository){
+        return new ClientConfig(clientRepository, locationRepository, clientSiteRepository);
     }
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@Table
+@Table(name = "Client")
 public class Client {
     @Id
     @SequenceGenerator(
@@ -44,23 +45,30 @@ public class Client {
     @NonNull
     private Timestamp lastModified;
 
+    private LocalDate deactivatedAt;
+
+    @NonNull
+    private LocalDate joinDate;
+
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientSite> clientSites;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference("client-contract")
     private List<Contract> contracts;
 
     public Client(
             String name,
             String phone,
-            boolean isActive
+            boolean isActive,
+            LocalDate joinDate
     ) {
         this.name = name;
         this.phone = phone;
         this.isActive = isActive;
         this.contracts = new ArrayList<>();
         this.clientSites = new ArrayList<>();
+        this.joinDate = joinDate;
     }
 
     @PrePersist

@@ -59,14 +59,14 @@ public class ShiftController {
         }
     }
 
-    // localhost:8080/api/v0.1/shift/deactivate-shift/2
-    @PutMapping("/deactivate-shift/{shiftId}")
-    public ResponseEntity<String> deactivateShift(@PathVariable("shiftId") Long shiftId) {
+    // localhost:8080/api/v0.1/shift/cancel-shift/2
+    @PutMapping("/cancel-shift/{shiftId}")
+    public ResponseEntity<String> cancelShift(@PathVariable("shiftId") Long shiftId) {
         try{
-            shiftService.deactivateShift(shiftId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The shift has been successfully deactivated, and associated workers removed from shift.");
+            shiftService.cancelShift(shiftId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The shift has been successfully cancelled, and associated workers removed from shift.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate shift.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to cancel shift.");
         }
     }
 

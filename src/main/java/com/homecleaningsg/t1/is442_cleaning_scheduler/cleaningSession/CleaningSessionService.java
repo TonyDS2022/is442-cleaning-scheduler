@@ -6,6 +6,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.AvailableWorkerDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ public class CleaningSessionService {
     private final WorkerRepository workerRepository;
     private final TripRepository tripRepository;
     private final LeaveApplicationService leaveApplicationService;
+    private final ShiftService shiftService;
 
     @Autowired
     public CleaningSessionService(
@@ -35,13 +38,15 @@ public class CleaningSessionService {
             ShiftRepository shiftRepository,
             WorkerRepository workerRepository,
             TripRepository tripRepository,
-            LeaveApplicationService leaveApplicationService
+            LeaveApplicationService leaveApplicationService,
+            ShiftService shiftService
     ) {
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
         this.tripRepository = tripRepository;
         this.leaveApplicationService = leaveApplicationService;
+        this.shiftService = shiftService;
     }
 
     public List<CleaningSession> getAllCleaningSessions() {
@@ -122,9 +127,6 @@ public class CleaningSessionService {
         if (updatedSessionDto.getSessionDescription() != null) {
             existingSession.setSessionDescription(updatedSessionDto.getSessionDescription());
         }
-        if (updatedSessionDto.getSessionStatus() != null) {
-            existingSession.setSessionStatus(updatedSessionDto.getSessionStatus());
-        }
         if (updatedSessionDto.getSessionRating() != null) {
             existingSession.setSessionRating(updatedSessionDto.getSessionRating());
         }
@@ -137,11 +139,46 @@ public class CleaningSessionService {
         return cleaningSessionRepository.save(existingSession);
     }
 
-    public void deactivateCleaningSession(Long cleaningSessionId) {
+    public void cancelCleaningSession(Long cleaningSessionId) {
         CleaningSession cleaningSession = cleaningSessionRepository.findById(cleaningSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
-        cleaningSession.setActive(false);
-        cleaningSessionRepository.save(cleaningSession);
+
+        if(cleaningSession.getSessionStatus() == CleaningSession.SessionStatus.CANCELLED){
+            throw new IllegalArgumentException("Cleaning session has already been cancelled");
+        }
+        else if(cleaningSession.getSessionStatus() == CleaningSession.SessionStatus.WORKING){
+            throw new IllegalArgumentException("Cleaning session cannot be cancelled as it is ongoing");
+        }
+        else if(cleaningSession.getSessionStatus() == CleaningSession.SessionStatus.FINISHED){
+            throw new IllegalArgumentException("Cleaning session cannot be cancelled because it has already been finished.");
+        }
+        // sessionStatus == NOT_STARTED
+        else{
+            cleaningSession.setSessionStatus(CleaningSession.SessionStatus.CANCELLED);
+            cleaningSession.setCancelledAt(LocalDate.now());
+            // cancel linked shift that has not occurred yet
+            List<Shift> shifts = shiftRepository.findByCleaningSession_CleaningSessionId(cleaningSessionId);
+            if(!shifts.isEmpty()){
+                for(Shift shift : shifts) {
+                    // cancel linked shifts has not occurred yet
+                    if (shift.getSessionStartDate().isAfter(LocalDate.now())) {
+                        Long shiftId = shift.getShiftId();
+                        shiftService.cancelShift(shiftId);
+                    }
+                }
+            }
+            cleaningSessionRepository.save(cleaningSession);
+        }
+    }
+
+    public SessionReportDto getMonthlySessionReport(int year, int month) {
+        LocalDate startOfMonth = YearMonth.of(year, month).atDay(1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        Long numFinishedSessions = cleaningSessionRepository.countNoOfMonthFinishedSessions(startOfMonth, endOfMonth);
+        Long numCancelledSessions = cleaningSessionRepository.countNoOfMonthCancelledSessions(startOfMonth, endOfMonth);
+
+        return new SessionReportDto(numFinishedSessions, numCancelledSessions);
     }
 
     public List<AvailableWorkerDto> getAssignableWorkers(Long cleaningSessionId) {
@@ -245,5 +282,12 @@ public class CleaningSessionService {
         } else {
             return CleaningSession.PlanningStage.GREEN;
         }
+    }
+
+    public SessionReportDto getYearlySessionReport(int year) {
+        Long numFinishedSessions = cleaningSessionRepository.countNoOfYearFinishedSessions(year);
+        Long numCancelledSessions = cleaningSessionRepository.countNoOfYearCancelledSessions(year);
+
+        return new SessionReportDto(numFinishedSessions, numCancelledSessions);
     }
 }

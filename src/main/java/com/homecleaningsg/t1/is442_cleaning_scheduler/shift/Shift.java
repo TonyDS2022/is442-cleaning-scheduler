@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NoArgsConstructor
@@ -80,6 +82,9 @@ public class Shift {
     @Column(name = "actualEndTime")
     private LocalTime actualEndTime;
 
+    @Column(name = "duration")
+    private Long duration;
+
     @NonNull
     @Enumerated(EnumType.STRING)
     @Column(name = "workingStatus")
@@ -88,7 +93,8 @@ public class Shift {
     public enum WorkingStatus {
         NOT_STARTED,
         WORKING,
-        FINISHED
+        FINISHED,
+        CANCELLED
     }
 
 
@@ -105,8 +111,7 @@ public class Shift {
     @NonNull
     private Timestamp lastModified;
 
-    @NonNull
-    private boolean isActive = true;
+    private LocalDate cancelledAt;
 
     public Shift(CleaningSession cleaningSession) {
         this.cleaningSession = cleaningSession;
@@ -121,7 +126,14 @@ public class Shift {
 
     @PrePersist
     @PreUpdate
-    protected void onUpdate() {
-        lastModified = new Timestamp(System.currentTimeMillis());
+    private void onUpdate() {
+        this.lastModified = new Timestamp(System.currentTimeMillis());
+        if (actualStartDate != null && actualStartTime != null && actualEndDate != null && actualEndTime != null) {
+            LocalDateTime startDateTime = LocalDateTime.of(actualStartDate, actualStartTime);
+            LocalDateTime endDateTime = LocalDateTime.of(actualEndDate, actualEndTime);
+            this.duration = Duration.between(startDateTime, endDateTime).toHours();
+        } else {
+            this.duration = 0L;
+        }
     }
 }

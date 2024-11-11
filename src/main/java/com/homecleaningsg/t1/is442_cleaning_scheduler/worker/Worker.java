@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -83,9 +84,10 @@ public class Worker {
     @NonNull
     private Timestamp lastModified;
 
-    public void setIsActive(boolean isActive){
-        this.isActive = isActive;
-    }
+    private LocalDate deactivatedAt;
+
+    @NonNull
+    private LocalDate joinDate;
 
     public Worker(String name,
                   String username,

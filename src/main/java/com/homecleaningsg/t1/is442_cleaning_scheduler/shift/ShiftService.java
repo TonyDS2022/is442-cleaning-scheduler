@@ -62,15 +62,28 @@ public class ShiftService {
         return shiftRepository.save(updatedShift);
     }
 
-    public void deactivateShift(Long shiftId) {
+    public void cancelShift(Long shiftId) {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
         Worker worker = shift.getWorker();
         if(worker != null){
             shift.setWorker(null);
         }
-        shift.setActive(false);
-        shiftRepository.save(shift);
+        if(shift.getWorkingStatus() == Shift.WorkingStatus.CANCELLED){
+            throw new IllegalArgumentException("Shift has already been cancelled");
+        }
+        else if(shift.getWorkingStatus() == Shift.WorkingStatus.WORKING){
+            throw new IllegalArgumentException("Shift cannot be cancelled as it is ongoing");
+        }
+        else if(shift.getWorkingStatus() == Shift.WorkingStatus.FINISHED){
+            throw new IllegalArgumentException("Shift cannot be cancelled because it has already been finished.");
+        }
+        // workingStatus == NOT_STARTED
+        else{
+            shift.setWorkingStatus(Shift.WorkingStatus.CANCELLED);
+            shift.setCancelledAt(LocalDate.now());
+            shiftRepository.save(shift);
+        }
     }
 
     public void deleteShift(Long shiftId) {
@@ -119,60 +132,62 @@ public class ShiftService {
         shiftRepository.save(shift);
     }
 
-    // public boolean shiftsTimeOverlap(Shift existingShift, Shift newShift){
-    //     // this encompasses all edge cases:
-    //     // 1. partial overlap
-    //     // 2. full overlap (new shift within existing shift/ existing shift within new shift)
-    //     // 3. touching boundaries (new shift ends exactly when the existing shift starts etc)
-    //     return !newShift.getSessionEndTime().isBefore(existingShift.getSessionStartTime())
-    //             && !newShift.getSessionStartTime().isAfter(existingShift.getSessionEndTime());
-    // }
-    //
-    // public boolean shiftIsWithinWorkingHours(Worker worker, Shift newShift){
-    //     return !newShift.getSessionStartTime().isBefore(worker.getStartWorkingHours())
-    //             && !newShift.getSessionEndTime().isAfter(worker.getEndWorkingHours());
-    // }
-    //
-    // public boolean isWorkerAvailableForShift(Worker worker, Shift newShift){
-    //
-    //     boolean isOnLeave = leaveApplicationService.isWorkerOnLeave(
-    //             worker.getWorkerId(),
-    //             newShift.getSessionStartDate(),
-    //             newShift.getSessionStartTime(),
-    //             newShift.getSessionEndDate(),
-    //             newShift.getSessionEndTime()
-    //     );
-    //
-    //     if (isOnLeave) {
-    //         return false;
-    //     }
-    //
-    //     List<Shift> workerShifts = this.getShiftsByDayAndWorker(newShift.getSessionStartDate(), worker.getWorkerId());
-    //     boolean hasConflict = workerShifts.stream()
-    //             .anyMatch(existingShift -> shiftsTimeOverlap(existingShift, newShift));
-    //     if(hasConflict){
-    //         return false;
-    //     }
-    //     return shiftIsWithinWorkingHours(worker,newShift);
-    // }
-    // public List<Worker> getAvailableWorkersForShift(Shift newShift) {
-    //     List<Worker> allWorkers = workerRepository.findAll();
-    //     return allWorkers.stream()
-    //             .filter(worker -> isWorkerAvailableForShift(worker, newShift))
-    //             .collect(Collectors.toList());
-    // }
-    // public Shift findLastShiftOnDayBeforeTime(Long workerId, LocalDate date, LocalTime time){
-    //     List<Shift> allWorkerShiftsOnDay = this.getLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
-    //     List<Shift> allWorkerShiftsOnDayBeforeTime = allWorkerShiftsOnDay.stream()
-    //             .filter(shift -> shift.getSessionEndTime().isBefore(time))
-    //             .toList();
-    //     if (allWorkerShiftsOnDayBeforeTime.isEmpty()) {
-    //         return null;
-    //     }
-    //     return allWorkerShiftsOnDayBeforeTime.stream()
-    //             .max((shift1, shift2) -> shift1.getSessionEndTime().compareTo(shift2.getSessionEndTime()))
-    //             .orElse(null);
-    // }
+    public WorkerHoursDto getYearlyHoursOfWorker(Long workerId, int year){
+        Long totalHours = shiftRepository.getWorkerTotalHoursWorkedInYear(workerId, year);
+        if (totalHours == null) {
+            totalHours = 0L;
+        }
+        long totalOverTimeHours = calculateYearlyOverTime(workerId, year);
+        return new WorkerHoursDto(workerId, totalHours, totalOverTimeHours);
+    }
+
+    public WorkerHoursDto getMonthlyHoursOfWorker(Long workerId, int year, int month){
+        Long totalHours = shiftRepository.getWorkerTotalHoursWorkedInMonth(workerId, year, month);
+        if (totalHours == null) {
+            totalHours = 0L;
+        }
+        Long totalOverTimeHours = calculateMonthlyOverTime(workerId, year, month);
+        return new WorkerHoursDto(workerId, totalHours, totalOverTimeHours);
+    }
+
+    public WorkerHoursDto getWeeklyHoursOfWorker(Long workerId, LocalDate startOfWeek, LocalDate endOfWeek){
+        List<Long> weeklyHours =  shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
+        long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
+        long overTimeHours = Math.max(0, totalHours - ShiftConfigLoader.WEEKLY_OVERTIME_THRESHOLD_HOURS);
+        return new WorkerHoursDto(workerId, totalHours, overTimeHours);
+    }
+
+    public Long calculateYearlyOverTime(Long workerId, int year){
+        long totalOvertimeHours = 0;
+        LocalDate startOfWeek = LocalDate.of(year, 1, 1);
+        LocalDate endOfWeek = startOfWeek.plusDays(7);
+
+        while (startOfWeek.getYear() == year) {
+            List<Long> weeklyHours = shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
+            long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
+            totalOvertimeHours += Math.max(0, totalHours - ShiftConfigLoader.WEEKLY_OVERTIME_THRESHOLD_HOURS);
+            startOfWeek = endOfWeek;
+            endOfWeek = startOfWeek.plusDays(7);
+        }
+
+        return totalOvertimeHours;
+    }
+
+    public Long calculateMonthlyOverTime(Long workerId, int year, int month){
+        long totalOvertimeHours = 0;
+        LocalDate startOfWeek = LocalDate.of(year, month, 1);
+        LocalDate endOfWeek = startOfWeek.plusDays(7);
+
+        while (startOfWeek.getMonthValue() == month) {
+            List<Long> weeklyHours = shiftRepository.getWorkerTotalHoursWorkedInWeek(workerId, startOfWeek, endOfWeek);
+            long totalHours = weeklyHours.stream().mapToLong(Long::longValue).sum();
+            totalOvertimeHours += Math.max(0, totalHours - ShiftConfigLoader.WEEKLY_OVERTIME_THRESHOLD_HOURS);
+            startOfWeek = endOfWeek;
+            endOfWeek = startOfWeek.plusDays(7);
+        }
+
+        return totalOvertimeHours;
+    }
 
     public List<AvailableWorkerDto> getAvailableWorkersForShift(Long shiftId) {
         Shift shift = shiftRepository.findById(shiftId)

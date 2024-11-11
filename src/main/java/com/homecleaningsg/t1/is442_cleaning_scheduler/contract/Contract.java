@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +46,11 @@ public class Contract {
 
     @NonNull
     @Column(name = "contractStart")
-    private Timestamp contractStart;
+    private LocalDate contractStart;
 
     @NonNull
     @Column(name = "contractEnd")
-    private Timestamp contractEnd;
+    private LocalDate contractEnd;
 
     @Column(name = "contractComment")
     private String contractComment;
@@ -83,6 +84,9 @@ public class Contract {
     @NonNull
     private Timestamp lastModified;
 
+    @NonNull
+    private LocalDate creationDate;
+
     // Derived field: getRate = price / sessionDurationMinutes
     public float getRate() {
         return price / sessionDurationMinutes;
@@ -109,8 +113,8 @@ public class Contract {
 
     public Contract(ClientSite clientSite,
                     Client client,
-                    @NonNull Timestamp contractStart,
-                    @NonNull Timestamp contractEnd,
+                    @NonNull LocalDate contractStart,
+                    @NonNull LocalDate contractEnd,
                     String contractComment,
                     float price,
                     int workersBudgeted,
@@ -140,6 +144,17 @@ public class Contract {
     }
 
     @PrePersist
+    protected void onCreate() {
+        lastModified = new Timestamp(System.currentTimeMillis());
+        LocalDate today = LocalDate.now();
+        if (this.contractEnd.isBefore(today)) {
+            this.contractStatus = ContractStatus.COMPLETED;
+        } else if (this.contractStart.isBefore(today) || this.contractStart.isEqual(today)) {
+            this.contractStatus = ContractStatus.IN_PROGRESS;
+        } else {
+            this.contractStatus = ContractStatus.NOT_STARTED;
+        }
+    }
     @PreUpdate
     protected void onUpdate() {
         lastModified = new Timestamp(System.currentTimeMillis());

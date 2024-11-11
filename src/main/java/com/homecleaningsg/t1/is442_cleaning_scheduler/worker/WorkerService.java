@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,6 +67,7 @@ public class WorkerService {
     }
 
     public Worker addWorker(Worker worker){
+        worker.setJoinDate(LocalDate.now());
         return workerRepository.save(worker);
     }
 
@@ -96,7 +98,27 @@ public class WorkerService {
             }
         }
 
-        worker.setIsActive(false);
+        worker.setActive(false);
+        worker.setDeactivatedAt(LocalDate.now());
         workerRepository.save(worker);
+    }
+
+    public WorkerReportDto getMonthlyWorkerReport(int year, int month) {
+        LocalDate startOfMonth = YearMonth.of(year, month).atDay(1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        Long newWorkers = workerRepository.countNewWorkersByMonth(startOfMonth, endOfMonth);
+        Long existingWorkers = workerRepository.countExistingWorkersByMonth(endOfMonth);
+        Long terminatedWorkers = workerRepository.countTerminatedWorkersByMonth(startOfMonth, endOfMonth);
+
+        return new WorkerReportDto(newWorkers, existingWorkers, terminatedWorkers);
+    }
+
+    public WorkerReportDto getYearlyWorkerReport(int year) {
+        Long newWorkers = workerRepository.countNewWorkersByYear(year);
+        Long existingWorkers = workerRepository.countExistingWorkersByYear(year);
+        Long terminatedWorkers = workerRepository.countTerminatedWorkersByYear(year);
+
+        return new WorkerReportDto(newWorkers, existingWorkers, terminatedWorkers);
     }
 }
