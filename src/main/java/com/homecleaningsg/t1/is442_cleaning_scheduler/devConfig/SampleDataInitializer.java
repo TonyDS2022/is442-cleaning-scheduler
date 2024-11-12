@@ -211,11 +211,32 @@ public class SampleDataInitializer implements ApplicationRunner {
     }
 
     public void initializeLocation() {
-        Location loc1 = new Location("88 Corporation Road", "649823");
-        Location loc2 = new Location("61 Kampong Arang Road", "438181");
-        Location loc3 = new Location("20 Orchard Road", "238830");
+        List<Location> locations = new ArrayList<>();
+        locations.add(new Location("88 Corporation Road", "649823"));
+        locations.add(new Location("61 Kampong Arang Road", "438181"));
+        locations.add(new Location("20 Orchard Road", "238830"));
+        locations.add(new Location("1 Fullerton Road", "049213"));
+        locations.add(new Location("10 Bayfront Avenue", "018956"));
+        locations.add(new Location("30 Raffles Avenue", "039803"));
+        locations.add(new Location("80 Mandai Lake Road", "729826"));
+        locations.add(new Location("18 Marina Gardens Drive", "018953"));
+        locations.add(new Location("6 Raffles Boulevard", "039594"));
+        locations.add(new Location("8 Sentosa Gateway", "098269"));
+        locations.add(new Location("1 Cluny Road", "259569"));
+        locations.add(new Location("2 Orchard Turn", "238801"));
+        locations.add(new Location("1 Beach Road", "189673"));
+        locations.add(new Location("1 Esplanade Drive", "038981"));
+        locations.add(new Location("10 Bayfront Avenue", "018956"));
+        locations.add(new Location("1 Harbourfront Walk", "098585"));
+        locations.add(new Location("1 Kim Seng Promenade", "237994"));
+        locations.add(new Location("1 Pasir Ris Close", "519599"));
+        locations.add(new Location("1 Stadium Place", "397628"));
+        locations.add(new Location("1 Empress Place", "179555"));
+        locations.add(new Location("1 Saint Andrew’s Road", "178957"));
+        locations.add(new Location("1 North Bridge Road", "179094"));
+        locations.add(new Location("1 Raffles Place", "048616"));
 
-        this.locationRepository.saveAll(List.of(loc1, loc2, loc3));
+        this.locationRepository.saveAll(locations);
 
         this.locationService.updateLocationLatLong().subscribe();
     }
