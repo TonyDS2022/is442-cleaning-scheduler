@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
@@ -17,6 +18,7 @@ import java.util.Optional;
 public class WorkerService {
     private final WorkerRepository workerRepository;
     private final LocationRepository locationRepository;
+    private final LocationService locationService;
     private final ShiftService shiftService;
     private final ShiftRepository shiftRepository;
 
@@ -24,11 +26,13 @@ public class WorkerService {
     public WorkerService(
             WorkerRepository workerRepository,
             LocationRepository locationRepository,
+            LocationService locationService,
             ShiftService shiftService,
             ShiftRepository shiftRepository
     ) {
         this.workerRepository = workerRepository;
         this.locationRepository = locationRepository;
+        this.locationService = locationService;
         this.shiftService = shiftService;
         this.shiftRepository = shiftRepository;
     }
@@ -41,15 +45,18 @@ public class WorkerService {
         return workerRepository.findByUsername(username).orElse(null);
     }
 
-    public void addResidentialAddressToWorker(Long workerId, Long locationId) {
+    public void addResidentialAddressToWorker(
+            Long workerId,
+            String streetAddress,
+            String postalCode,
+            String unitNumber
+    ) {
         // Find the worker by ID
         Optional<Worker> workerOptional = workerRepository.findById(workerId);
-        // Find the location by ID
-        Optional<Location> locationOptional = locationRepository.findById(locationId);
+        Location location = locationService.getOrCreateLocation(postalCode, streetAddress);
 
-        if (workerOptional.isPresent() && locationOptional.isPresent()) {
+        if (workerOptional.isPresent()) {
             Worker worker = workerOptional.get();
-            Location location = locationOptional.get();
             // Set the location to the worker
             worker.setHomeLocation(location);
             // Save the updated worker

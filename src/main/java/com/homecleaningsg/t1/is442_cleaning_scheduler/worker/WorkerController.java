@@ -34,12 +34,15 @@ public class WorkerController {
         return workerService.getResidentialAddressOfWorker(workerId);
     }
 
-    @PostMapping("/{workerId}/addResidentialAddressToWorker/{locationId}")
+    @PostMapping("/{workerId}/addResidentialAddressToWorker/")
     public ResponseEntity<String> addResidentialAddressToWorker(
             @PathVariable Long workerId,
-            @PathVariable Long locationId) {
+            @RequestParam String streetAddress,
+            @RequestParam String postalCode,
+            @RequestParam String unitNumber
+    ) {
         try {
-            workerService.addResidentialAddressToWorker(workerId, locationId);
+            workerService.addResidentialAddressToWorker(workerId, streetAddress, postalCode, unitNumber);
             return ResponseEntity.ok("Location added to worker successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage()); // Return 404 if worker or location is not found

@@ -65,6 +65,8 @@ public class Worker {
     @JoinColumn(name = "location_id")
     private Location homeLocation;
 
+    private String homeUnitNumber;
+
     public Worker(Location homeLocation){
         this.homeLocation = homeLocation;
     }
