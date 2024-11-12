@@ -41,4 +41,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
             "WHERE c.deactivatedAt IS NOT NULL " +
             "AND EXTRACT(YEAR FROM c.deactivatedAt) = :year")
     Long countTerminatedClientsByYear(@Param("year") int year);
+
+    @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c ")
+    Client findByNameAndPhone(String name, String phone);
 }
