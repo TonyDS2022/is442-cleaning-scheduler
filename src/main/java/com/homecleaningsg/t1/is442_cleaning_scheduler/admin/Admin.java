@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -38,6 +39,14 @@ public class Admin {
 
     @NonNull
     private Timestamp lastModified;
+
+    @NonNull
+    private boolean isActive = true;
+
+    @NonNull
+    private LocalDate joinDate;
+
+    private LocalDate deactivatedAt;
 
     public Admin(String username,
                  String password,
