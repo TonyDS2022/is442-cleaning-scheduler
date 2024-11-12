@@ -53,3 +53,12 @@ The following guides illustrate how to use some features concretely:
 
 ### Push policy and CI Actions
 Please test compile the application with `mvn test` before pushing to the repository.
+
+### Running the application
+To run the application, execute the following command in the root directory of the project:
+```bash
+  mvn spring-boot:run
+```
+
+#### Documentation with Swagger
+To access the Swagger documentation, navigate to `http://localhost:8080/swagger-ui.html` in your browser.
