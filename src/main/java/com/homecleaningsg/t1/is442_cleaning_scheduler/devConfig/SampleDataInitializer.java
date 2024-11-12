@@ -215,26 +215,6 @@ public class SampleDataInitializer implements ApplicationRunner {
         locations.add(new Location("88 Corporation Road", "649823"));
         locations.add(new Location("61 Kampong Arang Road", "438181"));
         locations.add(new Location("20 Orchard Road", "238830"));
-        locations.add(new Location("1 Fullerton Road", "049213"));
-        locations.add(new Location("10 Bayfront Avenue", "018956"));
-        locations.add(new Location("30 Raffles Avenue", "039803"));
-        locations.add(new Location("80 Mandai Lake Road", "729826"));
-        locations.add(new Location("18 Marina Gardens Drive", "018953"));
-        locations.add(new Location("6 Raffles Boulevard", "039594"));
-        locations.add(new Location("8 Sentosa Gateway", "098269"));
-        locations.add(new Location("1 Cluny Road", "259569"));
-        locations.add(new Location("2 Orchard Turn", "238801"));
-        locations.add(new Location("1 Beach Road", "189673"));
-        locations.add(new Location("1 Esplanade Drive", "038981"));
-        locations.add(new Location("10 Bayfront Avenue", "018956"));
-        locations.add(new Location("1 Harbourfront Walk", "098585"));
-        locations.add(new Location("1 Kim Seng Promenade", "237994"));
-        locations.add(new Location("1 Pasir Ris Close", "519599"));
-        locations.add(new Location("1 Stadium Place", "397628"));
-        locations.add(new Location("1 Empress Place", "179555"));
-        locations.add(new Location("1 Saint Andrew’s Road", "178957"));
-        locations.add(new Location("1 North Bridge Road", "179094"));
-        locations.add(new Location("1 Raffles Place", "048616"));
 
         this.locationRepository.saveAll(locations);
 
@@ -281,107 +261,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         );
         worker3.setJoinDate(LocalDate.of(2024,1,3));
 
-        Worker worker4 = new Worker(
-                "Michael Lee",
-                "michael",
-                "mike5678",
-                "michael.lee@example.com",
-                "92345678",
-                "Detail-oriented cleaner with expertise in high-rise window cleaning and disinfection.",
-                LocalTime.of(9, 0),
-                LocalTime.of(18, 0)
-        );
-        worker4.setJoinDate(LocalDate.of(2024,10,3));
-
-        Worker worker5 = new Worker(
-                "Sarah Lim",
-                "sarah",
-                "sarahlim2023",
-                "sarah.lim@example.com",
-                "93456789",
-                "5 years experience in residential cleaning, with a focus on green cleaning methods.",
-                LocalTime.of(10, 0),
-                LocalTime.of(19, 0)
-        );
-        worker5.setJoinDate(LocalDate.of(2024,3,3));
-
-        Location loc5 = locationRepository.findByPostalCode("438181")
-                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-        worker5.setHomeLocation(loc5);
-
-        Worker worker6 = new Worker(
-                "Ravi Kumar",
-                "ravi",
-                "ravi@999",
-                "ravi.kumar@example.com",
-                "94567890",
-                "Specializes in cleaning kitchens and commercial food preparation areas.",
-                LocalTime.of(9, 0),
-                LocalTime.of(15, 0)
-        );
-        worker6.setJoinDate(LocalDate.of(2024,1,4));
-        worker6.setDeactivatedAt(LocalDate.of(2024,2,4));
-        worker6.setActive(false);
-
-        Worker worker7 = new Worker(
-                "Maria Garcia",
-                "maria",
-                "maria8765",
-                "maria.garcia@example.com",
-                "95678901",
-                "Friendly and reliable cleaner with 10 years of experience in hotel housekeeping.",
-                LocalTime.of(12, 0),
-                LocalTime.of(21, 0)
-        );
-        worker7.setJoinDate(LocalDate.of(2024,8,3));
-
-        Worker worker8 = new Worker(
-                "Tommy Wu",
-                "tommy",
-                "tommy0987",
-                "tommy.wu@example.com",
-                "96789012",
-                "Focused on deep-cleaning services for industrial environments.",
-                LocalTime.of(14, 0),
-                LocalTime.of(22, 0)
-        );
-        worker8.setJoinDate(LocalDate.of(2024,9,2));
-
-        Location loc8 = locationRepository.findByPostalCode("238830")
-                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-        worker8.setHomeLocation(loc8);
-
-        Worker worker9 = new Worker(
-                "Lucy Wang",
-                "lucy",
-                "lucy5432",
-                "lucy.wang@example.com",
-                "97890123",
-                "Residential cleaner with a specialty in eco-friendly products and methods.",
-                LocalTime.of(8, 0),
-                LocalTime.of(17, 0)
-        );
-        worker9.setJoinDate(LocalDate.of(2024,9,3));
-
-        Worker worker10 = new Worker(
-                "David Ong",
-                "david",
-                "david3210",
-                "david.ong@example.com",
-                "98901234",
-                "Experienced in managing cleaning teams and ensuring high-quality standards in large commercial facilities.",
-                LocalTime.of(8, 0),
-                LocalTime.of(14, 0)
-        );
-        worker10.setJoinDate(LocalDate.of(2024,10,3));
-        worker10.setDeactivatedAt(LocalDate.now());
-        worker10.setActive(false);
-
-        workerRepository.saveAll(List.of(worker1, worker2, worker3, worker4, worker5, worker6, worker7, worker8, worker9, worker10));
-        // save loc instances
-        locationRepository.saveAll(List.of(
-                loc8, loc5
-        ));
+        workerRepository.saveAll(List.of(worker1, worker2, worker3));
     }
 
     public void initializeClients() {
