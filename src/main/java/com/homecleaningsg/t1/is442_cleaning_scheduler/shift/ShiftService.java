@@ -117,6 +117,15 @@ public class ShiftService {
         shiftRepository.save(existingShift);
     }
 
+    public void unassignWorkerFromShift(Long shiftId) {
+        Shift shift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+        if (shift.getWorkingStatus() != Shift.WorkingStatus.NOT_STARTED) {
+            throw new IllegalArgumentException("Past shifts cannot be unassigned.");
+        }
+        shiftRepository.save(shift);
+    }
+
     public void startShift(long shiftId) {
         // TBC: what do we do with the other shifts in the same cleaning session?
         Shift shift = shiftRepository.findById(shiftId)
