@@ -65,6 +65,19 @@ public class ShiftController {
         }
     }
 
+    // localhost:8080/api/v0.1/shift/unassign-worker/1
+    @PutMapping("/unassign-worker/{shiftId}")
+    public ResponseEntity<String> unassignWorker(
+            @PathVariable("shiftId") Long shiftId
+    ) {
+        try{
+            shiftService.unassignWorkerFromShift(shiftId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker unassigned from shift successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     // localhost:8080/api/v0.1/shift/start-shift/1
     @PutMapping("/start-shift/{shiftId}")
     public ResponseEntity<String> startShift(
