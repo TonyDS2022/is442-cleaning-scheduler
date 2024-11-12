@@ -34,8 +34,6 @@ public class Location {
     @NonNull
     private String postalCode;
 
-    private String unitNumber;
-
     private Double latitude;
     private Double longitude;
 
