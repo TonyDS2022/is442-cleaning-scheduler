@@ -1,13 +1,13 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionUpdateDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,6 +34,38 @@ public class AdminController {
     @GetMapping("/{username}")
     public Admin getAdminByUsername(@PathVariable("username") String username) {
         return adminService.getAdminByUsername(username);
+    }
+
+    @PostMapping("/add-admin/")
+    public ResponseEntity<String> addAdmin(@RequestBody Admin admin) {
+        try {
+            adminService.addAdmin(admin);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin added successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add admin.");
+        }
+    }
+
+    @PutMapping("/update-admin/{adminId}")
+    public ResponseEntity<String> updateAdmin(
+            @PathVariable("adminId") Long adminId, @RequestBody Admin updatedAdmin) {
+        try {
+            adminService.updateAdmin(adminId, updatedAdmin);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin updated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update admin details.");
+        }
+    }
+
+    // localhost:8080/api/v0.1/admin/deactivate-admin/1
+    @PutMapping("/deactivate-admin/{adminId}")
+    public ResponseEntity<String> deactivateAdmin(@PathVariable("adminId") Long adminId) {
+        try {
+            adminService.deactivateAdmin(adminId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin deactivated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate admin.");
+        }
     }
 
     // localhost:8080/api/v0.1/admins/yearly-statistics/2024
