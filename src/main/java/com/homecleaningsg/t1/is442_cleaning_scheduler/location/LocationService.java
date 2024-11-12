@@ -63,22 +63,24 @@ public class LocationService {
         // Call tripService to build trips for the location
         // Call tripService to update the trip duration by calling Google Distance Matrix API
         // return the existing or new location
-        return locationRepository.findByPostalCode(postalCode)
-                .orElseGet(() -> {
-                    Location newLocation = new Location(address, postalCode);
-                    newLocation = geoCode(newLocation);
-                    newLocation.setSubzone(subzoneRepository);
-                    tripService.buildTrips(newLocation);
-                    // update Trip Duration by calling Google Distance Matrix API
-                    //tripService.updateTripDistanceDurationAsync().subscribe();
-                    // sleep for 1 second to avoid Google Distance Matrix API rate limit
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return locationRepository.save(newLocation);
-                });
+        Location location = locationRepository.getLocationByPostalCode(postalCode);
+
+        if (location != null) {
+            return location;
+        }
+        Location newLocation = new Location(address, postalCode);
+        newLocation = geoCode(newLocation);
+        newLocation.setSubzone(subzoneRepository);
+        tripService.buildTrips(newLocation);
+        // update Trip Duration by calling Google Distance Matrix API
+        //tripService.updateTripDistanceDurationAsync().subscribe();
+        // sleep for 1 second to avoid Google Distance Matrix API rate limit
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return locationRepository.save(newLocation);
     }
 
     public Location geoCode(Location location) {
