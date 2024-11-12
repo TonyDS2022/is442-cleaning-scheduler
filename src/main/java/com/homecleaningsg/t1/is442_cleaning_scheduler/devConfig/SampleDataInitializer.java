@@ -28,6 +28,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
+import com.opencsv.CSVReader;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.LngLatAlt;
@@ -45,6 +47,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -71,6 +74,7 @@ public class SampleDataInitializer implements ApplicationRunner {
     private final LocationService locationService;
     private final MedicalRecordService medicalRecordService;
     private final TripService tripService;
+    private final WorkerService workerService;
 
     public SampleDataInitializer(
             AdminRepository adminRepository,
@@ -87,8 +91,8 @@ public class SampleDataInitializer implements ApplicationRunner {
             ClientService clientService,
             LocationService locationService,
             MedicalRecordService medicalRecordService,
-            TripService tripService
-    ) {
+            TripService tripService,
+            WorkerService workerService) {
         this.adminRepository = adminRepository;
         this.contractRepository = contractRepository;
         this.clientSiteRepository = clientSiteRepository;
@@ -104,6 +108,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.locationService = locationService;
         this.medicalRecordService = medicalRecordService;
         this.tripService = tripService;
+        this.workerService = workerService;
     }
 
     @Override
@@ -111,16 +116,16 @@ public class SampleDataInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         // Add sample data here
         initializeSubzones();
-        initializeLocation();
-        initializeTrips();
+//        initializeLocation();
+//        initializeTrips();
         initializeWorkers();
-        initializeClients();
-        initializeContracts();
-        initializeCleaningSessions();
-        initializeShifts();
-        initializeAdmins();
-        initializeMedicalRecords();
-        initializeLeaveApplications();
+//        initializeClients();
+//        initializeContracts();
+//        initializeCleaningSessions();
+//        initializeShifts();
+//        initializeAdmins();
+//        initializeMedicalRecords();
+//        initializeLeaveApplications();
     }
 
     public void initializeSubzones() throws Exception {
@@ -228,141 +233,34 @@ public class SampleDataInitializer implements ApplicationRunner {
     }
 
     public void initializeWorkers() {
-        Worker worker1 = new Worker(
-                "Karthiga",
-                "karthiga",
-                "kar1243",
-                "karthigamagesh17@gmail.com",
-                "99999999",
-                "Hello, I am a sincere cleaner specialised in wooden floors",
-                LocalTime.of(8,0),
-                LocalTime.of(17,0));
-        worker1.setJoinDate(LocalDate.of(2024,5,3));
+        // read from resource/workers.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/workers.csv"))) {
 
-        Worker worker2 = new Worker(
-                "John",
-                "john",
-                "john1243",
-                "john@gmail.com",
-                "99999999",
-                "Cleaner with 20 years experience in cleaning bungalows/landed properties",
-                LocalTime.of(13,0),
-                LocalTime.of(22, 0));
-        worker2.setJoinDate(LocalDate.of(2024,10,3));
+            String[] values;
+            reader.readNext();
 
-        Worker worker3 = new Worker(
-                "Alice Tan",
-                "alice",
-                "alice1234",
-                "alice.tan@example.com",
-                "91234567",
-                "Experienced cleaner specializing in office spaces and carpet cleaning.",
-                LocalTime.of(7, 0),
-                LocalTime.of(16, 0)
-        );
-        worker3.setJoinDate(LocalDate.of(2024,1,3));
+            int lineCount = 0;
 
-        Worker worker4 = new Worker(
-                "Michael Lee",
-                "michael",
-                "mike5678",
-                "michael.lee@example.com",
-                "92345678",
-                "Detail-oriented cleaner with expertise in high-rise window cleaning and disinfection.",
-                LocalTime.of(9, 0),
-                LocalTime.of(18, 0)
-        );
-        worker4.setJoinDate(LocalDate.of(2024,10,3));
+            while ((values = reader.readNext()) != null && lineCount < 5) {
+                String name = values[0].trim();
+                String username = values[1].trim();
+                String password = values[2].trim();
+                String email = values[3].trim();
+                String phone = values[4].trim();
+                String bio = values[5].trim();
+                LocalTime startWorkingHours = LocalTime.parse(values[6].trim());
+                LocalTime endWorkingHours = LocalTime.parse(values[7].trim());
+                String streetAddress = values[8].trim();
+                String postalCode = values[9].trim();
+                String unitNumber = values[10].trim();
+                Worker worker = new Worker(name, username, password, email, phone, bio, startWorkingHours, endWorkingHours);
+                workerService.addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
 
-        Worker worker5 = new Worker(
-                "Sarah Lim",
-                "sarah",
-                "sarahlim2023",
-                "sarah.lim@example.com",
-                "93456789",
-                "5 years experience in residential cleaning, with a focus on green cleaning methods.",
-                LocalTime.of(10, 0),
-                LocalTime.of(19, 0)
-        );
-        worker5.setJoinDate(LocalDate.of(2024,3,3));
-
-        Location loc5 = locationRepository.findByPostalCode("438181")
-                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-        worker5.setHomeLocation(loc5);
-
-        Worker worker6 = new Worker(
-                "Ravi Kumar",
-                "ravi",
-                "ravi@999",
-                "ravi.kumar@example.com",
-                "94567890",
-                "Specializes in cleaning kitchens and commercial food preparation areas.",
-                LocalTime.of(9, 0),
-                LocalTime.of(15, 0)
-        );
-        worker6.setJoinDate(LocalDate.of(2024,1,4));
-        worker6.setDeactivatedAt(LocalDate.of(2024,2,4));
-        worker6.setActive(false);
-
-        Worker worker7 = new Worker(
-                "Maria Garcia",
-                "maria",
-                "maria8765",
-                "maria.garcia@example.com",
-                "95678901",
-                "Friendly and reliable cleaner with 10 years of experience in hotel housekeeping.",
-                LocalTime.of(12, 0),
-                LocalTime.of(21, 0)
-        );
-        worker7.setJoinDate(LocalDate.of(2024,8,3));
-
-        Worker worker8 = new Worker(
-                "Tommy Wu",
-                "tommy",
-                "tommy0987",
-                "tommy.wu@example.com",
-                "96789012",
-                "Focused on deep-cleaning services for industrial environments.",
-                LocalTime.of(14, 0),
-                LocalTime.of(22, 0)
-        );
-        worker8.setJoinDate(LocalDate.of(2024,9,2));
-
-        Location loc8 = locationRepository.findByPostalCode("238830")
-                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-        worker8.setHomeLocation(loc8);
-
-        Worker worker9 = new Worker(
-                "Lucy Wang",
-                "lucy",
-                "lucy5432",
-                "lucy.wang@example.com",
-                "97890123",
-                "Residential cleaner with a specialty in eco-friendly products and methods.",
-                LocalTime.of(8, 0),
-                LocalTime.of(17, 0)
-        );
-        worker9.setJoinDate(LocalDate.of(2024,9,3));
-
-        Worker worker10 = new Worker(
-                "David Ong",
-                "david",
-                "david3210",
-                "david.ong@example.com",
-                "98901234",
-                "Experienced in managing cleaning teams and ensuring high-quality standards in large commercial facilities.",
-                LocalTime.of(8, 0),
-                LocalTime.of(14, 0)
-        );
-        worker10.setJoinDate(LocalDate.of(2024,10,3));
-        worker10.setDeactivatedAt(LocalDate.now());
-        worker10.setActive(false);
-
-        workerRepository.saveAll(List.of(worker1, worker2, worker3, worker4, worker5, worker6, worker7, worker8, worker9, worker10));
-        // save loc instances
-        locationRepository.saveAll(List.of(
-                loc8, loc5
-        ));
+                lineCount++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void initializeClients() {
