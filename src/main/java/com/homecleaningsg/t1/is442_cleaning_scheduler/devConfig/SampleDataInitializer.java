@@ -52,6 +52,7 @@ import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +123,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         initializeLocation();
         initializeTrips();
         initializeWorkers();
-//        initializeClients();
+        initializeClients();
 //        initializeContracts();
 //        initializeCleaningSessions();
 //        initializeShifts();
@@ -300,19 +301,30 @@ public class SampleDataInitializer implements ApplicationRunner {
     }
 
     public void initializeClients() {
-        Location location1 = this.locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location with ID 1 not found"));
-        Location location2 = this.locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location with ID 2 not found"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/clients_table.csv"))) {
 
-        Client client1 = new Client("Amy Santiago", "98472094", true,  LocalDate.of(2024,10,4));
-        Client client2 = new Client("Jake Peralta", "92384923", true, LocalDate.of(2024,8,2));
-        this.clientRepository.saveAll(List.of(client1, client2));
-
-        ClientSite clientSite1 = new ClientSite(client1, location1.getAddress(), location1.getPostalCode(), "#01-01", location1);
-        ClientSite clientSite2 = new ClientSite(client2, location2.getAddress(), location2.getPostalCode(), "#02-02", location2);
-
-        client1.setDeactivatedAt(LocalDate.of(2024, 11, 4));
-        client1.setActive(false);
-        this.clientSiteRepository.saveAll(List.of(clientSite1, clientSite2));
+            String[] values;
+            reader.readNext();
+            while ((values = reader.readNext()) != null) {
+                String name = values[0].trim();
+                String phone = values[1].trim();
+                LocalDate joinDate = LocalDate.parse(values[2].trim(), formatter);
+                boolean isActive = values[3].trim().equals("t");
+                LocalDate deactivatedAt = values[4].trim().isEmpty() ? null : LocalDate.parse(values[4].trim(), formatter);
+                Client client = new Client(name, phone, isActive, joinDate);
+                clientRepository.save(client);
+                if (!isActive) {
+                    client.setDeactivatedAt(deactivatedAt);
+                }
+                String streetAddress = values[5].trim();
+                String postalCode = values[6].trim();
+                String unitNumber = values[7].trim();
+                clientService.addClientSiteToClient(client, streetAddress, postalCode, unitNumber);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void initializeContracts() {
