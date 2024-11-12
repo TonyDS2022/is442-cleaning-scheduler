@@ -375,8 +375,8 @@ public class SampleDataInitializer implements ApplicationRunner {
 
         Worker worker1 = workerRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
         // Worker worker2 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 2 not found"));
-        Worker worker6 = workerRepository.findById(6L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
-        Worker worker7 = workerRepository.findById(7L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
+        Worker worker6 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
+        Worker worker7 = workerRepository.findById(3L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
 
         // These two shifts are part of the same cleaning session,
         // meaning they share the same start and end times (auto assigned in Shift.java)
