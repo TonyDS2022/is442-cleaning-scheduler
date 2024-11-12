@@ -1,0 +1,15 @@
+name,phone,join_date,is_active,deactivated_at,street_address,postal_code,unit_number
+Alexander Hamilton,87303924,21/1/2024,t,,849 Woodlands Street 82,730849,#01-01
+Aaron Burr,42590038,19/6/2024,f,6/11/2024,13B Hillcrest Rd,286733,#01-01
+Eliza Schuyler Hamilton,43716551,25/5/2024,t,,229 Joo Chiat Rd,427489,#01-01
+Angelica Schuyler,99722341,28/9/2024,t,,107 Eunos Ave 3,409837,#01-02
+George Washington,67692975,12/10/2024,t,,661 Choa Chu Kang Cres,680661,#10-234
+Marquis de Lafayette,72818026,7/7/2024,t,,5 Ang Mo Kio Street 62,569141,#2A-22
+Thomas Jefferson,30856158,7/2/2024,t,,1 McNally St,187940,#05-01
+John Laurens,55130598,21/4/2024,t,,68A Goodman Rd,439034,
+Philip Hamilton,59549496,9/3/2024,t,,19 Bedok S Rd,460019,#15-217
+Hercules Mulligan,36075593,15/5/2024,t,,624B Punggol Central,822624,#13-115
+James Madison,53019861,27/4/2024,t,,18 Yunnan Walk 2,638149,
+King George III,67473141,5/6/2024,f,10/9/2024,20 Nanyang Ave,639809,#04-04
+Peggy Schuyler,87746342,1/7/2024,t,,18 Jln Zamrud,668611,
+Maria Reynolds,24726697,25/9/2024,t,,3 Lor 42 Geylang,398026,#17-04
