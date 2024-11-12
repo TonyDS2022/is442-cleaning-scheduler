@@ -117,6 +117,31 @@ public class ShiftService {
         shiftRepository.save(existingShift);
     }
 
+    public void startShift(long shiftId) {
+        // TBC: what do we do with the other shifts in the same cleaning session?
+        Shift shift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+        CleaningSession cleaningSession = shift.getCleaningSession();
+        if(shift.getWorkingStatus() == Shift.WorkingStatus.WORKING){
+            throw new IllegalArgumentException("Shift has already started");
+        }
+        else if(shift.getWorkingStatus() == Shift.WorkingStatus.FINISHED){
+            throw new IllegalArgumentException("Shift has already finished");
+        }
+        else if(shift.getWorkingStatus() == Shift.WorkingStatus.CANCELLED){
+            throw new IllegalArgumentException("Shift has been cancelled");
+        }
+        else if(shift.getWorker() == null) {
+            throw new IllegalArgumentException("Shift has no worker assigned");
+        }
+        else{
+            shift.setWorkingStatus(Shift.WorkingStatus.WORKING);
+            shift.setActualStartDate(LocalDate.now());
+            shift.setActualStartTime(LocalTime.now());
+            shiftRepository.save(shift);
+        }
+    }
+
     public void cancelShift(Long shiftId) {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
