@@ -41,12 +41,28 @@ public class ShiftService {
         this.tripRepository = tripRepository;
     }
 
-    public List<Shift> getAllShifts() {
-        return shiftRepository.findAll();
+    public List<ShiftWithWorkerDetailsDto> getAllShifts() {
+
+        List<Shift> shifts = shiftRepository.findAll();
+
+        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
+
+        for (Shift shift : shifts) {
+            Worker worker = shift.getWorker();
+            ShiftWithWorkerDetailsDto shiftWithWorkerDetailsDto = new ShiftWithWorkerDetailsDto(shift);
+            shiftWithWorkerDetailsDtos.add(shiftWithWorkerDetailsDto);
+        }
+
+        return shiftWithWorkerDetailsDtos;
     }
 
-    public Optional<Shift> getShiftById(Long shiftId) {
-        return shiftRepository.findById(shiftId);
+    public Optional<ShiftWithWorkerDetailsDto> getShiftById(Long shiftId) {
+        Optional<Shift> shift = shiftRepository.findById(shiftId);
+        if (shift.isEmpty()) {
+            return Optional.empty();
+        }
+        ShiftWithWorkerDetailsDto shiftWithWorkerDetailsDto = new ShiftWithWorkerDetailsDto(shift.get());
+        return Optional.of(shiftWithWorkerDetailsDto);
     }
 
     public void addShift(Shift shift) {
@@ -94,20 +110,49 @@ public class ShiftService {
     }
 
     // get shifts by month, week, day, worker
-    public List<Shift> getShiftsByMonthAndWorker(int month, int year, Long workerId) {
-        return shiftRepository.findByMonthAndWorker(month, year, workerId);
+    public List<ShiftWithWorkerDetailsDto> getShiftsByMonthAndWorker(int month, int year, Long workerId) {
+        List<Shift> shifts = shiftRepository.findByMonthAndWorker(month, year, workerId);
+        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
+        for (Shift shift : shifts) {
+            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
+        }
+        return shiftWithWorkerDetailsDtos;
     }
 
-    public List<Shift> getShiftsByWeekAndWorker(int week, int year, Long workerId) {
-        return shiftRepository.findByWeekAndWorker(week, year, workerId);
+    public List<ShiftWithWorkerDetailsDto> getShiftsByWeekAndWorker(int week, int year, Long workerId) {
+        List<Shift> shifts = shiftRepository.findByWeekAndWorker(week, year, workerId);
+        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
+        for (Shift shift : shifts) {
+            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
+        }
+        return shiftWithWorkerDetailsDtos;
     }
 
-    public List<Shift> getShiftsByDayAndWorker(LocalDate date, Long workerId) {
-        return shiftRepository.findByDayAndWorker(date, workerId);
+    public List<ShiftWithWorkerDetailsDto> getShiftsByDayAndWorker(LocalDate date, Long workerId) {
+        List<Shift> shifts = shiftRepository.findByDayAndWorker(date, workerId);
+        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
+        for (Shift shift : shifts) {
+            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
+        }
+        return shiftWithWorkerDetailsDtos;
     }
 
-    public List<Shift> getLastShiftByDayAndWorkerBeforeTime(Long workerId, LocalDate date, LocalTime time) {
-        return shiftRepository.findLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
+    public List<ShiftWithWorkerDetailsDto> getLastShiftByDayAndWorkerBeforeTime(Long workerId, LocalDate date, LocalTime time) {
+        List<Shift> shifts = shiftRepository.findLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
+        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
+        for (Shift shift : shifts) {
+            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
+        }
+        return shiftWithWorkerDetailsDtos;
+    }
+
+    public List<ShiftWithWorkerDetailsDto> getShiftsDtosByWorkerId(Long workerId) {
+        List<Shift> shifts = shiftRepository.findByWorkerWorkerId(workerId);
+        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
+        for (Shift shift : shifts) {
+            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
+        }
+        return shiftWithWorkerDetailsDtos;
     }
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {
