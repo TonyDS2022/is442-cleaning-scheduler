@@ -25,6 +25,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.Subzone;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
@@ -75,6 +77,7 @@ public class SampleDataInitializer implements ApplicationRunner {
     private final MedicalRecordService medicalRecordService;
     private final TripService tripService;
     private final WorkerService workerService;
+    private final TripRepository tripRepository;
 
     public SampleDataInitializer(
             AdminRepository adminRepository,
@@ -92,7 +95,7 @@ public class SampleDataInitializer implements ApplicationRunner {
             LocationService locationService,
             MedicalRecordService medicalRecordService,
             TripService tripService,
-            WorkerService workerService) {
+            WorkerService workerService, TripRepository tripRepository) {
         this.adminRepository = adminRepository;
         this.contractRepository = contractRepository;
         this.clientSiteRepository = clientSiteRepository;
@@ -109,15 +112,16 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.medicalRecordService = medicalRecordService;
         this.tripService = tripService;
         this.workerService = workerService;
+        this.tripRepository = tripRepository;
     }
 
     @Override
     @Transactional
-    public void run(ApplicationArguments args) throws Exception {
+    public synchronized void run(ApplicationArguments args) throws Exception {
         // Add sample data here
         initializeSubzones();
-//        initializeLocation();
-//        initializeTrips();
+        initializeLocation();
+        initializeTrips();
         initializeWorkers();
 //        initializeClients();
 //        initializeContracts();
@@ -128,6 +132,7 @@ public class SampleDataInitializer implements ApplicationRunner {
 //        initializeLeaveApplications();
     }
 
+    @Transactional
     public void initializeSubzones() throws Exception {
         File subzoneGeojson = new File("MasterPlan2019SubzoneBoundaryNoSeaGEOJSON.geojson");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -217,31 +222,65 @@ public class SampleDataInitializer implements ApplicationRunner {
         }
     }
 
+    @Transactional
     public void initializeLocation() {
-        Location loc1 = new Location("88 Corporation Road", "649823");
-        Location loc2 = new Location("61 Kampong Arang Road", "438181");
-        Location loc3 = new Location("20 Orchard Road", "238830");
+        try (CSVReader reader = new CSVReader(new FileReader( "src/main/resources/locations_table.csv"))) {
 
-        this.locationRepository.saveAll(List.of(loc1, loc2, loc3));
+            String[] values;
+            reader.readNext();
 
-        this.locationService.updateLocationLatLong().subscribe();
+            while ((values = reader.readNext()) != null) {
+                Double latitude = Double.parseDouble(values[0].trim());
+                Double longitude = Double.parseDouble(values[1].trim());
+                Long subzoneId = Long.parseLong(values[3].trim());
+                String address = values[4].trim();
+                String postalCode = values[5].trim();
+                Location location = new Location(address, postalCode);
+                location.setLatitude(latitude);
+                location.setLongitude(longitude);
+                Subzone subzone = subzoneRepository.findById(subzoneId).orElseThrow(() -> new IllegalStateException("Subzone with ID " + subzoneId + " not found"));
+                location.setSubzone(subzone);
+                locationRepository.save(location);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @Transactional
     public void initializeTrips() {
-        tripService.buildTrips();
-        tripService.updateTripDistanceDurationAsync().subscribe();
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/trips_table.csv"))) {
+
+            String[] values;
+            reader.readNext();
+
+            while ((values = reader.readNext()) != null) {
+                Double tripDistanceMeters = Double.parseDouble(values[1].trim());
+                Double tripDurationSeconds = Double.parseDouble(values[2].trim());
+                Long destinationId = Long.parseLong(values[3].trim());
+                Long originId = Long.parseLong(values[4].trim());
+                Location origin = locationRepository.findById(originId).orElseThrow(() -> new IllegalStateException("Location with ID " + originId + " not found"));
+                Location destination = locationRepository.findById(destinationId).orElseThrow(() -> new IllegalStateException("Location with ID " + destinationId + " not found"));
+                Trip trip = new Trip(origin, destination);
+                trip.setTripDurationSeconds(tripDurationSeconds);
+                trip.setTripDistanceMeters(tripDistanceMeters);
+                tripRepository.save(trip);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @Transactional
     public void initializeWorkers() {
         // read from resource/workers.csv
         try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/workers.csv"))) {
 
             String[] values;
             reader.readNext();
-
-            int lineCount = 0;
-
-            while ((values = reader.readNext()) != null && lineCount < 5) {
+            while ((values = reader.readNext()) != null) {
                 String name = values[0].trim();
                 String username = values[1].trim();
                 String password = values[2].trim();
@@ -255,8 +294,6 @@ public class SampleDataInitializer implements ApplicationRunner {
                 String unitNumber = values[10].trim();
                 Worker worker = new Worker(name, username, password, email, phone, bio, startWorkingHours, endWorkingHours);
                 workerService.addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
-
-                lineCount++;
             }
         } catch (Exception e) {
             e.printStackTrace();
