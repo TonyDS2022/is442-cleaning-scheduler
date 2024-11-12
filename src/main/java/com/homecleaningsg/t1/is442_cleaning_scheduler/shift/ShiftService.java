@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -70,12 +72,49 @@ public class ShiftService {
         // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
-    public Shift updateShift(Long shiftId, Shift updatedShift) {
-        if (!shiftRepository.existsById(shiftId)) {
-            throw new IllegalArgumentException("Shift not found");
-        }
-        updatedShift.setShiftId(shiftId);
-        return shiftRepository.save(updatedShift);
+    public void updateShift(Long shiftId, Map<String, String> updates) {
+        Shift existingShift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+        CleaningSession existingCleaningSession = existingShift.getCleaningSession();
+
+        updates.forEach((key, value) -> {
+            try {
+                switch (key) {
+                    case "sessionStartDate":
+                        LocalDate startDate = LocalDate.parse(value);
+                        existingCleaningSession.setSessionStartDate(startDate);
+                        existingShift.setSessionStartDate(startDate);
+                        break;
+
+                    case "sessionStartTime":
+                        LocalTime startTime = LocalTime.parse(value);
+                        existingCleaningSession.setSessionStartTime(startTime);
+                        existingShift.setSessionStartTime(startTime);
+                        break;
+
+                    case "sessionEndDate":
+                        LocalDate endDate = LocalDate.parse(value);
+                        existingCleaningSession.setSessionEndDate(endDate);
+                        existingShift.setSessionEndDate(endDate);
+                        break;
+
+                    case "sessionEndTime":
+                        LocalTime endTime = LocalTime.parse(value);
+                        existingCleaningSession.setSessionEndTime(endTime);
+                        existingShift.setSessionEndTime(endTime);
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException("Invalid key: " + key);
+                }
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("Invalid date or time format for key: " + key);
+            }
+        });
+
+        // Save entities once after all updates are applied
+        cleaningSessionRepository.save(existingCleaningSession);
+        shiftRepository.save(existingShift);
     }
 
     public void cancelShift(Long shiftId) {

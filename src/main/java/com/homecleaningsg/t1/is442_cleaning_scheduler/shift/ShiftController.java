@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,12 +51,14 @@ public class ShiftController {
     // localhost:8080/api/v0.1/shift/update-shift/1
     @PutMapping("/update-shift/{shiftId}")
     public ResponseEntity<String> updateShift(
-            @PathVariable("shiftId") Long shiftId, @RequestBody Shift updatedShift) {
+            @PathVariable("shiftId") Long shiftId,
+            @RequestBody Map<String, String> updates
+    ) {
         try{
-            shiftService.updateShift(shiftId, updatedShift);
+            shiftService.updateShift(shiftId, updates);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift updated successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update shift details.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
