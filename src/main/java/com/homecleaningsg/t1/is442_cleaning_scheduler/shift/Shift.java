@@ -82,8 +82,8 @@ public class Shift {
     @Column(name = "actualEndTime")
     private LocalTime actualEndTime;
 
-    @Column(name = "duration")
-    private Long duration;
+    @Column(name = "shiftDurationHours")
+    private Long shiftDurationHours = 0L; // automatically evaluated by onUpdate()
 
     @NonNull
     @Enumerated(EnumType.STRING)
@@ -96,7 +96,6 @@ public class Shift {
         FINISHED,
         CANCELLED
     }
-
 
     private boolean workerHasPendingLeave;
 
@@ -131,9 +130,9 @@ public class Shift {
         if (actualStartDate != null && actualStartTime != null && actualEndDate != null && actualEndTime != null) {
             LocalDateTime startDateTime = LocalDateTime.of(actualStartDate, actualStartTime);
             LocalDateTime endDateTime = LocalDateTime.of(actualEndDate, actualEndTime);
-            this.duration = Duration.between(startDateTime, endDateTime).toHours();
+            this.shiftDurationHours = Duration.between(startDateTime, endDateTime).toHours();
         } else {
-            this.duration = 0L;
+            this.shiftDurationHours = 0L;
         }
     }
 }
