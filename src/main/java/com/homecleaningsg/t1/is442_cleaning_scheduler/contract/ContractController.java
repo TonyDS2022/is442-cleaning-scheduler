@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +72,12 @@ public class ContractController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/{contractId}")
+    public Contract getContractById(@PathVariable("contractId") Long contractId) {
+        return contractService.getContractById(contractId);
+    }
+
+    // localhost:8080/api/v0.1/contract/add-contract
     @PostMapping("/add-contract/")
     public ResponseEntity<String> addContract(@RequestBody Contract contract) {
         try {
