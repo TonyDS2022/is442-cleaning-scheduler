@@ -65,6 +65,19 @@ public class ShiftController {
         }
     }
 
+    // localhost:8080/api/v0.1/shift/start-shift/1
+    @PutMapping("/start-shift/{shiftId}")
+    public ResponseEntity<String> startShift(
+            @PathVariable Long shiftId
+    ) {
+        try{
+            shiftService.startShift(shiftId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift started successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to start shift.");
+        }
+    }
+
     // localhost:8080/api/v0.1/shift/cancel-shift/2
     @PutMapping("/cancel-shift/{shiftId}")
     public ResponseEntity<String> cancelShift(@PathVariable("shiftId") Long shiftId) {
