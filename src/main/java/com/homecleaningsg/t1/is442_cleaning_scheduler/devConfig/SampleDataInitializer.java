@@ -344,7 +344,8 @@ public class SampleDataInitializer implements ApplicationRunner {
         contract1.setWorkersBudgeted(1);
         contract1.setRooms(1);
         contract1.setFrequency(Contract.Frequency.WEEKLY);
-        contract1.setSessionDurationMinutes(60);
+        contract1.setSessionStartTime(LocalTime.of(9,0));
+        contract1.setSessionEndTime(LocalTime.of(12,0));
         contract1.setCreationDate(LocalDate.of(2024, 11, 3));
 
         Contract contract2 = new Contract();
@@ -355,7 +356,8 @@ public class SampleDataInitializer implements ApplicationRunner {
         contract2.setWorkersBudgeted(3);
         contract2.setRooms(2);
         contract2.setFrequency(Contract.Frequency.BIWEEKLY);
-        contract2.setSessionDurationMinutes(120);
+        contract2.setSessionStartTime(LocalTime.of(9,0));
+        contract2.setSessionEndTime(LocalTime.of(12,0));
         contract2.setCreationDate(LocalDate.of(2024, 9, 1));
 
         client1.addContract(contract1);
@@ -381,8 +383,9 @@ public class SampleDataInitializer implements ApplicationRunner {
                 LocalDate.of(2024,10,5),
                 LocalTime.of(12,0),
                 "Session 1",
-                CleaningSession.SessionStatus.WORKING
+                2
         );
+        session1.setSessionStatus(CleaningSession.SessionStatus.WORKING);
         session1.setSessionRating(CleaningSession.Rating.AVERAGE);
         session1.setSessionFeedback("Feedback 1");
         session1.setPlanningStage(CleaningSession.PlanningStage.GREEN);
@@ -394,8 +397,9 @@ public class SampleDataInitializer implements ApplicationRunner {
                 LocalDate.of(2024,10,12),
                 LocalTime.of(17,0),
                 "Session 2",
-                CleaningSession.SessionStatus.NOT_STARTED
+                1
         );
+        session2.setSessionStatus(CleaningSession.SessionStatus.NOT_STARTED);
         session2.setSessionRating(CleaningSession.Rating.GOOD);
         session2.setSessionFeedback("Feedback 2");
 
@@ -406,7 +410,7 @@ public class SampleDataInitializer implements ApplicationRunner {
                 LocalDate.of(2024,11,3),
                 LocalTime.of(12,0),
                 "Session 3",
-                CleaningSession.SessionStatus.NOT_STARTED
+                3
         );
         session3.setSessionStatus(CleaningSession.SessionStatus.CANCELLED);
         session3.setCancelledAt(LocalDate.of(2024,11,1));

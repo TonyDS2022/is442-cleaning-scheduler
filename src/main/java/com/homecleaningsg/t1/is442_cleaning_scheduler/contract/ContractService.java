@@ -1,13 +1,20 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
+import com.google.common.util.concurrent.ClosingFuture;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSiteRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,12 +26,18 @@ public class ContractService {
     private final ContractRepository contractRepository;
     private final CleaningSessionRepository cleaningSessionRepository;
     private final CleaningSessionService cleaningSessionService;
+    private final ClientSiteRepository clientSiteRepository;
+    private final LocationRepository locationRepository;
+    private final ShiftService shiftService;
 
     @Autowired
-    public ContractService(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, CleaningSessionService cleaningSessionService) {
+    public ContractService(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, CleaningSessionService cleaningSessionService, ClientSiteRepository clientSiteRepository, LocationRepository locationRepository, ShiftService shiftService) {
         this.contractRepository = contractRepository;
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.cleaningSessionService = cleaningSessionService;
+        this.clientSiteRepository = clientSiteRepository;
+        this.locationRepository = locationRepository;
+        this.shiftService = shiftService;
     }
 
     // updates contractStatus automatically when all contracts are retrieved
@@ -59,6 +72,10 @@ public class ContractService {
                 .collect(Collectors.toList());
     }
 
+    public Contract getContractById(Long contractId){
+        return contractRepository.findById(contractId).orElseThrow(() -> new IllegalArgumentException("Contract not found"));
+    }
+
     // Create, Update, Delete Contract
     public Contract createContract(Contract contract) {
         return contractRepository.save(contract);
@@ -83,8 +100,60 @@ public class ContractService {
         contractRepository.deleteById(id);
     }
 
+    private LocalDate getNextDateByFrequency(LocalDate currentDate, Contract.Frequency frequency) {
+        return switch (frequency) {
+            case DAILY -> currentDate.plusDays(1);
+            case WEEKLY -> currentDate.plusWeeks(1);
+            case BIWEEKLY -> currentDate.plusWeeks(2);
+            case MONTHLY -> currentDate.plusMonths(1);
+            case BIMONTHLY -> currentDate.plusMonths(2);
+            case QUARTERLY -> currentDate.plusMonths(3);
+            case ANNUALLY -> currentDate.plusYears(1);
+            default -> throw new IllegalArgumentException("Unsupported frequency: " + frequency);
+        };
+    }
+
     public Contract addContract(Contract contract){
-        return contractRepository.save(contract);
+        locationRepository.save(contract.getClientSite().getLocation());
+        clientSiteRepository.save(contract.getClientSite());
+        contractRepository.save(contract);
+        List<LocalDate> daysToSchedule = new ArrayList<>();
+        LocalDate currentDate = contract.getContractStart();
+        // Loop until we reach the contract end date
+        while (!currentDate.isAfter(contract.getContractEnd())) {
+            // Loop until we reach or exceed the contract end date
+            while (!currentDate.isAfter(contract.getContractEnd())) {
+                // Add the current date to the list as a session day
+                daysToSchedule.add(currentDate);
+                // Increment currentDate based on contract frequency
+                currentDate = getNextDateByFrequency(currentDate, contract.getFrequency());
+            }
+            // Increment currentDate based on contract frequency
+            currentDate = getNextDateByFrequency(currentDate, contract.getFrequency());
+        }
+        // Create CleaningSessions and Shifts for each calculated day
+        int sessionCounter = 1; // Initialize a counter to label the sessions
+        for (LocalDate day : daysToSchedule) {
+            // Construct the session description with the session number (e.g., "Session 1", "Session 2", etc.)
+            String sessionDescription = "Session " + sessionCounter++;
+            // Create a CleaningSession based on the day and contract details
+            CleaningSession newCleaningSession = new CleaningSession(
+                    contract,
+                    day,
+                    contract.getSessionStartTime(),
+                    day,
+                    contract.getSessionEndTime(),
+                    sessionDescription,
+                    contract.getWorkersBudgeted()
+            );
+            cleaningSessionService.addCleaningSession(newCleaningSession);
+            // Create Shifts based on the workers budgeted in the contract
+            for (int i = 0; i < contract.getWorkersBudgeted(); i++) {
+                Shift newShift = new Shift(newCleaningSession);
+                shiftService.addShift(newShift);
+            }
+        }
+        return contract;
     }
 
     public Contract updateContract(Long contractId, Contract updatedContract){

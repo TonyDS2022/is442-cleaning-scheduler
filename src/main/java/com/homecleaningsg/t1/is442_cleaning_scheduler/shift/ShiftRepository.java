@@ -19,18 +19,18 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
 
     List<Shift> findBySessionEndTimeBetween(LocalTime endTimeLeftBound, LocalTime endTimeRightBound);
 
-    @Query("SELECT SUM(s.duration) FROM Shift s " +
+    @Query("SELECT SUM(s.shiftDurationHours) FROM Shift s " +
             "WHERE s.worker.workerId = :workerId " +
             "AND EXTRACT(YEAR FROM s.actualStartDate) = :year")
     Long getWorkerTotalHoursWorkedInYear(@Param("workerId") Long workerId, @Param("year") int year);
 
-    @Query("SELECT SUM(s.duration) FROM Shift s " +
+    @Query("SELECT SUM(s.shiftDurationHours) FROM Shift s " +
             "WHERE s.worker.workerId = :workerId " +
             "AND EXTRACT(YEAR FROM s.actualStartDate) = :year " +
             "AND EXTRACT(MONTH FROM s.actualStartDate) = :month")
     Long getWorkerTotalHoursWorkedInMonth(@Param("workerId") Long workerId, @Param("year") int year, @Param("month") int month);
 
-    @Query("SELECT s.duration FROM Shift s " +
+    @Query("SELECT s.shiftDurationHours FROM Shift s " +
             "WHERE s.worker.workerId = :workerId " +
             "AND s.actualStartDate >= :startOfWeek " +
             "AND s.actualEndDate <= :endOfWeek")
