@@ -73,5 +73,9 @@ public class ClientSite {
         this.location = location;
         client.addClientSite(this);
     }
+
+    public boolean isSameSite(ClientSite clientSite) {
+        return this.streetAddress.equals(clientSite.getStreetAddress()) && this.postalCode.equals(clientSite.getPostalCode()) && this.unitNumber.equals(clientSite.getUnitNumber());
+    }
 }
 
