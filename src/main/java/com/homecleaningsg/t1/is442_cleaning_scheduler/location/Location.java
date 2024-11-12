@@ -50,6 +50,10 @@ public class Location {
         }
     }
 
+    public void setSubzone(Subzone subzone) {
+        this.subzone = subzone;
+    }
+
     public double getEuclideanDistanceKmFrom(Location another) {
         double EARTH_RADIUS_KM = 6371.0;
         //check that latitude and longitude are not null
