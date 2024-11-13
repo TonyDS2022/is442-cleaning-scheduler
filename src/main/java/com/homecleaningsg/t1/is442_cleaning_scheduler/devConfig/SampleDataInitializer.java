@@ -25,9 +25,13 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.Subzone;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
+import com.opencsv.CSVReader;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.LngLatAlt;
@@ -45,6 +49,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -71,6 +76,8 @@ public class SampleDataInitializer implements ApplicationRunner {
     private final LocationService locationService;
     private final MedicalRecordService medicalRecordService;
     private final TripService tripService;
+    private final WorkerService workerService;
+    private final TripRepository tripRepository;
 
     public SampleDataInitializer(
             AdminRepository adminRepository,
@@ -87,8 +94,8 @@ public class SampleDataInitializer implements ApplicationRunner {
             ClientService clientService,
             LocationService locationService,
             MedicalRecordService medicalRecordService,
-            TripService tripService
-    ) {
+            TripService tripService,
+            WorkerService workerService, TripRepository tripRepository) {
         this.adminRepository = adminRepository;
         this.contractRepository = contractRepository;
         this.clientSiteRepository = clientSiteRepository;
@@ -104,25 +111,28 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.locationService = locationService;
         this.medicalRecordService = medicalRecordService;
         this.tripService = tripService;
+        this.workerService = workerService;
+        this.tripRepository = tripRepository;
     }
 
     @Override
     @Transactional
-    public void run(ApplicationArguments args) throws Exception {
+    public synchronized void run(ApplicationArguments args) throws Exception {
         // Add sample data here
         initializeSubzones();
         initializeLocation();
         initializeTrips();
         initializeWorkers();
-        initializeClients();
-        initializeContracts();
-        initializeCleaningSessions();
-        initializeShifts();
-        initializeAdmins();
-        initializeMedicalRecords();
-        initializeLeaveApplications();
+//        initializeClients();
+//        initializeContracts();
+//        initializeCleaningSessions();
+//        initializeShifts();
+//        initializeAdmins();
+//        initializeMedicalRecords();
+//        initializeLeaveApplications();
     }
 
+    @Transactional
     public void initializeSubzones() throws Exception {
         File subzoneGeojson = new File("MasterPlan2019SubzoneBoundaryNoSeaGEOJSON.geojson");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -212,58 +222,82 @@ public class SampleDataInitializer implements ApplicationRunner {
         }
     }
 
+    @Transactional
     public void initializeLocation() {
-        List<Location> locations = new ArrayList<>();
-        locations.add(new Location("88 Corporation Road", "649823"));
-        locations.add(new Location("61 Kampong Arang Road", "438181"));
-        locations.add(new Location("20 Orchard Road", "238830"));
+        try (CSVReader reader = new CSVReader(new FileReader( "src/main/resources/locations_table.csv"))) {
 
-        this.locationRepository.saveAll(locations);
+            String[] values;
+            reader.readNext();
 
-        this.locationService.updateLocationLatLong().subscribe();
+            while ((values = reader.readNext()) != null) {
+                Double latitude = Double.parseDouble(values[0].trim());
+                Double longitude = Double.parseDouble(values[1].trim());
+                Long subzoneId = Long.parseLong(values[3].trim());
+                String address = values[4].trim();
+                String postalCode = values[5].trim();
+                Location location = new Location(address, postalCode);
+                location.setLatitude(latitude);
+                location.setLongitude(longitude);
+                Subzone subzone = subzoneRepository.findById(subzoneId).orElseThrow(() -> new IllegalStateException("Subzone with ID " + subzoneId + " not found"));
+                location.setSubzone(subzone);
+                locationRepository.save(location);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @Transactional
     public void initializeTrips() {
-        tripService.buildTrips();
-        tripService.updateTripDistanceDurationAsync().subscribe();
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/trips_table.csv"))) {
+
+            String[] values;
+            reader.readNext();
+
+            while ((values = reader.readNext()) != null) {
+                Double tripDistanceMeters = Double.parseDouble(values[1].trim());
+                Double tripDurationSeconds = Double.parseDouble(values[2].trim());
+                Long destinationId = Long.parseLong(values[3].trim());
+                Long originId = Long.parseLong(values[4].trim());
+                Location origin = locationRepository.findById(originId).orElseThrow(() -> new IllegalStateException("Location with ID " + originId + " not found"));
+                Location destination = locationRepository.findById(destinationId).orElseThrow(() -> new IllegalStateException("Location with ID " + destinationId + " not found"));
+                Trip trip = new Trip(origin, destination);
+                trip.setTripDurationSeconds(tripDurationSeconds);
+                trip.setTripDistanceMeters(tripDistanceMeters);
+                tripRepository.save(trip);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @Transactional
     public void initializeWorkers() {
-        Worker worker1 = new Worker(
-                "Karthiga",
-                "karthiga",
-                "kar1243",
-                "karthigamagesh17@gmail.com",
-                "99999999",
-                "Hello, I am a sincere cleaner specialised in wooden floors",
-                LocalTime.of(8,0),
-                LocalTime.of(17,0));
-        worker1.setJoinDate(LocalDate.of(2024,5,3));
+        // read from resource/workers.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/workers.csv"))) {
 
-        Worker worker2 = new Worker(
-                "John",
-                "john",
-                "john1243",
-                "john@gmail.com",
-                "99999999",
-                "Cleaner with 20 years experience in cleaning bungalows/landed properties",
-                LocalTime.of(13,0),
-                LocalTime.of(22, 0));
-        worker2.setJoinDate(LocalDate.of(2024,10,3));
-
-        Worker worker3 = new Worker(
-                "Alice Tan",
-                "alice",
-                "alice1234",
-                "alice.tan@example.com",
-                "91234567",
-                "Experienced cleaner specializing in office spaces and carpet cleaning.",
-                LocalTime.of(7, 0),
-                LocalTime.of(16, 0)
-        );
-        worker3.setJoinDate(LocalDate.of(2024,1,3));
-
-        workerRepository.saveAll(List.of(worker1, worker2, worker3));
+            String[] values;
+            reader.readNext();
+            while ((values = reader.readNext()) != null) {
+                String name = values[0].trim();
+                String username = values[1].trim();
+                String password = values[2].trim();
+                String email = values[3].trim();
+                String phone = values[4].trim();
+                String bio = values[5].trim();
+                LocalTime startWorkingHours = LocalTime.parse(values[6].trim());
+                LocalTime endWorkingHours = LocalTime.parse(values[7].trim());
+                String streetAddress = values[8].trim();
+                String postalCode = values[9].trim();
+                String unitNumber = values[10].trim();
+                Worker worker = new Worker(name, username, password, email, phone, bio, startWorkingHours, endWorkingHours);
+                workerService.addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void initializeClients() {
@@ -296,8 +330,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         contract1.setWorkersBudgeted(1);
         contract1.setRooms(1);
         contract1.setFrequency(Contract.Frequency.WEEKLY);
-        contract1.setSessionStartTime(LocalTime.of(9,0));
-        contract1.setSessionEndTime(LocalTime.of(12,0));
+        contract1.setSessionDurationMinutes(60);
         contract1.setCreationDate(LocalDate.of(2024, 11, 3));
 
         Contract contract2 = new Contract();
@@ -308,8 +341,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         contract2.setWorkersBudgeted(3);
         contract2.setRooms(2);
         contract2.setFrequency(Contract.Frequency.BIWEEKLY);
-        contract2.setSessionStartTime(LocalTime.of(9,0));
-        contract2.setSessionEndTime(LocalTime.of(12,0));
+        contract2.setSessionDurationMinutes(120);
         contract2.setCreationDate(LocalDate.of(2024, 9, 1));
 
         client1.addContract(contract1);
@@ -335,9 +367,8 @@ public class SampleDataInitializer implements ApplicationRunner {
                 LocalDate.of(2024,10,5),
                 LocalTime.of(12,0),
                 "Session 1",
-                2
+                CleaningSession.SessionStatus.WORKING
         );
-        session1.setSessionStatus(CleaningSession.SessionStatus.WORKING);
         session1.setSessionRating(CleaningSession.Rating.AVERAGE);
         session1.setSessionFeedback("Feedback 1");
         session1.setPlanningStage(CleaningSession.PlanningStage.GREEN);
@@ -349,9 +380,8 @@ public class SampleDataInitializer implements ApplicationRunner {
                 LocalDate.of(2024,10,12),
                 LocalTime.of(17,0),
                 "Session 2",
-                1
+                CleaningSession.SessionStatus.NOT_STARTED
         );
-        session2.setSessionStatus(CleaningSession.SessionStatus.NOT_STARTED);
         session2.setSessionRating(CleaningSession.Rating.GOOD);
         session2.setSessionFeedback("Feedback 2");
 
@@ -362,7 +392,7 @@ public class SampleDataInitializer implements ApplicationRunner {
                 LocalDate.of(2024,11,3),
                 LocalTime.of(12,0),
                 "Session 3",
-                3
+                CleaningSession.SessionStatus.NOT_STARTED
         );
         session3.setSessionStatus(CleaningSession.SessionStatus.CANCELLED);
         session3.setCancelledAt(LocalDate.of(2024,11,1));
@@ -377,8 +407,8 @@ public class SampleDataInitializer implements ApplicationRunner {
 
         Worker worker1 = workerRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
         // Worker worker2 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 2 not found"));
-        Worker worker6 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
-        Worker worker7 = workerRepository.findById(3L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
+        Worker worker6 = workerRepository.findById(6L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
+        Worker worker7 = workerRepository.findById(7L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
 
         // These two shifts are part of the same cleaning session,
         // meaning they share the same start and end times (auto assigned in Shift.java)
