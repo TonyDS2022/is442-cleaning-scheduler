@@ -34,7 +34,7 @@ public class WorkerController {
         return workerService.getResidentialAddressOfWorker(workerId);
     }
 
-    @PostMapping("/{workerId}/addResidentialAddressToWorker/")
+    @PostMapping("/{workerId}/addResidentialAddressToWorker")
     public ResponseEntity<String> addResidentialAddressToWorker(
             @PathVariable Long workerId,
             @RequestParam String streetAddress,
