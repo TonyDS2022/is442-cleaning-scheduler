@@ -200,4 +200,13 @@ public class ContractService {
 
         return new ContractReportDto(newContracts, existingOngoingContracts, completedContracts);
     }
+
+    public Long getNumberOfHours(Long numberOfRooms, ClientSite.PropertyType propertyType) {
+        if (propertyType == ClientSite.PropertyType.HDB) {
+            return numberOfRooms;
+        } else if (propertyType == ClientSite.PropertyType.CONDOMINIUM) {
+            return numberOfRooms + 1;
+        }
+        throw new IllegalArgumentException("Invalid property type or number of rooms");
+    }
 }
