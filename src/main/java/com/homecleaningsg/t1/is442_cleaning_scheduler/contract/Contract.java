@@ -131,8 +131,7 @@ public class Contract {
                     float price,
                     int workersBudgeted,
                     int rooms,
-                    String frequency,
-                    ContractStatus contractStatus) {
+                    String frequency) {
         this.clientSite = clientSite;
         this.client = client;
         this.contractStart = contractStart;
@@ -144,7 +143,6 @@ public class Contract {
         this.workersBudgeted = workersBudgeted;
         this.rooms = rooms;
         this.frequency = Frequency.valueOf(frequency);
-        this.contractStatus = contractStatus;
     }
 
     @PrePersist
