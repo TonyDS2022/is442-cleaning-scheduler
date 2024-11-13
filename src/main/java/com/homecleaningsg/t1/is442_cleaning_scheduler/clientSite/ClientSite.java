@@ -49,6 +49,16 @@ public class ClientSite {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
+    private Long numberOfRooms;
+
+    public enum PropertyType {
+        HDB,
+        CONDOMINIUM,
+        LANDED
+    }
+
+    private PropertyType propertyType;
+
     @NonNull
     @JsonIgnore
     private Timestamp lastModified;
@@ -72,6 +82,19 @@ public class ClientSite {
         this.unitNumber = unitNumber;
         this.location = location;
         client.addClientSite(this);
+    }
+    public ClientSite(
+            Client client,
+            String streetAddress,
+            String postalCode,
+            String unitNumber,
+            Location location,
+            Long numberOfRooms,
+            PropertyType propertyType
+    ) {
+        this(client, streetAddress, postalCode, unitNumber, location);
+        this.numberOfRooms = numberOfRooms;
+        this.propertyType = propertyType;
     }
 
     public boolean isSameSite(ClientSite clientSite) {

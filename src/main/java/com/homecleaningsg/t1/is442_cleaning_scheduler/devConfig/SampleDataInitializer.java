@@ -321,7 +321,9 @@ public class SampleDataInitializer implements ApplicationRunner {
                 String streetAddress = values[5].trim();
                 String postalCode = values[6].trim();
                 String unitNumber = values[7].trim();
-                clientService.addClientSiteToClient(client, streetAddress, postalCode, unitNumber);
+                Long numberOfRooms = Long.parseLong(values[8].trim());
+                ClientSite.PropertyType propertyType = ClientSite.PropertyType.valueOf(values[9].trim());
+                clientService.addClientSiteToClient(client, streetAddress, postalCode, unitNumber, numberOfRooms, propertyType);
             }
         } catch (Exception e) {
             e.printStackTrace();
