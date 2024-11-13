@@ -263,7 +263,7 @@ public class SampleDataInitializer implements ApplicationRunner {
                 Long originId = Long.parseLong(values[4].trim());
                 Location origin = locationRepository.findById(originId).orElseThrow(() -> new IllegalStateException("Location with ID " + originId + " not found"));
                 Location destination = locationRepository.findById(destinationId).orElseThrow(() -> new IllegalStateException("Location with ID " + destinationId + " not found"));
-                Trip trip = new Trip(origin, destination);
+                Trip trip = git new Trip(origin, destination);
                 trip.setTripDurationSeconds(tripDurationSeconds);
                 trip.setTripDistanceMeters(tripDistanceMeters);
                 tripRepository.save(trip);
