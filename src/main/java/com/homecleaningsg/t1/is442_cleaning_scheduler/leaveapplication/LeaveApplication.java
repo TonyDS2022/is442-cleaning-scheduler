@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.DateTimeUtils;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.Admin;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,6 +39,9 @@ public class LeaveApplication {
     @ManyToOne(cascade = CascadeType.DETACH)
     @JsonBackReference("worker-leaveApplication")
     private Worker worker;
+
+    @ManyToOne(cascade = CascadeType.DETACH)
+    private Admin admin;
 
     @NonNull
     @Enumerated(EnumType.STRING)
@@ -92,6 +96,7 @@ public class LeaveApplication {
             LocalDate leaveEndDate
     ) {
         this.worker = worker;
+        this.admin = worker.getSupervisor();
         this.leaveType = leaveType;
         this.leaveStartDate = leaveStartDate;
         this.leaveEndDate = leaveEndDate;
