@@ -43,7 +43,7 @@ public class CleaningSessionTest {
                 endDate,
                 endTime,
                 "Test Session",
-                CleaningSession.SessionStatus.NOT_STARTED
+                2
         );
     }
 
