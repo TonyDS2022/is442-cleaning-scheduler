@@ -9,6 +9,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -39,6 +40,9 @@ public class ShiftService {
         this.tripRepository = tripRepository;
     }
 
+    @Value("${shift.auto-assign-worker}")
+    private boolean autoAssignWorker;
+
     public List<ShiftWithWorkerDetailsDto> getAllShifts() {
 
         List<Shift> shifts = shiftRepository.findAll();
@@ -65,11 +69,13 @@ public class ShiftService {
 
     public void addShift(Shift shift) {
         // attempt to assign worker
-        List<AvailableWorkerDto> availableWorkers = getAvailableWorkersForShift(shift);
-        if (!availableWorkers.isEmpty()) {
-            Worker worker = workerRepository.findById(availableWorkers.get(0).getWorkerId())
-                    .orElseThrow(() -> new IllegalArgumentException("Worker not found"));
-            setWorker(shift, worker);
+        if (autoAssignWorker) {
+            List<AvailableWorkerDto> availableWorkers = getAvailableWorkersForShift(shift);
+            if (!availableWorkers.isEmpty()) {
+                Worker worker = workerRepository.findById(availableWorkers.get(0).getWorkerId())
+                        .orElseThrow(() -> new IllegalArgumentException("Worker not found"));
+                setWorker(shift, worker);
+            }
         }
         shiftRepository.save(shift);
         // updateCleaningSessionPlanningStage(shift.getCleaningSession());
