@@ -1,11 +1,12 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.DateTimeUtils;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,23 +18,21 @@ import java.util.Optional;
 @Service
 public class WorkerService {
     private final WorkerRepository workerRepository;
-    private final LocationRepository locationRepository;
-    private final ShiftService shiftService;
-    private final ShiftRepository shiftRepository;
+    private final LeaveApplicationRepository leaveApplicationRepository;
     private final LocationService locationService;
+    private final ShiftRepository shiftRepository;
 
     @Autowired
     public WorkerService(
             WorkerRepository workerRepository,
-            LocationRepository locationRepository,
-            ShiftService shiftService,
-            ShiftRepository shiftRepository,
-            LocationService locationService) {
+            LeaveApplicationRepository leaveApplicationRepository,
+            LocationService locationService,
+            ShiftRepository shiftRepository
+    ) {
         this.workerRepository = workerRepository;
-        this.locationRepository = locationRepository;
-        this.shiftService = shiftService;
-        this.shiftRepository = shiftRepository;
+        this.leaveApplicationRepository = leaveApplicationRepository;
         this.locationService = locationService;
+        this.shiftRepository = shiftRepository;
     }
 
     public List<Worker> getAllWorkers() {
@@ -131,5 +130,53 @@ public class WorkerService {
         Long terminatedWorkers = workerRepository.countTerminatedWorkersByYear(year);
 
         return new WorkerReportDto(newWorkers, existingWorkers, terminatedWorkers);
+    }
+
+    public boolean workerCanApplyForLeave(
+            Long workerId,
+            LocalDate leaveStartDate,
+            LocalDate leaveEndDate,
+            LeaveApplication.LeaveType leaveType
+    ) throws IllegalArgumentException {
+        // check if worker exists
+        if (!workerRepository.existsById(workerId)) {
+            throw new IllegalArgumentException("Worker not found");
+        }
+        // check if leave start date is before end date
+        if (leaveStartDate.isAfter(leaveEndDate)) {
+            throw new IllegalArgumentException("Leave start date cannot be after end date");
+        }
+        // check if leave start end dates are in the current year
+        LocalDate currentYearStart = DateTimeUtils.getLastOccurrenceBeforeToday(LeavePolicyLoader.YEAR_START_DATE);
+        LocalDate currentYearEnd = LeavePolicyLoader.YEAR_START_DATE.atYear(currentYearStart.getYear() + 1);
+        if (leaveStartDate.isBefore(currentYearStart) || leaveEndDate.isAfter(currentYearEnd)) {
+            throw new IllegalArgumentException("Leave dates must be within the current year");
+        }
+        // check if leave overlaps with existing leaves
+        if (workerHasPendingOrApprovedLeaveBetween(workerId, leaveStartDate, leaveEndDate)) {
+            throw new IllegalArgumentException("Leave overlaps with existing leave");
+        }
+        // check if worker has enough leave balance
+        List<LeaveApplication> pastLeaveInCurrentYear = leaveApplicationRepository.findByWorkerIdAndLeaveTypeAndLeaveStartDateAfterAndLeaveEndDateBeforeAndApplicationStatusNot(
+                workerId,
+                leaveType,
+                currentYearStart,
+                currentYearEnd,
+                LeaveApplication.ApplicationStatus.REJECTED
+        );
+        long pastLeaveDurationDays = pastLeaveInCurrentYear.stream()
+                .mapToLong(LeaveApplication::getLeaveDurationDays)
+                .sum();
+        long requestedLeaveDurationDays = DateTimeUtils.numberOfWorkingDaysBetween(leaveStartDate, leaveEndDate);
+        long leaveBalance = LeavePolicyLoader.getMaxLeaveDays(leaveType) - pastLeaveDurationDays;
+        return requestedLeaveDurationDays <= leaveBalance;
+    }
+
+    public boolean workerHasPendingOrApprovedLeaveBetween(
+            Long workerId,
+            LocalDate leftBound,
+            LocalDate rightBound
+    ) {
+        return leaveApplicationRepository.workerHasPendingOrApprovedLeaveBetween(workerId, rightBound, leftBound);
     }
 }

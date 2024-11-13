@@ -57,4 +57,7 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
     List<Shift> findLastShiftByDayAndWorkerBeforeTime(@Param("workerId") Long workerId,
                                                       @Param("date") LocalDate date,
                                                       @Param("time") LocalTime time);
+
+    @Query("SELECT s FROM Shift s WHERE s.worker.workerId = :workerId AND (s.sessionStartDate <= :endDate AND s.sessionEndDate >= :startDate)")
+    List<Shift> findShiftsByWorkerIdAndOverlappingDateRange(Long workerId, LocalDate startDate, LocalDate endDate);
 }

@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -20,12 +21,14 @@ public class ShiftController {
 
     private final ShiftService shiftService;
     private final LeaveApplicationService leaveApplicationService;
+    private final WorkerService workerService;
 
     @Autowired
     public ShiftController(ShiftService shiftService,
-                           LeaveApplicationService leaveApplicationService) {
+                           LeaveApplicationService leaveApplicationService, WorkerService workerService) {
         this.shiftService = shiftService;
         this.leaveApplicationService = leaveApplicationService;
+        this.workerService = workerService;
     }
 
     @GetMapping
@@ -171,7 +174,7 @@ public class ShiftController {
             @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime shiftStartTime,
             @RequestParam LocalDate shiftEndDate,
             @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime shiftEndTime) {
-        boolean isOnLeave = leaveApplicationService.isWorkerOnLeave(workerId, shiftStartDate, shiftStartTime, shiftEndDate, shiftEndTime);
+        boolean isOnLeave = workerService.workerHasPendingOrApprovedLeaveBetween(workerId, shiftStartDate, shiftEndDate);
         return ResponseEntity.ok(isOnLeave);
     }
 
@@ -189,9 +192,7 @@ public class ShiftController {
     public List<WorkerPendingLeaveDto> getShiftsWithPendingLeave(@PathVariable("workerId") Long workerId) {
         List<Shift> shifts = shiftService.getShiftsByWorkerId(workerId);
         return shifts.stream().map(shift -> {
-            boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(workerId)
-                    .stream()
-                    .anyMatch(leave -> isOverlapping(leave.getLeaveStartDate(), leave.getLeaveStartDate(), shift));
+            boolean hasPendingLeave = workerService.workerHasPendingOrApprovedLeaveBetween(workerId, shift.getSessionStartDate(), shift.getSessionEndDate());
             return new WorkerPendingLeaveDto(shift, hasPendingLeave);
         }).collect(Collectors.toList());
     }
