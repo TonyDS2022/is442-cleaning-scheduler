@@ -30,7 +30,6 @@ public class ShiftWithWorkerDetailsDto {
     private LocalTime actualStartTime;
     private LocalDate actualEndDate;
     private LocalTime actualEndTime;
-    private Long durationMinutes;
     private String workingStatus;
     private boolean workerHasPendingLeave;
 
@@ -54,7 +53,6 @@ public class ShiftWithWorkerDetailsDto {
         this.actualStartTime = shift.getActualStartTime();
         this.actualEndDate = shift.getActualEndDate();
         this.actualEndTime = shift.getActualEndTime();
-        this.durationMinutes = shift.getDuration();
         this.workingStatus = shift.getWorkingStatus().name();
         this.workerHasPendingLeave = shift.isWorkerHasPendingLeave();
     }
