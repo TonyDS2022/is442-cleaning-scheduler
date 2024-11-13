@@ -5,6 +5,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +13,17 @@ import java.util.List;
 public class CleaningSessionCalendarCardViewDto {
 
     @Getter
-    private class WorkerListDto {
+    private class ShiftDto {
+        private Long shiftId;
         private Long workerId;
         private String workerName;
         private String workerPhone;
 
-        public WorkerListDto(Worker worker) {
-            this.workerId = worker.getWorkerId();
-            this.workerName = worker.getName();
-            this.workerPhone = worker.getPhone();
+        public ShiftDto(Shift shift) {
+            this.shiftId = shift.getShiftId();
+            this.workerId = shift.getWorker().getWorkerId();
+            this.workerName = shift.getWorker().getName();
+            this.workerPhone = shift.getWorker().getPhone();
         }
     }
 
@@ -29,8 +32,11 @@ public class CleaningSessionCalendarCardViewDto {
     private String clientAddress;
     private Double latitude;
     private Double longitude;
-    private List<WorkerListDto> workers = new ArrayList<>();
     private LocalDate sessionStartDate;
+    private LocalDate sessionEndDate;
+    private LocalTime sessionStartTime;
+    private LocalTime sessionEndTime;
+    private List<ShiftDto> shifts = new ArrayList<>();
     private CleaningSession.PlanningStage planningStage;
     private CleaningSession.SessionStatus sessionStatus;
 
@@ -41,10 +47,14 @@ public class CleaningSessionCalendarCardViewDto {
         this.latitude = cleaningSession.getClientSite().getLocation().getLatitude();
         this.longitude = cleaningSession.getClientSite().getLocation().getLongitude();
         this.sessionStartDate = cleaningSession.getSessionStartDate();
+        this.sessionEndDate = cleaningSession.getSessionEndDate();
+        this.sessionStartTime = cleaningSession.getSessionStartTime();
+        this.sessionEndTime = cleaningSession.getSessionEndTime();
+        this.sessionStartDate = cleaningSession.getSessionStartDate();
         this.planningStage = cleaningSession.getPlanningStage();
         this.sessionStatus = cleaningSession.getSessionStatus();
         for (Shift shift : cleaningSession.getShifts()) {
-            this.workers.add(new WorkerListDto(shift.getWorker()));
+            this.shifts.add(new ShiftDto(shift));
         }
     }
 }
