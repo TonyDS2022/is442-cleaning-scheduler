@@ -385,7 +385,7 @@ public class ShiftService {
 
         List<Worker> availableWorkers = allWorkersInWorkingHours.stream()
                 .filter(worker -> !workerOnShift.contains(worker))
-                .filter(worker -> !workersWithPendingOrApprovedLeave.contains(worker)) /* #TODO: uncomment when implemented */
+                .filter(worker -> !workersWithPendingOrApprovedLeave.contains(worker))
                 .toList();
 
         Map<Worker, Shift> lastShiftByWorkerBeforeShift = new HashMap<>();
@@ -409,7 +409,7 @@ public class ShiftService {
             workerTrip.put(worker, trip);
         }
 
-        return availableWorkers.stream()
+        List<AvailableWorkerDto> results = availableWorkers.stream()
                 .map(worker -> new AvailableWorkerDto(
                         worker.getWorkerId(),
                         worker.getName(),
@@ -418,5 +418,11 @@ public class ShiftService {
                         workerTrip.get(worker).getTripDurationSeconds(),
                         workerTrip.get(worker).getTripDistanceMeters())
                 ).toList();
+
+        // Sort by ascending trip duration
+        List<AvailableWorkerDto> mutableResults = new ArrayList<>(results);
+        mutableResults.sort(Comparator.comparing(AvailableWorkerDto::getTripDurationSeconds));
+
+        return mutableResults;
     }
 }
