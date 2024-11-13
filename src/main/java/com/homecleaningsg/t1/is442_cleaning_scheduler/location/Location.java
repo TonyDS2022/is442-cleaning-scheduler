@@ -34,8 +34,6 @@ public class Location {
     @NonNull
     private String postalCode;
 
-    private String unitNumber;
-
     private Double latitude;
     private Double longitude;
 
@@ -50,6 +48,10 @@ public class Location {
             //get the subzone from the latitude and longitude
             subzone = subzoneRepository.findSubzoneByLatLong(latitude, longitude);
         }
+    }
+
+    public void setSubzone(Subzone subzone) {
+        this.subzone = subzone;
     }
 
     public double getEuclideanDistanceKmFrom(Location another) {
@@ -72,5 +74,9 @@ public class Location {
             return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
         }
         return -1;
+    }
+
+    public boolean equals(Object other) {
+        return other instanceof Location && ((Location) other).getPostalCode().equals(this.getPostalCode());
     }
 }

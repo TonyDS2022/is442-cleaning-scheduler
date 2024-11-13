@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
@@ -19,18 +20,20 @@ public class WorkerService {
     private final LocationRepository locationRepository;
     private final ShiftService shiftService;
     private final ShiftRepository shiftRepository;
+    private final LocationService locationService;
 
     @Autowired
     public WorkerService(
             WorkerRepository workerRepository,
             LocationRepository locationRepository,
             ShiftService shiftService,
-            ShiftRepository shiftRepository
-    ) {
+            ShiftRepository shiftRepository,
+            LocationService locationService) {
         this.workerRepository = workerRepository;
         this.locationRepository = locationRepository;
         this.shiftService = shiftService;
         this.shiftRepository = shiftRepository;
+        this.locationService = locationService;
     }
 
     public List<Worker> getAllWorkers() {
@@ -41,23 +44,31 @@ public class WorkerService {
         return workerRepository.findByUsername(username).orElse(null);
     }
 
-    public void addResidentialAddressToWorker(Long workerId, Long locationId) {
+    public void addResidentialAddressToWorker(
+            Long workerId,
+            String streetAddress,
+            String postalCode,
+            String unitNumber
+    ) {
         // Find the worker by ID
         Optional<Worker> workerOptional = workerRepository.findById(workerId);
-        // Find the location by ID
-        Optional<Location> locationOptional = locationRepository.findById(locationId);
-
-        if (workerOptional.isPresent() && locationOptional.isPresent()) {
-            Worker worker = workerOptional.get();
-            Location location = locationOptional.get();
-            // Set the location to the worker
-            worker.setHomeLocation(location);
-            // Save the updated worker
-            workerRepository.save(worker);
-        } else {
-            // Handle cases where the worker or location is not found
-            throw new RuntimeException("Worker or Location not found");
+        if (workerOptional.isEmpty()) {
+            throw new RuntimeException("Worker not found");
         }
+        Worker worker = workerOptional.get();
+        addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
+    }
+
+    public void addResidentialAddressToWorker(
+            Worker worker,
+            String streetAddress,
+            String postalCode,
+            String unitNumber
+    ) {
+        worker.setHomeUnitNumber(unitNumber);
+        Location location = locationService.getOrCreateLocation(postalCode, streetAddress);
+        worker.setHomeLocation(location);
+        workerRepository.save(worker);
     }
 
     public Location getResidentialAddressOfWorker(Long workerId) {

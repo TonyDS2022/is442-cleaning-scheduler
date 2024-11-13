@@ -25,9 +25,13 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.Subzone;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.SubzoneRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
+import com.opencsv.CSVReader;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.LngLatAlt;
@@ -45,9 +49,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +77,8 @@ public class SampleDataInitializer implements ApplicationRunner {
     private final LocationService locationService;
     private final MedicalRecordService medicalRecordService;
     private final TripService tripService;
+    private final WorkerService workerService;
+    private final TripRepository tripRepository;
 
     public SampleDataInitializer(
             AdminRepository adminRepository,
@@ -87,8 +95,8 @@ public class SampleDataInitializer implements ApplicationRunner {
             ClientService clientService,
             LocationService locationService,
             MedicalRecordService medicalRecordService,
-            TripService tripService
-    ) {
+            TripService tripService,
+            WorkerService workerService, TripRepository tripRepository) {
         this.adminRepository = adminRepository;
         this.contractRepository = contractRepository;
         this.clientSiteRepository = clientSiteRepository;
@@ -104,25 +112,28 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.locationService = locationService;
         this.medicalRecordService = medicalRecordService;
         this.tripService = tripService;
+        this.workerService = workerService;
+        this.tripRepository = tripRepository;
     }
 
     @Override
     @Transactional
-    public void run(ApplicationArguments args) throws Exception {
+    public synchronized void run(ApplicationArguments args) throws Exception {
         // Add sample data here
         initializeSubzones();
         initializeLocation();
         initializeTrips();
         initializeWorkers();
         initializeClients();
-        initializeContracts();
-        initializeCleaningSessions();
-        initializeShifts();
-        initializeAdmins();
-        initializeMedicalRecords();
-        initializeLeaveApplications();
+//        initializeContracts();
+//        initializeCleaningSessions();
+//        initializeShifts();
+//        initializeAdmins();
+//        initializeMedicalRecords();
+//        initializeLeaveApplications();
     }
 
+    @Transactional
     public void initializeSubzones() throws Exception {
         File subzoneGeojson = new File("MasterPlan2019SubzoneBoundaryNoSeaGEOJSON.geojson");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -212,173 +223,111 @@ public class SampleDataInitializer implements ApplicationRunner {
         }
     }
 
+    @Transactional
     public void initializeLocation() {
-        Location loc1 = new Location("88 Corporation Road", "649823");
-        Location loc2 = new Location("61 Kampong Arang Road", "438181");
-        Location loc3 = new Location("20 Orchard Road", "238830");
+        try (CSVReader reader = new CSVReader(new FileReader( "src/main/resources/locations_table.csv"))) {
 
-        this.locationRepository.saveAll(List.of(loc1, loc2, loc3));
+            String[] values;
+            reader.readNext();
 
-        this.locationService.updateLocationLatLong().subscribe();
+            while ((values = reader.readNext()) != null) {
+                Double latitude = Double.parseDouble(values[0].trim());
+                Double longitude = Double.parseDouble(values[1].trim());
+                Long subzoneId = Long.parseLong(values[3].trim());
+                String address = values[4].trim();
+                String postalCode = values[5].trim();
+                Location location = new Location(address, postalCode);
+                location.setLatitude(latitude);
+                location.setLongitude(longitude);
+                Subzone subzone = subzoneRepository.findById(subzoneId).orElseThrow(() -> new IllegalStateException("Subzone with ID " + subzoneId + " not found"));
+                location.setSubzone(subzone);
+                locationRepository.save(location);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @Transactional
     public void initializeTrips() {
-        tripService.buildTrips();
-        tripService.updateTripDistanceDurationAsync().subscribe();
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/trips_table.csv"))) {
+
+            String[] values;
+            reader.readNext();
+
+            while ((values = reader.readNext()) != null) {
+                Double tripDistanceMeters = Double.parseDouble(values[1].trim());
+                Double tripDurationSeconds = Double.parseDouble(values[2].trim());
+                Long destinationId = Long.parseLong(values[3].trim());
+                Long originId = Long.parseLong(values[4].trim());
+                Location origin = locationRepository.findById(originId).orElseThrow(() -> new IllegalStateException("Location with ID " + originId + " not found"));
+                Location destination = locationRepository.findById(destinationId).orElseThrow(() -> new IllegalStateException("Location with ID " + destinationId + " not found"));
+                Trip trip = new Trip(origin, destination);
+                trip.setTripDurationSeconds(tripDurationSeconds);
+                trip.setTripDistanceMeters(tripDistanceMeters);
+                tripRepository.save(trip);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @Transactional
     public void initializeWorkers() {
-        Worker worker1 = new Worker(
-                "Karthiga",
-                "karthiga",
-                "kar1243",
-                "karthigamagesh17@gmail.com",
-                "99999999",
-                "Hello, I am a sincere cleaner specialised in wooden floors",
-                LocalTime.of(8,0),
-                LocalTime.of(17,0));
-        worker1.setJoinDate(LocalDate.of(2024,5,3));
+        // read from resource/workers.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/workers.csv"))) {
 
-        Worker worker2 = new Worker(
-                "John",
-                "john",
-                "john1243",
-                "john@gmail.com",
-                "99999999",
-                "Cleaner with 20 years experience in cleaning bungalows/landed properties",
-                LocalTime.of(13,0),
-                LocalTime.of(22, 0));
-        worker2.setJoinDate(LocalDate.of(2024,10,3));
-
-        Worker worker3 = new Worker(
-                "Alice Tan",
-                "alice",
-                "alice1234",
-                "alice.tan@example.com",
-                "91234567",
-                "Experienced cleaner specializing in office spaces and carpet cleaning.",
-                LocalTime.of(7, 0),
-                LocalTime.of(16, 0)
-        );
-        worker3.setJoinDate(LocalDate.of(2024,1,3));
-
-        Worker worker4 = new Worker(
-                "Michael Lee",
-                "michael",
-                "mike5678",
-                "michael.lee@example.com",
-                "92345678",
-                "Detail-oriented cleaner with expertise in high-rise window cleaning and disinfection.",
-                LocalTime.of(9, 0),
-                LocalTime.of(18, 0)
-        );
-        worker4.setJoinDate(LocalDate.of(2024,10,3));
-
-        Worker worker5 = new Worker(
-                "Sarah Lim",
-                "sarah",
-                "sarahlim2023",
-                "sarah.lim@example.com",
-                "93456789",
-                "5 years experience in residential cleaning, with a focus on green cleaning methods.",
-                LocalTime.of(10, 0),
-                LocalTime.of(19, 0)
-        );
-        worker5.setJoinDate(LocalDate.of(2024,3,3));
-
-        Location loc5 = locationRepository.findByPostalCode("438181")
-                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-        worker5.setHomeLocation(loc5);
-
-        Worker worker6 = new Worker(
-                "Ravi Kumar",
-                "ravi",
-                "ravi@999",
-                "ravi.kumar@example.com",
-                "94567890",
-                "Specializes in cleaning kitchens and commercial food preparation areas.",
-                LocalTime.of(9, 0),
-                LocalTime.of(15, 0)
-        );
-        worker6.setJoinDate(LocalDate.of(2024,1,4));
-        worker6.setDeactivatedAt(LocalDate.of(2024,2,4));
-        worker6.setActive(false);
-
-        Worker worker7 = new Worker(
-                "Maria Garcia",
-                "maria",
-                "maria8765",
-                "maria.garcia@example.com",
-                "95678901",
-                "Friendly and reliable cleaner with 10 years of experience in hotel housekeeping.",
-                LocalTime.of(12, 0),
-                LocalTime.of(21, 0)
-        );
-        worker7.setJoinDate(LocalDate.of(2024,8,3));
-
-        Worker worker8 = new Worker(
-                "Tommy Wu",
-                "tommy",
-                "tommy0987",
-                "tommy.wu@example.com",
-                "96789012",
-                "Focused on deep-cleaning services for industrial environments.",
-                LocalTime.of(14, 0),
-                LocalTime.of(22, 0)
-        );
-        worker8.setJoinDate(LocalDate.of(2024,9,2));
-
-        Location loc8 = locationRepository.findByPostalCode("238830")
-                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-        worker8.setHomeLocation(loc8);
-
-        Worker worker9 = new Worker(
-                "Lucy Wang",
-                "lucy",
-                "lucy5432",
-                "lucy.wang@example.com",
-                "97890123",
-                "Residential cleaner with a specialty in eco-friendly products and methods.",
-                LocalTime.of(8, 0),
-                LocalTime.of(17, 0)
-        );
-        worker9.setJoinDate(LocalDate.of(2024,9,3));
-
-        Worker worker10 = new Worker(
-                "David Ong",
-                "david",
-                "david3210",
-                "david.ong@example.com",
-                "98901234",
-                "Experienced in managing cleaning teams and ensuring high-quality standards in large commercial facilities.",
-                LocalTime.of(8, 0),
-                LocalTime.of(14, 0)
-        );
-        worker10.setJoinDate(LocalDate.of(2024,10,3));
-        worker10.setDeactivatedAt(LocalDate.now());
-        worker10.setActive(false);
-
-        workerRepository.saveAll(List.of(worker1, worker2, worker3, worker4, worker5, worker6, worker7, worker8, worker9, worker10));
-        // save loc instances
-        locationRepository.saveAll(List.of(
-                loc8, loc5
-        ));
+            String[] values;
+            reader.readNext();
+            while ((values = reader.readNext()) != null) {
+                String name = values[0].trim();
+                String username = values[1].trim();
+                String password = values[2].trim();
+                String email = values[3].trim();
+                String phone = values[4].trim();
+                String bio = values[5].trim();
+                LocalTime startWorkingHours = LocalTime.parse(values[6].trim());
+                LocalTime endWorkingHours = LocalTime.parse(values[7].trim());
+                String streetAddress = values[8].trim();
+                String postalCode = values[9].trim();
+                String unitNumber = values[10].trim();
+                Worker worker = new Worker(name, username, password, email, phone, bio, startWorkingHours, endWorkingHours);
+                workerService.addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void initializeClients() {
-        Location location1 = this.locationRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Location with ID 1 not found"));
-        Location location2 = this.locationRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Location with ID 2 not found"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/clients_table.csv"))) {
 
-        Client client1 = new Client("Amy Santiago", "98472094", true,  LocalDate.of(2024,10,4));
-        Client client2 = new Client("Jake Peralta", "92384923", true, LocalDate.of(2024,8,2));
-        this.clientRepository.saveAll(List.of(client1, client2));
-
-        ClientSite clientSite1 = new ClientSite(client1, location1.getAddress(), location1.getPostalCode(), "#01-01", location1);
-        ClientSite clientSite2 = new ClientSite(client2, location2.getAddress(), location2.getPostalCode(), "#02-02", location2);
-
-        client1.setDeactivatedAt(LocalDate.of(2024, 11, 4));
-        client1.setActive(false);
-        this.clientSiteRepository.saveAll(List.of(clientSite1, clientSite2));
+            String[] values;
+            reader.readNext();
+            while ((values = reader.readNext()) != null) {
+                String name = values[0].trim();
+                String phone = values[1].trim();
+                LocalDate joinDate = LocalDate.parse(values[2].trim(), formatter);
+                boolean isActive = values[3].trim().equals("t");
+                LocalDate deactivatedAt = values[4].trim().isEmpty() ? null : LocalDate.parse(values[4].trim(), formatter);
+                Client client = new Client(name, phone, isActive, joinDate);
+                clientRepository.save(client);
+                if (!isActive) {
+                    client.setDeactivatedAt(deactivatedAt);
+                }
+                String streetAddress = values[5].trim();
+                String postalCode = values[6].trim();
+                String unitNumber = values[7].trim();
+                Long numberOfRooms = Long.parseLong(values[8].trim());
+                ClientSite.PropertyType propertyType = ClientSite.PropertyType.valueOf(values[9].trim());
+                clientService.addClientSiteToClient(client, streetAddress, postalCode, unitNumber, numberOfRooms, propertyType);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void initializeContracts() {
