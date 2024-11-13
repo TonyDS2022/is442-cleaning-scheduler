@@ -21,9 +21,12 @@ public class CleaningSessionCalendarCardViewDto {
 
         public ShiftDto(Shift shift) {
             this.shiftId = shift.getShiftId();
-            this.workerId = shift.getWorker().getWorkerId();
-            this.workerName = shift.getWorker().getName();
-            this.workerPhone = shift.getWorker().getPhone();
+            Worker worker = shift.getWorker();
+            if (worker != null) {
+                this.workerId = worker.getWorkerId();
+                this.workerName = worker.getName();
+                this.workerPhone = worker.getPhone();
+            }
         }
     }
 
