@@ -114,17 +114,17 @@ public class SampleDataInitializer implements ApplicationRunner {
 
     @Override
     @Transactional
-    public synchronized void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) throws Exception {
         // Add sample data here
         initializeSubzones();
         initializeLocation();
         initializeTrips();
+        initializeAdmins();
         initializeWorkers();
         initializeClients();
         initializeContracts();
         initializeCleaningSessions();
         initializeShifts();
-//        initializeAdmins();
 //        initializeMedicalRecords();
 //        initializeLeaveApplications();
     }
@@ -271,6 +271,14 @@ public class SampleDataInitializer implements ApplicationRunner {
     }
 
     @Transactional
+    public void initializeAdmins() {
+        Admin rootAdmin = new Admin("Ray Holt", "Peralta$T3stiM0ny", true);
+        Admin admin1 = new Admin("Jake Peralta", "NoiceToit!", false);
+        Admin admin2 = new Admin("Amy Santiago", "GinaLovesLinManuel!", false);
+        adminRepository.saveAll(List.of(rootAdmin, admin1, admin2));
+    }
+
+    @Transactional
     public void initializeWorkers() {
         // read from resource/workers.csv
         try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/workers.csv"))) {
@@ -289,7 +297,10 @@ public class SampleDataInitializer implements ApplicationRunner {
                 String streetAddress = values[8].trim();
                 String postalCode = values[9].trim();
                 String unitNumber = values[10].trim();
+                Long adminId = Long.parseLong(values[11].trim());
                 Worker worker = new Worker(name, username, password, email, phone, bio, startWorkingHours, endWorkingHours);
+                Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new IllegalStateException("Admin with ID " + adminId + " not found"));
+                worker.setSupervisor(admin);
                 workerService.addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
             }
         } catch (Exception e) {
@@ -297,6 +308,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         }
     }
 
+    @Transactional
     public void initializeClients() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/clients_table.csv"))) {
@@ -326,6 +338,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         }
     }
 
+    @Transactional
     public void initializeContracts() {
         Client client1 = this.clientRepository.findById(1L)
                 .orElseThrow(() -> new IllegalStateException("Client with ID 1 not found"));
@@ -368,6 +381,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.contractRepository.saveAll(List.of(contract1, contract2));
     }
 
+    @Transactional
     public void initializeCleaningSessions() {
         Contract contract = this.contractRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Contract not found"));
 
@@ -414,15 +428,15 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.cleaningSessionRepository.saveAll(List.of(session1, session2, session3));
     }
 
+    @Transactional
     public void initializeShifts() {
         CleaningSession session1 = cleaningSessionRepository.findById(1L).orElseThrow(() -> new IllegalStateException("CleaningSession 1 not found"));
         CleaningSession session2 = cleaningSessionRepository.findById(2L).orElseThrow(() -> new IllegalStateException("CleaningSession 2 not found"));
         CleaningSession session3 = cleaningSessionRepository.findById(3L).orElseThrow(() -> new IllegalStateException("CleaningSession 3 not found"));
 
-        Worker worker1 = workerRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
-        // Worker worker2 = workerRepository.findById(2L).orElseThrow(() -> new IllegalStateException("Worker 2 not found"));
-        Worker worker6 = workerRepository.findById(6L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
-        Worker worker7 = workerRepository.findById(7L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
+        Worker worker1 = workerRepository.findById(4L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
+        Worker worker2 = workerRepository.findById(5L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
+        Worker worker3 = workerRepository.findById(6L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
 
         // These two shifts are part of the same cleaning session,
         // meaning they share the same start and end times (auto assigned in Shift.java)
@@ -438,7 +452,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         shift1.setActualEndTime(LocalTime.of(12, 0));
 
         Shift shift2 = new Shift(session1);
-        shift2.setWorker(worker6);
+        shift2.setWorker(worker2);
         // this is the actual time that the worker arrive to the shift - worker6 is one hour late
         shift2.setActualStartDate(LocalDate.of(2024, 10, 5));
         shift2.setActualStartTime(LocalTime.of(10, 0));
@@ -447,7 +461,7 @@ public class SampleDataInitializer implements ApplicationRunner {
 
 
         Shift shift3 = new Shift(session2);
-        shift3.setWorker(worker7);
+        shift3.setWorker(worker3);
         shift3.setActualStartDate(LocalDate.of(2024, 10, 12));
         shift3.setActualStartTime(LocalTime.of(14, 0));
         shift3.setActualEndDate(LocalDate.of(2024, 10, 12));
@@ -472,9 +486,4 @@ public class SampleDataInitializer implements ApplicationRunner {
         cleaningSessionRepository.saveAll(new ArrayList<>(List.of(session1, session2, session3)));
     }
 
-    public void initializeAdmins() {
-        Admin ad1 = new Admin("rootadmin", "adminroot1234", true);
-        Admin ad2 = new Admin("admin", "admin1234", false);
-        adminRepository.saveAll(List.of(ad1, ad2));
-    }
 }
