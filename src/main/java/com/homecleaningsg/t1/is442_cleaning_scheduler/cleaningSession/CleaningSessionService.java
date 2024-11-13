@@ -284,4 +284,11 @@ public class CleaningSessionService {
 
         return new SessionReportDto(numFinishedSessions, numCancelledSessions);
     }
+
+    public List<CleaningSessionCalendarViewDto> getCalendarView() {
+        List<CleaningSession> cleaningSessions = cleaningSessionRepository.findAll();
+        return cleaningSessions.stream()
+                .map(CleaningSessionCalendarViewDto::new)
+                .toList();
+    }
 }
