@@ -18,23 +18,22 @@ import java.util.Optional;
 public class WorkerService {
     private final WorkerRepository workerRepository;
     private final LocationRepository locationRepository;
-    private final LocationService locationService;
     private final ShiftService shiftService;
     private final ShiftRepository shiftRepository;
+    private final LocationService locationService;
 
     @Autowired
     public WorkerService(
             WorkerRepository workerRepository,
             LocationRepository locationRepository,
-            LocationService locationService,
             ShiftService shiftService,
-            ShiftRepository shiftRepository
-    ) {
+            ShiftRepository shiftRepository,
+            LocationService locationService) {
         this.workerRepository = workerRepository;
         this.locationRepository = locationRepository;
-        this.locationService = locationService;
         this.shiftService = shiftService;
         this.shiftRepository = shiftRepository;
+        this.locationService = locationService;
     }
 
     public List<Worker> getAllWorkers() {
@@ -53,18 +52,23 @@ public class WorkerService {
     ) {
         // Find the worker by ID
         Optional<Worker> workerOptional = workerRepository.findById(workerId);
-        Location location = locationService.getOrCreateLocation(postalCode, streetAddress);
-
-        if (workerOptional.isPresent()) {
-            Worker worker = workerOptional.get();
-            // Set the location to the worker
-            worker.setHomeLocation(location);
-            // Save the updated worker
-            workerRepository.save(worker);
-        } else {
-            // Handle cases where the worker or location is not found
-            throw new RuntimeException("Worker or Location not found");
+        if (workerOptional.isEmpty()) {
+            throw new RuntimeException("Worker not found");
         }
+        Worker worker = workerOptional.get();
+        addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
+    }
+
+    public void addResidentialAddressToWorker(
+            Worker worker,
+            String streetAddress,
+            String postalCode,
+            String unitNumber
+    ) {
+        worker.setHomeUnitNumber(unitNumber);
+        Location location = locationService.getOrCreateLocation(postalCode, streetAddress);
+        worker.setHomeLocation(location);
+        workerRepository.save(worker);
     }
 
     public Location getResidentialAddressOfWorker(Long workerId) {

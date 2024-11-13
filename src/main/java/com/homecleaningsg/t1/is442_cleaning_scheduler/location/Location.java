@@ -71,4 +71,8 @@ public class Location {
         }
         return -1;
     }
+
+    public boolean equals(Object other) {
+        return other instanceof Location && ((Location) other).getPostalCode().equals(this.getPostalCode());
+    }
 }
