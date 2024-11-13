@@ -25,9 +25,9 @@ public class ContractConfigLoader {
     private String startDinnerTime;
     @Value("${contract.end-dinner-time}")
     private String endDinnerTime;
-    @Value("${contract.minSessionDurationHours}")
+    @Value("${contract.min-session-duration-hours}")
     private int minSessionDurationHours;
-    @Value("${contract.maxSessionDurationHours}")
+    @Value("${contract.max-session-duration-hours}")
     private int maxSessionDurationHours;
 
     protected static int MIN_SESSION_DURATION_HOURS;
