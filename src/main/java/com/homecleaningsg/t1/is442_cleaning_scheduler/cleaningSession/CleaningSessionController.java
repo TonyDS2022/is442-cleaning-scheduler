@@ -66,15 +66,4 @@ public class CleaningSessionController {
                 .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
     }
 
-    @GetMapping("/calendar-view")
-    public List<CleaningSessionCalendarViewDto> getCalendarView() {
-        return cleaningSessionService.getCalendarView();
-    }
-
-    @GetMapping("/calendar-card/{cleaningSessionId}")
-    public CleaningSessionCalendarCardViewDto getCalendarCardView(
-            @PathVariable Long cleaningSessionId) {
-        return cleaningSessionService.getCalendarCardView(cleaningSessionId);
-    }
-
 }

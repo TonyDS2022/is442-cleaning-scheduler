@@ -40,7 +40,7 @@ public class WorkerController {
             @RequestParam String streetAddress,
             @RequestParam String postalCode,
             @RequestParam String unitNumber
-    ) {
+            ) {
         try {
             workerService.addResidentialAddressToWorker(workerId, streetAddress, postalCode, unitNumber);
             return ResponseEntity.ok("Location added to worker successfully");

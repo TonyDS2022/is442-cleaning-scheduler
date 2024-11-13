@@ -1,6 +1,5 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
-import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -43,28 +41,12 @@ public class ShiftService {
         this.tripRepository = tripRepository;
     }
 
-    public List<ShiftWithWorkerDetailsDto> getAllShifts() {
-
-        List<Shift> shifts = shiftRepository.findAll();
-
-        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
-
-        for (Shift shift : shifts) {
-            Worker worker = shift.getWorker();
-            ShiftWithWorkerDetailsDto shiftWithWorkerDetailsDto = new ShiftWithWorkerDetailsDto(shift);
-            shiftWithWorkerDetailsDtos.add(shiftWithWorkerDetailsDto);
-        }
-
-        return shiftWithWorkerDetailsDtos;
+    public List<Shift> getAllShifts() {
+        return shiftRepository.findAll();
     }
 
-    public Optional<ShiftWithWorkerDetailsDto> getShiftById(Long shiftId) {
-        Optional<Shift> shift = shiftRepository.findById(shiftId);
-        if (shift.isEmpty()) {
-            return Optional.empty();
-        }
-        ShiftWithWorkerDetailsDto shiftWithWorkerDetailsDto = new ShiftWithWorkerDetailsDto(shift.get());
-        return Optional.of(shiftWithWorkerDetailsDto);
+    public Optional<Shift> getShiftById(Long shiftId) {
+        return shiftRepository.findById(shiftId);
     }
 
     public void addShift(Shift shift) {
@@ -72,83 +54,12 @@ public class ShiftService {
         // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
-    public void updateShift(Long shiftId, Map<String, String> updates) {
-        Shift existingShift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
-        CleaningSession existingCleaningSession = existingShift.getCleaningSession();
-
-        updates.forEach((key, value) -> {
-            try {
-                switch (key) {
-                    case "sessionStartDate":
-                        LocalDate startDate = LocalDate.parse(value);
-                        existingCleaningSession.setSessionStartDate(startDate);
-                        existingShift.setSessionStartDate(startDate);
-                        break;
-
-                    case "sessionStartTime":
-                        LocalTime startTime = LocalTime.parse(value);
-                        existingCleaningSession.setSessionStartTime(startTime);
-                        existingShift.setSessionStartTime(startTime);
-                        break;
-
-                    case "sessionEndDate":
-                        LocalDate endDate = LocalDate.parse(value);
-                        existingCleaningSession.setSessionEndDate(endDate);
-                        existingShift.setSessionEndDate(endDate);
-                        break;
-
-                    case "sessionEndTime":
-                        LocalTime endTime = LocalTime.parse(value);
-                        existingCleaningSession.setSessionEndTime(endTime);
-                        existingShift.setSessionEndTime(endTime);
-                        break;
-
-                    default:
-                        throw new IllegalArgumentException("Invalid key: " + key);
-                }
-            } catch (DateTimeParseException e) {
-                throw new IllegalArgumentException("Invalid date or time format for key: " + key);
-            }
-        });
-
-        // Save entities once after all updates are applied
-        cleaningSessionRepository.save(existingCleaningSession);
-        shiftRepository.save(existingShift);
-    }
-
-    public void unassignWorkerFromShift(Long shiftId) {
-        Shift shift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
-        if (shift.getWorkingStatus() != Shift.WorkingStatus.NOT_STARTED) {
-            throw new IllegalArgumentException("Past shifts cannot be unassigned.");
+    public Shift updateShift(Long shiftId, Shift updatedShift) {
+        if (!shiftRepository.existsById(shiftId)) {
+            throw new IllegalArgumentException("Shift not found");
         }
-        shiftRepository.save(shift);
-    }
-
-    public void startShift(long shiftId) {
-        // TBC: what do we do with the other shifts in the same cleaning session?
-        Shift shift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
-        CleaningSession cleaningSession = shift.getCleaningSession();
-        if(shift.getWorkingStatus() == Shift.WorkingStatus.WORKING){
-            throw new IllegalArgumentException("Shift has already started");
-        }
-        else if(shift.getWorkingStatus() == Shift.WorkingStatus.FINISHED){
-            throw new IllegalArgumentException("Shift has already finished");
-        }
-        else if(shift.getWorkingStatus() == Shift.WorkingStatus.CANCELLED){
-            throw new IllegalArgumentException("Shift has been cancelled");
-        }
-        else if(shift.getWorker() == null) {
-            throw new IllegalArgumentException("Shift has no worker assigned");
-        }
-        else{
-            shift.setWorkingStatus(Shift.WorkingStatus.WORKING);
-            shift.setActualStartDate(LocalDate.now());
-            shift.setActualStartTime(LocalTime.now());
-            shiftRepository.save(shift);
-        }
+        updatedShift.setShiftId(shiftId);
+        return shiftRepository.save(updatedShift);
     }
 
     public void cancelShift(Long shiftId) {
@@ -183,49 +94,20 @@ public class ShiftService {
     }
 
     // get shifts by month, week, day, worker
-    public List<ShiftWithWorkerDetailsDto> getShiftsByMonthAndWorker(int month, int year, Long workerId) {
-        List<Shift> shifts = shiftRepository.findByMonthAndWorker(month, year, workerId);
-        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
-        for (Shift shift : shifts) {
-            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
-        }
-        return shiftWithWorkerDetailsDtos;
+    public List<Shift> getShiftsByMonthAndWorker(int month, int year, Long workerId) {
+        return shiftRepository.findByMonthAndWorker(month, year, workerId);
     }
 
-    public List<ShiftWithWorkerDetailsDto> getShiftsByWeekAndWorker(int week, int year, Long workerId) {
-        List<Shift> shifts = shiftRepository.findByWeekAndWorker(week, year, workerId);
-        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
-        for (Shift shift : shifts) {
-            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
-        }
-        return shiftWithWorkerDetailsDtos;
+    public List<Shift> getShiftsByWeekAndWorker(int week, int year, Long workerId) {
+        return shiftRepository.findByWeekAndWorker(week, year, workerId);
     }
 
-    public List<ShiftWithWorkerDetailsDto> getShiftsByDayAndWorker(LocalDate date, Long workerId) {
-        List<Shift> shifts = shiftRepository.findByDayAndWorker(date, workerId);
-        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
-        for (Shift shift : shifts) {
-            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
-        }
-        return shiftWithWorkerDetailsDtos;
+    public List<Shift> getShiftsByDayAndWorker(LocalDate date, Long workerId) {
+        return shiftRepository.findByDayAndWorker(date, workerId);
     }
 
-    public List<ShiftWithWorkerDetailsDto> getLastShiftByDayAndWorkerBeforeTime(Long workerId, LocalDate date, LocalTime time) {
-        List<Shift> shifts = shiftRepository.findLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
-        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
-        for (Shift shift : shifts) {
-            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
-        }
-        return shiftWithWorkerDetailsDtos;
-    }
-
-    public List<ShiftWithWorkerDetailsDto> getShiftsDtosByWorkerId(Long workerId) {
-        List<Shift> shifts = shiftRepository.findByWorkerWorkerId(workerId);
-        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
-        for (Shift shift : shifts) {
-            shiftWithWorkerDetailsDtos.add(new ShiftWithWorkerDetailsDto(shift));
-        }
-        return shiftWithWorkerDetailsDtos;
+    public List<Shift> getLastShiftByDayAndWorkerBeforeTime(Long workerId, LocalDate date, LocalTime time) {
+        return shiftRepository.findLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
     }
 
     public List<Shift> getShiftsByWorkerId(Long workerId) {
