@@ -83,7 +83,6 @@ public class Shift {
     private LocalTime actualEndTime;
 
     @Column(name = "shiftDurationHours")
-
     private Long shiftDurationHours = 0L; // automatically evaluated by onUpdate()
 
     @NonNull

@@ -21,7 +21,6 @@ public class WorkerService {
     private final LocationService locationService;
     private final ShiftService shiftService;
     private final ShiftRepository shiftRepository;
-    private final LocationService locationService;
 
     @Autowired
     public WorkerService(
@@ -29,14 +28,13 @@ public class WorkerService {
             LocationRepository locationRepository,
             LocationService locationService,
             ShiftService shiftService,
-            ShiftRepository shiftRepository,
-            LocationService locationService) {
+            ShiftRepository shiftRepository
+    ) {
         this.workerRepository = workerRepository;
         this.locationRepository = locationRepository;
         this.locationService = locationService;
         this.shiftService = shiftService;
         this.shiftRepository = shiftRepository;
-        this.locationService = locationService;
     }
 
     public List<Worker> getAllWorkers() {
@@ -67,20 +65,6 @@ public class WorkerService {
             // Handle cases where the worker or location is not found
             throw new RuntimeException("Worker or Location not found");
         }
-        Worker worker = workerOptional.get();
-        addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
-    }
-
-    public void addResidentialAddressToWorker(
-            Worker worker,
-            String streetAddress,
-            String postalCode,
-            String unitNumber
-    ) {
-        worker.setHomeUnitNumber(unitNumber);
-        Location location = locationService.getOrCreateLocation(postalCode, streetAddress);
-        worker.setHomeLocation(location);
-        workerRepository.save(worker);
     }
 
     public Location getResidentialAddressOfWorker(Long workerId) {

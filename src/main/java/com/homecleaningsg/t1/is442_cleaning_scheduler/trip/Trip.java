@@ -5,8 +5,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
+@NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @EqualsAndHashCode
 @Getter
 @Setter
@@ -45,17 +45,4 @@ public class Trip {
     public void setEuclideanDistanceKm() {
         this.euclideanDistanceKm = origin.getEuclideanDistanceKmFrom(destination);
     }
-
-    public Trip() {
-        this.tripDurationSeconds = 0;
-        this.tripDistanceMeters = 0;
-        this.euclideanDistanceKm = 0;
-    }
-
-    @PrePersist
-    @PreUpdate
-    public void onUpdate() {
-        setEuclideanDistanceKm();
-    }
-
 }
