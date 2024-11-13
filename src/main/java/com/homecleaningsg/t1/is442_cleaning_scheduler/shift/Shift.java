@@ -97,7 +97,6 @@ public class Shift {
         CANCELLED
     }
 
-
     private boolean workerHasPendingLeave;
 
     @Lob
