@@ -279,17 +279,4 @@ public class CleaningSessionService {
 
         return new SessionReportDto(numFinishedSessions, numCancelledSessions);
     }
-
-    public List<CleaningSessionCalendarViewDto> getCalendarView() {
-        List<CleaningSession> cleaningSessions = cleaningSessionRepository.findAll();
-        return cleaningSessions.stream()
-                .map(CleaningSessionCalendarViewDto::new)
-                .toList();
-    }
-
-    public CleaningSessionCalendarCardViewDto getCalendarCardView(Long cleaningSessionId) {
-        CleaningSession cleaningSession = cleaningSessionRepository.findById(cleaningSessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
-        return new CleaningSessionCalendarCardViewDto(cleaningSession);
-    }
 }
