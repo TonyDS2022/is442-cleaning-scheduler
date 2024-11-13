@@ -75,10 +75,4 @@ public class ClientController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate client.");
         }
     }
-
-    // localhost:8080/api/v0.1/client/get-clients-with-client-sites/
-    @GetMapping("/get-clients-with-client-sites/")
-    public List<ClientWithClientSiteDto> getListOfClientsWithClientSites() {
-        return clientService.getListOfClientsWithClientSites();
-    }
 }
