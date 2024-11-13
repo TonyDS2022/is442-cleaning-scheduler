@@ -126,11 +126,35 @@ public class ShiftService {
         shiftRepository.save(shift);
     }
 
+    public void updateCleaningSessionStatus(CleaningSession cleaningSession) {
+        List<Shift> shifts = cleaningSession.getShifts();
+
+        boolean anyFinished = false;
+        boolean anyWorking = false;
+
+        for (Shift shift : shifts) {
+            Shift.WorkingStatus shiftStatus = shift.getWorkingStatus();
+            if (shiftStatus == Shift.WorkingStatus.FINISHED) {
+                anyFinished = true;
+            }
+            if (shiftStatus == Shift.WorkingStatus.WORKING) {
+                anyWorking = true;
+            }
+        }
+
+        if (anyFinished) {
+            cleaningSession.setSessionStatus(CleaningSession.SessionStatus.FINISHED);
+        } else if (anyWorking) {
+            cleaningSession.setSessionStatus(CleaningSession.SessionStatus.WORKING);
+        }
+        // Save the updated cleaning session status
+        cleaningSessionRepository.save(cleaningSession);
+    }
+
     public void startShift(long shiftId) {
         // TBC: what do we do with the other shifts in the same cleaning session?
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
-        CleaningSession cleaningSession = shift.getCleaningSession();
         if(shift.getWorkingStatus() == Shift.WorkingStatus.WORKING){
             throw new IllegalArgumentException("Shift has already started");
         }
@@ -149,6 +173,35 @@ public class ShiftService {
             shift.setActualStartTime(LocalTime.now());
             shiftRepository.save(shift);
         }
+        CleaningSession cleaningSession = shift.getCleaningSession();
+        // update cleaning status status
+        updateCleaningSessionStatus(cleaningSession);
+    }
+
+    public void endShift(long shiftId) {
+        Shift shift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+        if(shift.getWorkingStatus() == Shift.WorkingStatus.NOT_STARTED){
+            throw new IllegalArgumentException("Shift has not started");
+        }
+        else if(shift.getWorkingStatus() == Shift.WorkingStatus.FINISHED){
+            throw new IllegalArgumentException("Shift has already finished");
+        }
+        else if(shift.getWorkingStatus() == Shift.WorkingStatus.CANCELLED){
+            throw new IllegalArgumentException("Shift has been cancelled");
+        }
+        else if(shift.getWorker() == null) {
+            throw new IllegalArgumentException("Shift has no worker assigned");
+        }
+        else{
+            shift.setWorkingStatus(Shift.WorkingStatus.FINISHED);
+            shift.setActualEndDate(LocalDate.now());
+            shift.setActualEndTime(LocalTime.now());
+            shiftRepository.save(shift);
+        }
+        CleaningSession cleaningSession = shift.getCleaningSession();
+        // update cleaning status status
+        updateCleaningSessionStatus(cleaningSession);
     }
 
     public void cancelShift(Long shiftId) {
