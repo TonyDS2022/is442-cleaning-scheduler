@@ -171,26 +171,4 @@ public class ClientService {
         return client;
     }
 
-    public List<ClientWithClientSiteDto> getListOfClientsWithClientSites(){
-        List<Client> clients = clientRepository.findAll();
-        List<ClientWithClientSiteDto> clientWithClientSiteDtos = new ArrayList<>();
-        for(Client client: clients){
-            List<ClientSite> clientSites = client.getClientSites();
-            List<ClientSiteDto> clientSiteDtos = new ArrayList<>();
-            for(ClientSite clientSite: clientSites) {
-                ClientSiteDto clientSiteDto = new ClientSiteDto(
-                        clientSite.getStreetAddress(),
-                        clientSite.getPostalCode(),
-                        clientSite.getUnitNumber());
-                clientSiteDtos.add(clientSiteDto);
-            }
-            ClientWithClientSiteDto clientWithClientSiteDto = new ClientWithClientSiteDto(
-                    client.getClientId(),
-                    client.getName(),
-                    clientSiteDtos);
-            clientWithClientSiteDtos.add(clientWithClientSiteDto);
-        }
-        return clientWithClientSiteDtos;
-    }
-
 }
