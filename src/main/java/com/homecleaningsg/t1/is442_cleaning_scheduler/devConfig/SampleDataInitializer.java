@@ -125,9 +125,9 @@ public class SampleDataInitializer implements ApplicationRunner {
         initializeTrips();
         initializeWorkers();
         initializeClients();
-//        initializeContracts();
-//        initializeCleaningSessions();
-//        initializeShifts();
+        initializeContracts();
+        initializeCleaningSessions();
+        initializeShifts();
 //        initializeAdmins();
 //        initializeMedicalRecords();
 //        initializeLeaveApplications();
