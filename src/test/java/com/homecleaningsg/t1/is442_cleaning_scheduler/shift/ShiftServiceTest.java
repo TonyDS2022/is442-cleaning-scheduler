@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
@@ -35,6 +36,8 @@ public class ShiftServiceTest {
     private WorkerService workerService;
     @Mock
     private TripRepository tripRepository;
+    @Mock
+    private LeaveApplicationRepository leaveApplicationRepository;
 
     @InjectMocks
     private ShiftService shiftService;
