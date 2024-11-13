@@ -1,8 +1,12 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.DateTimeUtils;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.Admin;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,33 +34,32 @@ public class LeaveApplication {
             generator = "leave_application_sequence"
     )
     private Long leaveApplicationId;
+
     @NonNull
-    private Long workerId;
-    @NonNull
-    private Long adminId;
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JsonBackReference("worker-leaveApplication")
+    private Worker worker;
+
+    @ManyToOne(cascade = CascadeType.DETACH)
+    private Admin admin;
+
     @NonNull
     @Enumerated(EnumType.STRING)
     private LeaveType leaveType;
-    @JsonIgnore
-    private String fileName;
-    @JsonIgnore
-    private String imageHash;
+
+//    @JsonIgnore
+//    private String fileName;
+//
+//    @JsonIgnore
+//    private String imageHash;
 
     @NonNull
     @Column(name = "leaveStartDate")
     private LocalDate leaveStartDate;
 
     @NonNull
-    @Column(name = "leaveStartTime")
-    private LocalTime leaveStartTime;
-
-    @NonNull
     @Column(name = "leaveEndDate")
     private LocalDate leaveEndDate;
-
-    @NonNull
-    @Column(name = "leaveEndTime")
-    private LocalTime leaveEndTime;
 
     @NonNull
     @Column(name = "leaveSubmittedDate")
@@ -76,51 +79,36 @@ public class LeaveApplication {
         REJECTED
     }
 
+    public enum LeaveType {
+        MEDICAL,
+        ANNUAL
+    }
+
+    public Long leaveDurationDays;
+
     @NonNull
     private Timestamp lastModified;
 
-    private int medicalLeaveBalance;
-    private int otherLeaveBalance;
-
-    // @OneToMany(mappedBy = "leaveApplication", cascade = CascadeType.ALL, orphanRemoval = true)
-    // @JsonManagedReference // to prevent infinite recursion
-    // private List<Worker> workers;
-
     public LeaveApplication(
-            Long workerId,
-            Long adminId,
+            Worker worker,
             LeaveType leaveType,
-            String fileName,
-            String imageHash,
             LocalDate leaveStartDate,
-            LocalTime leaveStartTime,
-            LocalDate leaveEndDate,
-            LocalTime leaveEndTime,
-            LocalDate leaveSubmittedDate,
-            LocalTime leaveSubmittedTime,
-            ApplicationStatus applicationStatus,
-            int medicalLeaveBalance,
-            int otherLeaveBalance
+            LocalDate leaveEndDate
     ) {
-        this.workerId = workerId;
-        this.adminId = adminId;
+        this.worker = worker;
+        this.admin = worker.getSupervisor();
         this.leaveType = leaveType;
-        this.fileName = fileName;
-        this.imageHash = imageHash;
         this.leaveStartDate = leaveStartDate;
-        this.leaveStartTime = leaveStartTime;
         this.leaveEndDate = leaveEndDate;
-        this.leaveEndTime = leaveEndTime;
-        this.leaveSubmittedDate = leaveSubmittedDate;
-        this.leaveSubmittedTime = leaveSubmittedTime;
-        this.applicationStatus = applicationStatus;
-        this.medicalLeaveBalance = medicalLeaveBalance;
-        this.otherLeaveBalance = otherLeaveBalance;
+        this.leaveSubmittedDate = LocalDate.now();
+        this.leaveSubmittedTime = LocalTime.now();
+        this.applicationStatus = ApplicationStatus.PENDING;
     }
 
     @PrePersist
     @PreUpdate
     protected void onUpdate() {
+        leaveDurationDays = DateTimeUtils.numberOfWorkingDaysBetween(leaveStartDate, leaveEndDate);
         lastModified = new Timestamp(System.currentTimeMillis());
     }
 }

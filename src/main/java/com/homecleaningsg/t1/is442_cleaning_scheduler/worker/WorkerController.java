@@ -34,13 +34,13 @@ public class WorkerController {
         return workerService.getResidentialAddressOfWorker(workerId);
     }
 
-    @PostMapping("/{workerId}/addResidentialAddressToWorker")
+    @PostMapping("/{workerId}/addResidentialAddressToWorker/")
     public ResponseEntity<String> addResidentialAddressToWorker(
             @PathVariable Long workerId,
             @RequestParam String streetAddress,
             @RequestParam String postalCode,
             @RequestParam String unitNumber
-            ) {
+    ) {
         try {
             workerService.addResidentialAddressToWorker(workerId, streetAddress, postalCode, unitNumber);
             return ResponseEntity.ok("Location added to worker successfully");

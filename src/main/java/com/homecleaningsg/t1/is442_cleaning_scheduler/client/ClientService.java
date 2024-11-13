@@ -171,4 +171,12 @@ public class ClientService {
         return client;
     }
 
+    public List<ClientWithClientSiteDto> getListOfClientsWithClientSites() {
+        List<Client> clients = clientRepository.getClientByActiveEqualsTrue();
+        List<ClientWithClientSiteDto> clientWithClientSiteDtos = new ArrayList<>();
+        for (Client client : clients) {
+            clientWithClientSiteDtos.add(new ClientWithClientSiteDto(client));
+        }
+        return clientWithClientSiteDtos;
+    }
 }

@@ -159,14 +159,10 @@ public class CleaningSession {
     protected void onCreate() {
         lastModified = new Timestamp(System.currentTimeMillis());
         LocalDate today = LocalDate.now();
-        if (this.sessionEndDate.isBefore(today)) {
-            if(this.sessionStatus != SessionStatus.CANCELLED){
-                this.sessionStatus = CleaningSession.SessionStatus.FINISHED;
-            }
-        } else if (this.sessionStartDate.isBefore(today) || this.sessionStartDate.isEqual(today)) {
-            this.sessionStatus = CleaningSession.SessionStatus.WORKING;
-        } else {
-            this.sessionStatus = CleaningSession.SessionStatus.NOT_STARTED;
+        if (this.sessionEndDate.isBefore(today) && this.sessionStatus != SessionStatus.CANCELLED) {
+            this.sessionStatus = CleaningSession.SessionStatus.FINISHED;
+        } else if (this.sessionStartDate.isAfter(today) && this.sessionStatus != SessionStatus.CANCELLED) {
+            this.sessionStatus = SessionStatus.NOT_STARTED;
         }
     }
     @PreUpdate

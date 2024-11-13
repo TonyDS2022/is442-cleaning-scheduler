@@ -7,6 +7,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -31,7 +32,7 @@ public class ShiftServiceTest {
     @Mock
     private WorkerRepository workerRepository;
     @Mock
-    private LeaveApplicationService leaveApplicationService;
+    private WorkerService workerService;
     @Mock
     private TripRepository tripRepository;
 
@@ -93,7 +94,7 @@ public class ShiftServiceTest {
                 .thenReturn(Collections.emptyList());  // No overlapping shifts with start time
         when(shiftRepository.findBySessionEndTimeBetween(any(LocalTime.class), any(LocalTime.class)))
                 .thenReturn(Collections.emptyList());  // No overlapping shifts with end time
-        when(leaveApplicationService.isWorkerOnLeave(anyLong(), any(LocalDate.class), any(LocalTime.class), any(LocalDate.class), any(LocalTime.class)))
+        when(workerService.workerHasPendingOrApprovedLeaveBetween(anyLong(), any(LocalDate.class),any(LocalDate.class)))
                 .thenReturn(false);  // Workers are not on leave
         when(tripRepository.findTripByOriginAndDestination(worker1.getHomeLocation(), shiftLocation)).thenReturn(trip1);
         when(tripRepository.findTripByOriginAndDestination(worker2.getHomeLocation(), shiftLocation)).thenReturn(trip2);
