@@ -45,4 +45,9 @@ public class    LeaveApplicationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @GetMapping("/{adminId}/get-pending-leave-applications")
+    public List<LeaveApplicationAdminViewDto> getPendingLeaveApplications(@PathVariable("adminId") Long adminId) {
+        return leaveApplicationService.getPendingLeaveApplicationsForAdmin(adminId);
+    }
 }

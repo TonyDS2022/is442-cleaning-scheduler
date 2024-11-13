@@ -1,5 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
@@ -7,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor // Lombok annotation to generate constructor with required arguments.
@@ -16,6 +20,7 @@ public class LeaveApplicationService {
     private final LeaveApplicationRepository leaveApplicationRepository;
     private final WorkerService workerService;
     private final WorkerRepository workerRepository;
+    private final ShiftRepository shiftRepository;
 
     public void applyAnnualLeave(
             Long workerId,
@@ -59,6 +64,26 @@ public class LeaveApplicationService {
         } else {
             throw new IllegalArgumentException("Insufficient medical leave balance.");
         }
+    }
+
+    public List<Shift> getShiftsAffectedByLeaveApplication(LeaveApplication leaveApplication) {
+        LocalDate startDate = leaveApplication.getLeaveStartDate();
+        LocalDate endDate = leaveApplication.getLeaveEndDate();
+        Long workerId = leaveApplication.getWorker().getWorkerId();
+        return shiftRepository.findShiftsByWorkerIdAndOverlappingDateRange(
+                workerId,
+                startDate,
+                endDate
+        );
+    }
+
+    public List<LeaveApplicationAdminViewDto> getPendingLeaveApplicationsForAdmin(Long adminId) {
+        List<LeaveApplication> pendingLeaveApplications = leaveApplicationRepository.findPendingLeaveApplicationsByAdminId(adminId);
+        List<LeaveApplicationAdminViewDto> leaveApplicationAdminViewDtos = new ArrayList<>();
+        for (LeaveApplication leaveApplication : pendingLeaveApplications) {
+            leaveApplicationAdminViewDtos.add(new LeaveApplicationAdminViewDto(leaveApplication));
+        }
+        return leaveApplicationAdminViewDtos;
     }
 
 }

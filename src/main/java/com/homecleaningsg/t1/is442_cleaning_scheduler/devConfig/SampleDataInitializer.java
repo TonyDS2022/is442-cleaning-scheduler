@@ -118,8 +118,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         initializeCleaningSessions();
         initializeShifts();
         initializeAdmins();
-        initializeMedicalRecords();
-        initializeLeaveApplications();
+//        initializeLeaveApplications();
     }
 
     public void initializeSubzones() throws Exception {
@@ -530,20 +529,5 @@ public class SampleDataInitializer implements ApplicationRunner {
         Admin ad1 = new Admin("rootadmin", "adminroot1234", true);
         Admin ad2 = new Admin("admin", "admin1234", false);
         adminRepository.saveAll(List.of(ad1, ad2));
-    }
-
-    public void initializeMedicalRecords() {
-        String mcId1 = medicalRecordService.generateCustomMcId();
-        String mcId2 = medicalRecordService.generateCustomMcId();
-        String mcId3 = medicalRecordService.generateCustomMcId();
-
-        MedicalRecord medicalRecord1 = new MedicalRecord(mcId1, "fake-blob-123", "user1_image1_timestamp", OffsetDateTime.now(), OffsetDateTime.now().plusDays(7));
-        MedicalRecord medicalRecord2 = new MedicalRecord(mcId2, "fake-blob-456", "user1_image2_timestamp", OffsetDateTime.now().minusDays(10), OffsetDateTime.now().minusDays(3));
-
-        medicalRecordRepository.saveAll(List.of(medicalRecord1, medicalRecord2));
-    }
-
-    public void initializeLeaveApplications() {
-
     }
 }

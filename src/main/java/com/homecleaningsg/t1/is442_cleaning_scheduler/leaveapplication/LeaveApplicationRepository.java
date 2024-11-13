@@ -97,4 +97,13 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
                     "AND (l.leaveStartDate <= :rightBound AND l.leaveEndDate >= :leftBound)"
     )
     boolean workerHasPendingOrApprovedLeaveBetween(Long workerId, LocalDate leftBound, LocalDate rightBound);
+
+    @Query(
+            "SELECT l " +
+                    "FROM LeaveApplication l " +
+                    "WHERE l.admin.adminId = :adminId " +
+                    "AND (l.applicationStatus = 'PENDING') " +
+                    "AND (l.leaveStartDate <= :rightBound AND l.leaveEndDate >= :leftBound)"
+    )
+    List<LeaveApplication> findPendingLeaveApplicationsByAdminId(Long adminId);
 }
