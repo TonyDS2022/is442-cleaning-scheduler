@@ -12,6 +12,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSiteRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
@@ -53,6 +54,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Component
 @Profile("dev")
@@ -75,6 +77,7 @@ public class SampleDataInitializer implements ApplicationRunner {
     private final TripService tripService;
     private final WorkerService workerService;
     private final TripRepository tripRepository;
+    private final ContractService contractService;
 
     public SampleDataInitializer(
             AdminRepository adminRepository,
@@ -92,7 +95,7 @@ public class SampleDataInitializer implements ApplicationRunner {
             LocationService locationService,
             MedicalRecordService medicalRecordService,
             TripService tripService,
-            WorkerService workerService, TripRepository tripRepository) {
+            WorkerService workerService, TripRepository tripRepository, ContractService contractService) {
         this.adminRepository = adminRepository;
         this.contractRepository = contractRepository;
         this.clientSiteRepository = clientSiteRepository;
@@ -110,6 +113,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.tripService = tripService;
         this.workerService = workerService;
         this.tripRepository = tripRepository;
+        this.contractService = contractService;
     }
 
     @Override
@@ -123,8 +127,8 @@ public class SampleDataInitializer implements ApplicationRunner {
         initializeWorkers();
         initializeClients();
         initializeContracts();
-        initializeCleaningSessions();
-        initializeShifts();
+//        initializeCleaningSessions();
+//        initializeShifts();
 //        initializeMedicalRecords();
 //        initializeLeaveApplications();
     }
@@ -340,45 +344,35 @@ public class SampleDataInitializer implements ApplicationRunner {
 
     @Transactional
     public void initializeContracts() {
-        Client client1 = this.clientRepository.findById(1L)
-                .orElseThrow(() -> new IllegalStateException("Client with ID 1 not found"));
-        Client client2 = this.clientRepository.findById(2L)
-                .orElseThrow(() -> new IllegalStateException("Client with ID 2 not found"));
-
-        Contract contract1 = new Contract();
-        contract1.setContractStart(LocalDate.of(2024, 11, 3));
-        contract1.setContractEnd(LocalDate.of(2024, 12, 3));
-        contract1.setContractComment("Contract 1");
-        contract1.setPrice(60.0f);
-        contract1.setWorkersBudgeted(1);
-        contract1.setRooms(1);
-        contract1.setFrequency(Contract.Frequency.WEEKLY);
-        contract1.setSessionStartTime(LocalTime.of(9,0));
-        contract1.setSessionEndTime(LocalTime.of(12,0));
-        contract1.setCreationDate(LocalDate.of(2024, 11, 3));
-
-        Contract contract2 = new Contract();
-        contract2.setContractStart(LocalDate.of(2024, 9, 3));
-        contract2.setContractEnd(LocalDate.of(2024, 10, 3));
-        contract2.setContractComment("Contract 2");
-        contract2.setPrice(250.0f);
-        contract2.setWorkersBudgeted(3);
-        contract2.setRooms(2);
-        contract2.setFrequency(Contract.Frequency.BIWEEKLY);
-        contract2.setSessionStartTime(LocalTime.of(9,0));
-        contract2.setSessionEndTime(LocalTime.of(12,0));
-        contract2.setCreationDate(LocalDate.of(2024, 9, 1));
-
-        client1.addContract(contract1);
-        contract1.setClientSite(client1.getClientSites().get(0));
-        client2.addContract(contract2);
-        contract2.setClientSite(client2.getClientSites().get(0));
-
-        System.out.println("Contract 1 Rate: " + contract1.getRate());
-        System.out.println("Contract 2 Rate: " + contract2.getRate());
-
-        this.clientRepository.saveAll(List.of(client1, client2));
-        this.contractRepository.saveAll(List.of(contract1, contract2));
+        List<Integer> validHour = List.of(8, 13, 18);
+        Random random = new Random(24601);
+        List<Client> clients = clientRepository.findAll();
+        for (Client client: clients) {
+            if (!client.isActive()) {
+                continue;
+            }
+            if (client.getClientSites().get(0).getPropertyType() == ClientSite.PropertyType.LANDED) {
+                continue;
+            }
+            Long numberOfRooms = client.getClientSites().get(0).getNumberOfRooms();
+            ClientSite.PropertyType propertyType = client.getClientSites().get(0).getPropertyType();
+            LocalTime startTime = LocalTime.of(validHour.get(random.nextInt(validHour.size())), 0);
+            LocalTime endTime = startTime.plusHours(contractService.getNumberOfHours(numberOfRooms, propertyType));
+            Contract contract = new Contract(
+                    client.getClientSites().get(0),
+                    client,
+                    client.getJoinDate(),
+                    client.getJoinDate().plusMonths(3),
+                    startTime,
+                    endTime,
+                    "This is a sample contract",
+                    276.0f,
+                    1,
+                    numberOfRooms.intValue(),
+                    "WEEKLY"
+            );
+            contractService.addContract(contract);
+        }
     }
 
     @Transactional
