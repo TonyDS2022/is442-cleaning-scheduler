@@ -36,25 +36,40 @@ public class ContractService {
     private final CleaningSessionService cleaningSessionService;
     private final ClientSiteRepository clientSiteRepository;
     private final ShiftService shiftService;
+<<<<<<< Updated upstream
     private final LocationService locationService;
     private final ClientService clientService;
 
+=======
+    private final ClientService clientService;
+>>>>>>> Stashed changes
 
     @Autowired
     public ContractService(ContractRepository contractRepository,
                            CleaningSessionRepository cleaningSessionRepository,
                            CleaningSessionService cleaningSessionService,
                            ClientSiteRepository clientSiteRepository,
+<<<<<<< Updated upstream
                            ShiftService shiftService,
                            LocationService locationService,
                            ClientService clientService) {
+=======
+                           LocationRepository locationRepository,
+                           ShiftService shiftService,
+                           ClientService clientservice) {
+>>>>>>> Stashed changes
         this.contractRepository = contractRepository;
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.cleaningSessionService = cleaningSessionService;
         this.clientSiteRepository = clientSiteRepository;
         this.shiftService = shiftService;
+<<<<<<< Updated upstream
         this.locationService = locationService;
         this.clientService = clientService;
+>>>>>>> Stashed changes
+=======
+        this.clientService = clientservice;
+
 >>>>>>> Stashed changes
     }
 
@@ -117,6 +132,53 @@ public class ContractService {
         };
     }
 
+<<<<<<< Updated upstream
+=======
+    public Contract addContract(Contract contract){
+        ClientSite clientSite = contract.getClientSite();
+        Client client = contract.getClient();
+        clientService.getOrCreateClient(client.getName(), client.getPhone(), clientSite.getStreetAddress(), clientSite.getPostalCode(), clientSite.getUnitNumber());
+        contractRepository.save(contract);
+        List<LocalDate> daysToSchedule = new ArrayList<>();
+        LocalDate currentDate = contract.getContractStart();
+        // Loop until we reach the contract end date
+        while (!currentDate.isAfter(contract.getContractEnd())) {
+            // Loop until we reach or exceed the contract end date
+            while (!currentDate.isAfter(contract.getContractEnd())) {
+                // Add the current date to the list as a session day
+                daysToSchedule.add(currentDate);
+                // Increment currentDate based on contract frequency
+                currentDate = getNextDateByFrequency(currentDate, contract.getFrequency());
+            }
+            // Increment currentDate based on contract frequency
+            currentDate = getNextDateByFrequency(currentDate, contract.getFrequency());
+        }
+        // Create CleaningSessions and Shifts for each calculated day
+        int sessionCounter = 1; // Initialize a counter to label the sessions
+        for (LocalDate day : daysToSchedule) {
+            // Construct the session description with the session number (e.g., "Session 1", "Session 2", etc.)
+            String sessionDescription = "Session " + sessionCounter++;
+            // Create a CleaningSession based on the day and contract details
+            CleaningSession newCleaningSession = new CleaningSession(
+                    contract,
+                    day,
+                    contract.getSessionStartTime(),
+                    day,
+                    contract.getSessionEndTime(),
+                    sessionDescription,
+                    contract.getWorkersBudgeted()
+            );
+            cleaningSessionService.addCleaningSession(newCleaningSession);
+            // Create Shifts based on the workers budgeted in the contract
+            for (int i = 0; i < contract.getWorkersBudgeted(); i++) {
+                Shift newShift = new Shift(newCleaningSession);
+                shiftService.addShift(newShift);
+            }
+        }
+        return contract;
+    }
+
+>>>>>>> Stashed changes
     public Contract updateContract(Long contractId, Contract updatedContract){
         if(!contractRepository.existsById(contractId)){
             throw new IllegalArgumentException("Contract not found");
