@@ -3,7 +3,6 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
@@ -22,7 +21,6 @@ public class ShiftService {
 
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
-    private final LeaveApplicationService leaveApplicationService;
     private final CleaningSessionRepository cleaningSessionRepository;
     private final LeaveApplicationRepository leaveApplicationRepository;
     private final TripRepository tripRepository;
@@ -30,14 +28,12 @@ public class ShiftService {
     @Autowired
     public ShiftService(ShiftRepository shiftRepository,
                         WorkerRepository workerRepository,
-                        LeaveApplicationService leaveApplicationService,
                         CleaningSessionRepository cleaningSessionRepository,
                         LeaveApplicationRepository leaveApplicationRepository,
                         TripRepository tripRepository
     ) {
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
-        this.leaveApplicationService = leaveApplicationService;
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.leaveApplicationRepository = leaveApplicationRepository;
         this.tripRepository = tripRepository;
@@ -68,6 +64,13 @@ public class ShiftService {
     }
 
     public void addShift(Shift shift) {
+        // attempt to assign worker
+        List<AvailableWorkerDto> availableWorkers = getAvailableWorkersForShift(shift);
+        if (!availableWorkers.isEmpty()) {
+            Worker worker = workerRepository.findById(availableWorkers.get(0).getWorkerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Worker not found"));
+            setWorker(shift, worker);
+        }
         shiftRepository.save(shift);
         // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
@@ -285,12 +288,16 @@ public class ShiftService {
         return shiftRepository.findByWorkerWorkerId(workerId);
     }
 
-    public void setWorker(Long shiftId, Long workerId){
+    public void setWorker(Long shiftId, Long workerId) {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new IllegalArgumentException("Worker not found"));
 
+        setWorker(shift, worker);
+    }
+
+    public void setWorker(Shift shift, Worker worker) {
         if (shift.getWorker() != null && shift.getWorker().equals(worker)) {
             throw new IllegalStateException("Worker is already assigned to this shift.");
         }
@@ -363,7 +370,10 @@ public class ShiftService {
     public List<AvailableWorkerDto> getAvailableWorkersForShift(Long shiftId) {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+        return getAvailableWorkersForShift(shift);
+    }
 
+    public List<AvailableWorkerDto> getAvailableWorkersForShift(Shift shift) {
         LocalTime shiftStartTime = shift.getSessionStartTime();
         LocalTime shiftEndTime = shift.getSessionEndTime();
 
