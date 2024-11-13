@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -106,4 +107,15 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
                     "AND (l.leaveStartDate <= :rightBound AND l.leaveEndDate >= :leftBound)"
     )
     List<LeaveApplication> findPendingLeaveApplicationsByAdminId(Long adminId);
+
+    @Query(
+            "SELECT l.worker " +
+                    "FROM LeaveApplication l " +
+                    "WHERE (l.applicationStatus = 'PENDING' OR l.applicationStatus = 'APPROVED') " +
+                    "AND (l.leaveStartDate <= :leaveEndDate AND l.leaveEndDate >= :leaveStartDate)"
+    )
+    List<Worker> findWorkersByLeaveOverlappingWith(
+            @Param("leaveStartDate") LocalDate leaveStartDate,
+            @Param("leaveEndDate") LocalDate leaveEndDate
+    );
 }

@@ -367,9 +367,9 @@ public class ShiftService {
         LocalTime shiftStartTime = shift.getSessionStartTime();
         LocalTime shiftEndTime = shift.getSessionEndTime();
 
-        List<Worker> allWorkersInWorkingHours = workerRepository.findByStartWorkingHoursAfterAndEndWorkingHoursBefore(shiftStartTime, shiftEndTime);
-//        List<Worker> workersWithPendingLeave = /* #TODO: get workers with pending leave applications */
-//        List<Worker> workersWithApprovedLeave = /* #TODO: get workers with approved leave applications */
+        List<Worker> allWorkersInWorkingHours = workerRepository.findByStartWorkingHoursBeforeEndWorkingHoursAfter(shiftStartTime, shiftEndTime);
+
+        List<Worker> workersWithPendingOrApprovedLeave = leaveApplicationRepository.findWorkersByLeaveOverlappingWith(shift.getSessionStartDate(), shift.getSessionEndDate());
 
         List<Worker> workerOnShiftsWithStartTimeOverlaps = shiftRepository.findBySessionStartTimeBetween(shiftStartTime, shiftEndTime)
                 .stream()
@@ -385,8 +385,7 @@ public class ShiftService {
 
         List<Worker> availableWorkers = allWorkersInWorkingHours.stream()
                 .filter(worker -> !workerOnShift.contains(worker))
-//                .filter(worker -> !workersWithPendingLeave.contains(worker)) /* #TODO: uncomment when implemented */
-//                .filter(worker -> !workersWithApprovedLeave.contains(worker)) /* #TODO: uncomment when implemented */
+                .filter(worker -> !workersWithPendingOrApprovedLeave.contains(worker)) /* #TODO: uncomment when implemented */
                 .toList();
 
         Map<Worker, Shift> lastShiftByWorkerBeforeShift = new HashMap<>();

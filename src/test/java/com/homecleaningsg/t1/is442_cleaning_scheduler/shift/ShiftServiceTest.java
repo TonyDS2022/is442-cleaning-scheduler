@@ -88,7 +88,7 @@ public class ShiftServiceTest {
 
         // Mock repository behavior
         when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(testShift));
-        when(workerRepository.findByStartWorkingHoursAfterAndEndWorkingHoursBefore(any(LocalTime.class), any(LocalTime.class)))
+        when(workerRepository.findByStartWorkingHoursBeforeEndWorkingHoursAfter(any(LocalTime.class), any(LocalTime.class)))
                 .thenReturn(allWorkers);
         when(shiftRepository.findBySessionStartTimeBetween(any(LocalTime.class), any(LocalTime.class)))
                 .thenReturn(Collections.emptyList());  // No overlapping shifts with start time

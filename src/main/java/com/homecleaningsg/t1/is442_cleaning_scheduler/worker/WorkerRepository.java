@@ -14,8 +14,6 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
 
     Worker findByName(String name);
 
-    List<Worker> findByStartWorkingHoursAfterAndEndWorkingHoursBefore(LocalTime startWorkingHours, LocalTime endWorkingHours);
-
     @Query("SELECT COUNT(DISTINCT w.workerId) FROM Worker w " +
             "WHERE w.joinDate BETWEEN :startOfMonth AND :endOfMonth")
     Long countNewWorkersByMonth(@Param("startOfMonth") LocalDate startOfMonth,
@@ -47,4 +45,15 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
             "WHERE w.deactivatedAt IS NOT NULL " +
             "AND EXTRACT(YEAR FROM w.deactivatedAt) = :year")
     Long countTerminatedWorkersByYear(@Param("year") int year);
+
+    @Query(
+            "SELECT w " +
+                    "FROM Worker w " +
+                    "WHERE w.startWorkingHours <= :shiftStartTime " +
+                    "AND w.endWorkingHours >= :shiftEndTime"
+    )
+    List<Worker> findByStartWorkingHoursBeforeEndWorkingHoursAfter(
+            @Param("shiftStartTime") LocalTime shiftStartTime,
+            @Param("shiftEndTime") LocalTime shiftEndTime
+    );
 }
