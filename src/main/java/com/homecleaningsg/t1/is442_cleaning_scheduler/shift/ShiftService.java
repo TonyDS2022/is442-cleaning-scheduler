@@ -170,7 +170,7 @@ public class ShiftService {
         else{
             shift.setWorkingStatus(Shift.WorkingStatus.WORKING);
             shift.setActualStartDate(LocalDate.now());
-            shift.setActualStartTime(LocalTime.now());
+            shift.setActualStartTime(LocalTime.now().withNano(0));
             shiftRepository.save(shift);
         }
         CleaningSession cleaningSession = shift.getCleaningSession();
@@ -196,7 +196,7 @@ public class ShiftService {
         else{
             shift.setWorkingStatus(Shift.WorkingStatus.FINISHED);
             shift.setActualEndDate(LocalDate.now());
-            shift.setActualEndTime(LocalTime.now());
+            shift.setActualEndTime(LocalTime.now().withNano(0));
             shiftRepository.save(shift);
         }
         CleaningSession cleaningSession = shift.getCleaningSession();

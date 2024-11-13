@@ -433,13 +433,9 @@ public class SampleDataInitializer implements ApplicationRunner {
         // A shift represents a worker's involvement in the cleaning session,
         // and is used to denote the cleaning session for each worker.
 
+        // for testing shift start and shift end
         Shift shift1 = new Shift(session1);
         shift1.setWorker(worker1);
-        // this is the actual time that the worker arrive to the shift
-        shift1.setActualStartDate(LocalDate.of(2024, 10, 5));
-        shift1.setActualStartTime(LocalTime.of(9, 0));
-        shift1.setActualEndDate(LocalDate.of(2024, 10, 5));
-        shift1.setActualEndTime(LocalTime.of(12, 0));
 
         Shift shift2 = new Shift(session1);
         shift2.setWorker(worker6);
@@ -468,7 +464,16 @@ public class SampleDataInitializer implements ApplicationRunner {
         Shift shift5 = new Shift(session3);
         shift5.setWorker(worker1);
 
-        shiftRepository.saveAll(new ArrayList<>(List.of(shift1, shift2, shift3, shift4, shift5)));
+
+        Shift shift6 = new Shift(session2);
+        shift6.setWorker(worker6);
+        // this is the actual time that the worker arrive to the shift
+        shift6.setActualStartDate(LocalDate.of(2024, 10, 12));
+        shift6.setActualStartTime(LocalTime.of(9, 0));
+        shift6.setActualEndDate(LocalDate.of(2024, 10, 12));
+        shift6.setActualEndTime(LocalTime.of(12, 0));
+
+        shiftRepository.saveAll(new ArrayList<>(List.of(shift1, shift2, shift3, shift4, shift5, shift6)));
 
         session1.setShifts(new ArrayList<>(List.of(shift1, shift2)));
         session2.setShifts(new ArrayList<>(List.of(shift3, shift4)));
