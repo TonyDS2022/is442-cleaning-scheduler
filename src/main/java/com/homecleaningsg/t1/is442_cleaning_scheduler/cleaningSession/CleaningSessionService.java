@@ -11,6 +11,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ public class CleaningSessionService {
     private final TripRepository tripRepository;
     private final LeaveApplicationService leaveApplicationService;
     private final ShiftService shiftService;
+    private final WorkerService workerService;
 
     @Autowired
     public CleaningSessionService(
@@ -39,14 +41,15 @@ public class CleaningSessionService {
             WorkerRepository workerRepository,
             TripRepository tripRepository,
             LeaveApplicationService leaveApplicationService,
-            ShiftService shiftService
-    ) {
+            ShiftService shiftService,
+            WorkerService workerService) {
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
         this.tripRepository = tripRepository;
         this.leaveApplicationService = leaveApplicationService;
         this.shiftService = shiftService;
+        this.workerService = workerService;
     }
 
     public List<CleaningSession> getAllCleaningSessions() {
@@ -229,9 +232,11 @@ public class CleaningSessionService {
     public void updateWorkerHasPendingLeave(CleaningSession cleaningSession) {
         for (Shift shift : cleaningSession.getShifts()) {
             if (shift.getWorker() != null) {
-                boolean hasPendingLeave = leaveApplicationService.getPendingApplicationsByWorkerId(shift.getWorker().getWorkerId())
-                        .stream()
-                        .anyMatch(leave -> isOverlapping(leave.getLeaveStartDate(), leave.getLeaveStartDate(), shift));
+                boolean hasPendingLeave = workerService.workerHasPendingOrApprovedLeaveBetween(
+                        shift.getWorker().getWorkerId(),
+                        shift.getSessionStartDate(),
+                        shift.getSessionEndDate()
+                );
                 shift.setWorkerHasPendingLeave(hasPendingLeave);
                 shiftRepository.save(shift);
             } else {

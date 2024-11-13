@@ -61,6 +61,10 @@ public class Worker {
     @NonNull
     private LocalTime endWorkingHours;
 
+    @OneToMany(mappedBy = "leaveApplicationId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("worker-leaveApplication") // prevent infinite recursion when serializing
+    private List<LeaveApplication> leaveApplications = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "location_id")
     private Location homeLocation;
@@ -68,12 +72,6 @@ public class Worker {
     public Worker(Location homeLocation){
         this.homeLocation = homeLocation;
     }
-
-    // establish relationship with leaveApplications
-    @OneToMany(mappedBy = "workerId", cascade = CascadeType.ALL, orphanRemoval = true)
-    // @JsonIgnore
-    @JsonBackReference("leaveApplications-worker") // prevent infinite recursion when serializing
-    private List<LeaveApplication> leaveApplications = new ArrayList<>();
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("worker-shift")
