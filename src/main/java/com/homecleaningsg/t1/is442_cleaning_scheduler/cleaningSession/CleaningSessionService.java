@@ -88,17 +88,6 @@ public class CleaningSessionService {
     }
 
     public CleaningSession addCleaningSession(CleaningSession cleaningSession){
-        Contract contract = cleaningSession.getContract();
-        Long durationMinutes = Duration.between(
-                cleaningSession.getSessionStartTime(),
-                cleaningSession.getSessionEndTime()
-        ).toMinutes();
-
-
-        if (contract.getSessionDurationMinutes() != durationMinutes) {
-            throw new IllegalArgumentException("Cleaning session duration must be same as duration set in contract.");
-        }
-
         return cleaningSessionRepository.save(cleaningSession);
     }
 
