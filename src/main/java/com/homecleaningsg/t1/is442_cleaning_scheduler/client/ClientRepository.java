@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
@@ -44,4 +45,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     @Query("SELECT COUNT(DISTINCT c.clientId) FROM Client c ")
     Client findByNameAndPhone(String name, String phone);
+
+    @Query("SELECT c FROM Client c WHERE c.isActive = true")
+    List<Client> getClientByActiveEqualsTrue();
 }

@@ -40,13 +40,18 @@ public class ClientController {
     }
 
     @PostMapping("/{clientId}/add-client-site/")
-    public ResponseEntity<String> addClientSite(@PathVariable("clientId") Long clientId, @RequestBody ClientSiteDto clientSiteDto) {
+    public ResponseEntity<String> addClientSite(
+            @PathVariable("clientId") Long clientId,
+            @RequestParam String streetAddress,
+            @RequestParam String postalCode,
+            @RequestParam String unitNumber
+            ) {
         try {
             clientService.addClientSiteToClient(
                     clientId,
-                    clientSiteDto.getStreetAddress(),
-                    clientSiteDto.getPostalCode(),
-                    clientSiteDto.getUnitNumber()
+                    streetAddress,
+                    postalCode,
+                    unitNumber
             );
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client site added successfully.");
         } catch (IllegalArgumentException e) {
@@ -74,5 +79,11 @@ public class ClientController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate client.");
         }
+    }
+
+    // localhost:8080/api/v0.1/client/get-clients-with-client-sites/
+    @GetMapping("/get-clients-with-client-sites")
+    public List<ClientWithClientSiteDto> getListOfClientsWithClientSites() {
+        return clientService.getListOfClientsWithClientSites();
     }
 }
