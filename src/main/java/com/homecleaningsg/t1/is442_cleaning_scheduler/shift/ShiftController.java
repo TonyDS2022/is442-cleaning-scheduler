@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,12 +29,12 @@ public class ShiftController {
     }
 
     @GetMapping
-    public List<Shift> getAllShifts() {
+    public List<ShiftWithWorkerDetailsDto> getAllShifts() {
         return shiftService.getAllShifts();
     }
 
     @GetMapping("/{shiftId}")
-    public Optional<Shift> getShiftById(@PathVariable("shiftId") Long shiftId) {
+    public Optional<ShiftWithWorkerDetailsDto> getShiftById(@PathVariable("shiftId") Long shiftId) {
         return shiftService.getShiftById(shiftId);
     }
 
@@ -50,12 +51,40 @@ public class ShiftController {
     // localhost:8080/api/v0.1/shift/update-shift/1
     @PutMapping("/update-shift/{shiftId}")
     public ResponseEntity<String> updateShift(
-            @PathVariable("shiftId") Long shiftId, @RequestBody Shift updatedShift) {
+            @PathVariable("shiftId") Long shiftId,
+            @RequestBody Map<String, String> updates
+    ) {
         try{
-            shiftService.updateShift(shiftId, updatedShift);
+            shiftService.updateShift(shiftId, updates);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift updated successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update shift details.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    // localhost:8080/api/v0.1/shift/unassign-worker/1
+    @PutMapping("/unassign-worker/{shiftId}")
+    public ResponseEntity<String> unassignWorker(
+            @PathVariable("shiftId") Long shiftId
+    ) {
+        try{
+            shiftService.unassignWorkerFromShift(shiftId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker unassigned from shift successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    // localhost:8080/api/v0.1/shift/start-shift/1
+    @PutMapping("/start-shift/{shiftId}")
+    public ResponseEntity<String> startShift(
+            @PathVariable Long shiftId
+    ) {
+        try{
+            shiftService.startShift(shiftId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift started successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to start shift.");
         }
     }
 
@@ -71,31 +100,31 @@ public class ShiftController {
     }
 
     @GetMapping("/worker/{workerId}")
-    public List<Shift> getShiftsByWorkerId(@PathVariable("workerId") Long workerId) {
-        return shiftService.getShiftsByWorkerId(workerId);
+    public List<ShiftWithWorkerDetailsDto> getShiftsByWorkerId(@PathVariable("workerId") Long workerId) {
+        return shiftService.getShiftsDtosByWorkerId(workerId);
     }
 
     // get shifts by worker and month / week / day
     @GetMapping("/worker/{workerId}/month")
-    public List<Shift> getShiftsByMonthAndWorker(@PathVariable("workerId") Long workerId, @RequestParam int month, @RequestParam int year) {
+    public List<ShiftWithWorkerDetailsDto> getShiftsByMonthAndWorker(@PathVariable("workerId") Long workerId, @RequestParam int month, @RequestParam int year) {
         return shiftService.getShiftsByMonthAndWorker(month, year, workerId);
     }
 
     // http://localhost:8080/api/v0.1/shift/worker/1/week=40&year=2024
     @GetMapping("/worker/{workerId}/week")
-    public List<Shift> getShiftsByWeekAndWorker(@PathVariable("workerId") Long workerId, @RequestParam int week, @RequestParam int year) {
+    public List<ShiftWithWorkerDetailsDto> getShiftsByWeekAndWorker(@PathVariable("workerId") Long workerId, @RequestParam int week, @RequestParam int year) {
         return shiftService.getShiftsByWeekAndWorker(week, year, workerId);
     }
 
     // http://localhost:8080/api/v0.1/shift/worker/1/day?date=2024-10-05
     @GetMapping("/worker/{workerId}/day")
-    public List<Shift> getShiftsByDayAndWorker(@PathVariable("workerId") Long workerId, @RequestParam LocalDate date) {
+    public List<ShiftWithWorkerDetailsDto> getShiftsByDayAndWorker(@PathVariable("workerId") Long workerId, @RequestParam LocalDate date) {
         return shiftService.getShiftsByDayAndWorker(date, workerId);
     }
 
     // http://localhost:8080/api/v0.1/shift/worker/1/dayLastShiftBeforeTime?date=2024-10-05&time=15:00
     @GetMapping("/worker/{workerId}/dayLastShiftBeforeTime")
-    public List<Shift> getLastShiftByDayAndWorkerBeforeTime(@PathVariable("workerId") Long workerId,
+    public List<ShiftWithWorkerDetailsDto> getLastShiftByDayAndWorkerBeforeTime(@PathVariable("workerId") Long workerId,
                                                                       @RequestParam LocalDate date,
                                                                       @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
 
