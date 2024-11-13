@@ -71,4 +71,10 @@ public class CleaningSessionController {
         return cleaningSessionService.getCalendarView();
     }
 
+    @GetMapping("/calendar-card/{cleaningSessionId}")
+    public CleaningSessionCalendarCardViewDto getCalendarCardView(
+            @PathVariable Long cleaningSessionId) {
+        return cleaningSessionService.getCalendarCardView(cleaningSessionId);
+    }
+
 }
