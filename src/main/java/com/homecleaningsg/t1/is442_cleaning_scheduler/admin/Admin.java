@@ -1,10 +1,13 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
 
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -39,6 +42,10 @@ public class Admin {
 
     @NonNull
     private Timestamp lastModified;
+
+    @OneToMany(mappedBy = "workerId", cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
+    @JsonManagedReference("admin-worker")
+    private List<Worker> subordinates;
 
     @NonNull
     private boolean isActive = true;

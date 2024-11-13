@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.admin.Admin;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
@@ -60,6 +61,10 @@ public class Worker {
 
     @NonNull
     private LocalTime endWorkingHours;
+
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JsonBackReference("admin-worker")
+    private Admin supervisor;
 
     @OneToMany(mappedBy = "leaveApplicationId", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("worker-leaveApplication") // prevent infinite recursion when serializing
