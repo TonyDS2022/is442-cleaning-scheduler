@@ -147,7 +147,7 @@ public class ShiftController {
         return shiftService.getLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
     }
 
-    @PostMapping("/{shiftId}/set-worker/{workerId}")
+    @PostMapping("/{shiftId}/assign-worker/{workerId}")
     public ResponseEntity<String> assignWorkerToShift(@PathVariable("shiftId") Long shiftId, @PathVariable("workerId") Long workerId) {
         try {
             shiftService.setWorker(shiftId, workerId);
