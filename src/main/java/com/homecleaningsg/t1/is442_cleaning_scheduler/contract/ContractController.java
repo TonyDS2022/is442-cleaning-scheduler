@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -93,9 +95,16 @@ public class ContractController {
 
     // localhost:8080/api/v0.1/contract/add-contract
     @PostMapping("/add-contract/")
-    public ResponseEntity<String> addContract(@RequestBody Contract contract) {
+    public ResponseEntity<String> addContract(
+            @RequestParam Long clientId,
+            @RequestParam Long clientSiteId,
+            @RequestParam LocalDate contractStartDate,
+            @RequestParam LocalDate contractEndDate,
+            @RequestParam LocalTime sessionStartTime,
+            String frequency
+            ) {
         try {
-            contractService.addContract(contract);
+            contractService.addContract(clientId, clientSiteId, contractStartDate, contractEndDate, sessionStartTime, frequency);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Contract added successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add contract.");
