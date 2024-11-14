@@ -43,21 +43,7 @@ public class ContractService {
     // updates contractStatus automatically when all contracts are retrieved
     // based on current date and contractStart and contractEnd dates
     public List<Contract> getContract() {
-        List<Contract> contracts = contractRepository.findAll();
-
-        for (Contract contract : contracts) {
-            if (contract.getContractEnd().isBefore(LocalDate.now()) &&
-                    contract.getContractStatus() != Contract.ContractStatus.COMPLETED) {
-                contract.setContractStatus(Contract.ContractStatus.COMPLETED);
-                contractRepository.save(contract);
-            } else if (contract.getContractStart().isBefore(LocalDate.now()) &&
-                    contract.getContractStatus() == Contract.ContractStatus.NOT_STARTED) {
-                contract.setContractStatus(Contract.ContractStatus.IN_PROGRESS);
-                contractRepository.save(contract);
-            }
-        }
-
-        return contracts;
+        return contractRepository.findAll();
     }
 
     public Optional<Float> getRateByContractId(Long contractId) {
