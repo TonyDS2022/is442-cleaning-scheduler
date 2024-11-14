@@ -127,8 +127,8 @@ public class SampleDataInitializer implements ApplicationRunner {
         initializeWorkers();
         initializeClients();
         initializeContracts();
-//        initializeCleaningSessions();
-//        initializeShifts();
+        initializeCleaningSessions();
+        initializeShifts();
 //        initializeMedicalRecords();
 //        initializeLeaveApplications();
     }
@@ -383,117 +383,88 @@ public class SampleDataInitializer implements ApplicationRunner {
 
     @Transactional
     public void initializeCleaningSessions() {
-        Contract contract = this.contractRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Contract not found"));
+    // read from resource/cleaningSession.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/cleaningSessions_table.csv"))) {
 
-        // Create CleaningSession instances
-        CleaningSession session1 = new CleaningSession(
-                contract,
-                LocalDate.of(2024,10,5),
-                LocalTime.of(9,0),
-                LocalDate.of(2024,10,5),
-                LocalTime.of(12,0),
-                "Session 1",
-                2
-        );
-        session1.setSessionStatus(CleaningSession.SessionStatus.WORKING);
-        session1.setSessionRating(CleaningSession.Rating.AVERAGE);
-        session1.setSessionFeedback("Feedback 1");
-        session1.setPlanningStage(CleaningSession.PlanningStage.GREEN);
+            String[] values;
+            reader.readNext();  // Skip header row
+            while ((values = reader.readNext()) != null) {
+                Long contractId = Long.parseLong(values[0].trim());
+                LocalDate sessionDate = LocalDate.parse(values[1].trim());
+                LocalTime startTime = LocalTime.parse(values[2].trim());
+                LocalDate endDate = LocalDate.parse(values[3].trim());
+                LocalTime endTime = LocalTime.parse(values[4].trim());
+                String sessionName = values[5].trim();
+                int numberOfCleaners = Integer.parseInt(values[6].trim());
+                CleaningSession.SessionStatus sessionStatus = CleaningSession.SessionStatus.valueOf(values[7].trim());
+                LocalDate cancelledAt = values[8].trim().isEmpty() ? null : LocalDate.parse(values[8].trim());
 
-        CleaningSession session2 = new CleaningSession(
-                contract,
-                LocalDate.of(2024,10,12),
-                LocalTime.of(14,0),
-                LocalDate.of(2024,10,12),
-                LocalTime.of(17,0),
-                "Session 2",
-                1
-        );
-        session2.setSessionStatus(CleaningSession.SessionStatus.NOT_STARTED);
-        session2.setSessionRating(CleaningSession.Rating.GOOD);
-        session2.setSessionFeedback("Feedback 2");
+                Contract contract = contractRepository.findById(contractId)
+                        .orElseThrow(() -> new IllegalStateException("Contract with ID " + contractId + " not found"));
 
-        CleaningSession session3 = new CleaningSession(
-                contract,
-                LocalDate.of(2024,11,3),
-                LocalTime.of(9,0),
-                LocalDate.of(2024,11,3),
-                LocalTime.of(12,0),
-                "Session 3",
-                3
-        );
-        session3.setSessionStatus(CleaningSession.SessionStatus.CANCELLED);
-        session3.setCancelledAt(LocalDate.of(2024,11,1));
+                // Create and configure CleaningSession
+                CleaningSession cleaningSession = new CleaningSession(
+                        contract,
+                        sessionDate,
+                        startTime,
+                        endDate,
+                        endTime,
+                        sessionName,
+                        numberOfCleaners
+                );
 
-        this.cleaningSessionRepository.saveAll(List.of(session1, session2, session3));
+                cleaningSession.setSessionStatus(sessionStatus);
+
+                if (cancelledAt != null) {
+                    cleaningSession.setCancelledAt(cancelledAt);
+                }
+
+                // Save the CleaningSession instance
+                cleaningSessionRepository.save(cleaningSession);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Transactional
     public void initializeShifts() {
-        CleaningSession session1 = cleaningSessionRepository.findById(1L).orElseThrow(() -> new IllegalStateException("CleaningSession 1 not found"));
-        CleaningSession session2 = cleaningSessionRepository.findById(2L).orElseThrow(() -> new IllegalStateException("CleaningSession 2 not found"));
-        CleaningSession session3 = cleaningSessionRepository.findById(3L).orElseThrow(() -> new IllegalStateException("CleaningSession 3 not found"));
+        // read from resource/shifts.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/shifts_table.csv"))) {
+            String[] values;
+            reader.readNext();  // Skip header row
+            while ((values = reader.readNext()) != null) {
+                Long sessionId = Long.parseLong(values[0].trim());
+                Long workerId = Long.parseLong(values[1].trim());
+                LocalDate actualStartDate = LocalDate.parse(values[2].trim());
+                LocalTime actualStartTime = LocalTime.parse(values[3].trim());
+                LocalDate actualEndDate = LocalDate.parse(values[4].trim());
+                LocalTime actualEndTime = LocalTime.parse(values[5].trim());
+                Long shiftDurationHours = Long.parseLong(values[6].trim());
 
-        Worker worker1 = workerRepository.findById(4L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
-        Worker worker2 = workerRepository.findById(5L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
-        Worker worker3 = workerRepository.findById(6L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
+                // Fetch the Worker and Session based on workerId and sessionId
+                Worker worker = workerRepository.findById(workerId)
+                        .orElseThrow(() -> new IllegalStateException("Worker with ID " + workerId + " not found"));
 
-        // These two shifts are part of the same cleaning session,
-        // meaning they share the same start and end times (auto assigned in Shift.java)
-        // A shift represents a worker's involvement in the cleaning session,
-        // and is used to denote the cleaning session for each worker.
+                CleaningSession cleaningSession = cleaningSessionRepository.findById(sessionId)
+                        .orElseThrow(() -> new IllegalStateException("Session with ID " + sessionId + " not found"));
 
-        // for testing shift start and shift end
-        Shift shift1 = new Shift(session1);
-        shift1.setWorker(worker1);
-        // this is the actual time that the worker arrive to the shift
-        shift1.setActualStartDate(LocalDate.of(2024, 10, 5));
-        shift1.setActualStartTime(LocalTime.of(9, 0));
-        shift1.setActualEndDate(LocalDate.of(2024, 10, 5));
-        shift1.setActualEndTime(LocalTime.of(12, 0));
+                // Create and configure Shift
+                Shift shift = new Shift(cleaningSession);
+                shift.setWorker(worker);
+                shift.setActualStartDate(actualStartDate);
+                shift.setActualStartTime(actualStartTime);
+                shift.setActualEndDate(actualEndDate);
+                shift.setActualEndTime(actualEndTime);
+                shift.setShiftDurationHours(shiftDurationHours);
 
-        Shift shift2 = new Shift(session1);
-        shift2.setWorker(worker2);
-        // this is the actual time that the worker arrive to the shift - worker6 is one hour late
-        shift2.setActualStartDate(LocalDate.of(2024, 10, 5));
-        shift2.setActualStartTime(LocalTime.of(10, 0));
-        shift2.setActualEndDate(LocalDate.of(2024, 10, 5));
-        shift2.setActualEndTime(LocalTime.of(12, 0));
+                // Save the Shift instance
+                shiftRepository.save(shift);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-
-        Shift shift3 = new Shift(session2);
-        shift3.setWorker(worker3);
-        shift3.setActualStartDate(LocalDate.of(2024, 10, 12));
-        shift3.setActualStartTime(LocalTime.of(14, 0));
-        shift3.setActualEndDate(LocalDate.of(2024, 10, 12));
-        shift3.setActualEndTime(LocalTime.of(17, 0));
-
-        Shift shift4 = new Shift(session2);
-        shift4.setWorker(worker1);
-        shift4.setActualStartDate(LocalDate.of(2024, 10, 12));
-        shift4.setActualStartTime(LocalTime.of(14, 5));
-        shift4.setActualEndDate(LocalDate.of(2024, 10, 12));
-        shift4.setActualEndTime(LocalTime.of(17, 5));
-
-        // assign to session on 11-06-2024 to test leaveApplication clash
-        Shift shift5 = new Shift(session3);
-        shift5.setWorker(worker1);
-
-
-        Shift shift6 = new Shift(session2);
-        shift6.setWorker(worker2);
-        // this is the actual time that the worker arrive to the shift
-        shift6.setActualStartDate(LocalDate.of(2024, 10, 12));
-        shift6.setActualStartTime(LocalTime.of(9, 0));
-        shift6.setActualEndDate(LocalDate.of(2024, 10, 12));
-        shift6.setActualEndTime(LocalTime.of(12, 0));
-
-        shiftRepository.saveAll(new ArrayList<>(List.of(shift1, shift2, shift3, shift4, shift5, shift6)));
-
-        session1.setShifts(new ArrayList<>(List.of(shift1, shift2)));
-        session2.setShifts(new ArrayList<>(List.of(shift3, shift4)));
-        session3.setShifts(new ArrayList<>(List.of(shift5)));
-        cleaningSessionRepository.saveAll(new ArrayList<>(List.of(session1, session2, session3)));
     }
 
 }

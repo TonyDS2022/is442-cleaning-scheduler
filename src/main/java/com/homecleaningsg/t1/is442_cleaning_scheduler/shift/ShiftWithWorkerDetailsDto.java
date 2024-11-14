@@ -33,6 +33,7 @@ public class ShiftWithWorkerDetailsDto {
     private LocalTime actualEndTime;
     private String workingStatus;
     private boolean workerHasPendingLeave;
+    private Long shiftDurationHours;
 
     public ShiftWithWorkerDetailsDto(Shift shift) {
         this.shiftId = shift.getShiftId();
@@ -59,5 +60,6 @@ public class ShiftWithWorkerDetailsDto {
         this.actualEndTime = shift.getActualEndTime();
         this.workingStatus = shift.getWorkingStatus().name();
         this.workerHasPendingLeave = shift.isWorkerHasPendingLeave();
+        this.shiftDurationHours = shift.getShiftDurationHours();
     }
 }
