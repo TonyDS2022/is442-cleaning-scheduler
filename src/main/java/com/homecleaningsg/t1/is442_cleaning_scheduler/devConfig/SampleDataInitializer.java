@@ -13,6 +13,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSiteRepos
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
@@ -130,7 +131,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         initializeCleaningSessions();
         initializeShifts();
 //        initializeMedicalRecords();
-//        initializeLeaveApplications();
+        initializeLeaveApplications();
     }
 
     @Transactional
@@ -462,6 +463,45 @@ public class SampleDataInitializer implements ApplicationRunner {
 
                 // Save the Shift instance
                 shiftRepository.save(shift);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Transactional
+    public void initializeLeaveApplications() {
+        // read from resource/leaveApplications_table.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/leaveApplications_table.csv"))) {
+            String[] values;
+            reader.readNext();  // Skip header row
+            while ((values = reader.readNext()) != null) {
+                Long workerId = Long.parseLong(values[0].trim());
+                Long adminId = Long.parseLong(values[1].trim());
+                LeaveApplication.LeaveType leaveType = LeaveApplication.LeaveType.valueOf(values[2].trim());
+                LocalDate leaveStartDate = LocalDate.parse(values[3].trim());
+                LocalDate leaveEndDate = LocalDate.parse(values[4].trim());
+                LocalDate leaveSubmittedDate = LocalDate.parse(values[5].trim());
+                LocalTime leaveSubmittedTime = LocalTime.parse(values[6].trim());
+                LeaveApplication.ApplicationStatus applicationStatus = LeaveApplication.ApplicationStatus.valueOf(values[7].trim());
+
+                // Fetch the Worker and Admin based on workerId and adminId
+                Worker worker = workerRepository.findById(workerId)
+                        .orElseThrow(() -> new IllegalStateException("Worker with ID " + workerId + " not found"));
+
+                Admin admin = adminRepository.findById(adminId)
+                        .orElseThrow(() -> new IllegalStateException("Admin with ID " + adminId + " not found"));
+
+                // Create and configure LeaveApplications
+                LeaveApplication leaveApplication = new LeaveApplication(worker, leaveType, leaveStartDate, leaveEndDate);
+                leaveApplication.setLeaveSubmittedDate(leaveSubmittedDate);
+                leaveApplication.setLeaveSubmittedTime(leaveSubmittedTime);
+                leaveApplication.setApplicationStatus(applicationStatus);
+
+                // Save the Shift instance
+                leaveApplicationRepository.save(leaveApplication);
             }
         } catch (Exception e) {
             e.printStackTrace();

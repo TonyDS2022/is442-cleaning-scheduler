@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -16,11 +17,11 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v0.1/leave-applications")
 public class    LeaveApplicationController {
 
-    @Autowired
-    private LeaveApplicationService leaveApplicationService;
+    private final LeaveApplicationService leaveApplicationService;
 
     // localhost:8080/api/v0.1/leave-applications/1/apply-annual-leave/
     @PostMapping("/{workerId}/apply-annual-leave/")
