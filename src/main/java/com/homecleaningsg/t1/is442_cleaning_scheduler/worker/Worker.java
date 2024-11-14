@@ -70,7 +70,7 @@ public class Worker {
     @JsonManagedReference("worker-leaveApplication") // prevent infinite recursion when serializing
     private List<LeaveApplication> leaveApplications = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "location_id")
     private Location homeLocation;
 
