@@ -132,6 +132,7 @@ public class ShiftService {
         if (shift.getWorkingStatus() != Shift.WorkingStatus.NOT_STARTED) {
             throw new IllegalArgumentException("Past shifts cannot be unassigned.");
         }
+        shift.setWorker(null);
         shiftRepository.save(shift);
     }
 
