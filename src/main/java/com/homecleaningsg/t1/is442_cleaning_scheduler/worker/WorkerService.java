@@ -15,6 +15,8 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
+import static com.homecleaningsg.t1.is442_cleaning_scheduler.worker.LeavePolicyLoader.YEAR_START_DATE;
+
 @Service
 public class WorkerService {
     private final WorkerRepository workerRepository;
@@ -132,6 +134,29 @@ public class WorkerService {
         return new WorkerReportDto(newWorkers, existingWorkers, terminatedWorkers);
     }
 
+    public long getWorkerLeaveBalance(Long workerId, LeaveApplication.LeaveType leaveType, int year){
+        if(workerRepository.findById(workerId).isEmpty()){
+            throw new IllegalArgumentException("Worker not found");
+        }
+        LocalDate currentYearStart = LocalDate.of(year,1,1);
+        LocalDate currentYearEnd = LocalDate.of(year,12,31);
+
+        // get past worker leave applications in the year
+        List<LeaveApplication> pastLeaveInCurrentYear = leaveApplicationRepository.findByWorkerIdAndLeaveTypeAndLeaveStartDateAfterAndLeaveEndDateBeforeAndApplicationStatusNot(
+                workerId,
+                leaveType,
+                currentYearStart,
+                currentYearEnd,
+                LeaveApplication.ApplicationStatus.REJECTED
+        );
+        long pastLeaveDurationDays = pastLeaveInCurrentYear.stream()
+                .mapToLong(LeaveApplication::getLeaveDurationDays)
+                .sum();
+        long leaveBalance = LeavePolicyLoader.getMaxLeaveDays(leaveType) - pastLeaveDurationDays;
+
+        return leaveBalance;
+    }
+
     public boolean workerCanApplyForLeave(
             Long workerId,
             LocalDate leaveStartDate,
@@ -156,19 +181,9 @@ public class WorkerService {
         if (workerHasPendingOrApprovedLeaveBetween(workerId, leaveStartDate, leaveEndDate)) {
             throw new IllegalArgumentException("Leave overlaps with existing leave");
         }
-        // check if worker has enough leave balance
-        List<LeaveApplication> pastLeaveInCurrentYear = leaveApplicationRepository.findByWorkerIdAndLeaveTypeAndLeaveStartDateAfterAndLeaveEndDateBeforeAndApplicationStatusNot(
-                workerId,
-                leaveType,
-                currentYearStart,
-                currentYearEnd,
-                LeaveApplication.ApplicationStatus.REJECTED
-        );
-        long pastLeaveDurationDays = pastLeaveInCurrentYear.stream()
-                .mapToLong(LeaveApplication::getLeaveDurationDays)
-                .sum();
+        // check if remaining leave balance (minus away pending and approved applications) is enough
+        long leaveBalance = getWorkerLeaveBalance(workerId, leaveType, leaveStartDate.getYear());
         long requestedLeaveDurationDays = DateTimeUtils.numberOfWorkingDaysBetween(leaveStartDate, leaveEndDate);
-        long leaveBalance = LeavePolicyLoader.getMaxLeaveDays(leaveType) - pastLeaveDurationDays;
         return requestedLeaveDurationDays <= leaveBalance;
     }
 

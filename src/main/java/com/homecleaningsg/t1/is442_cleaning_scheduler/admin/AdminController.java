@@ -2,6 +2,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionUpdateDto;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.AbstractDocument;
 import java.util.List;
 
 
@@ -96,5 +99,26 @@ public class AdminController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(csvData);
+    }
+
+    // localhost:8080/api/v0.1/admins/approve-leave-application/
+    @PutMapping("/approve-leave-application/")
+    public ResponseEntity<String> approveLeaveApplication(@RequestBody LeaveApplication leaveApplication){
+        try{
+            adminService.approveLeaveApplication(leaveApplication);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Leave application approved successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to approved leave application.");
+        }
+    }
+
+    @PutMapping("/reject-leave-application/")
+    public ResponseEntity<String> rejectLeaveApplication(@RequestBody LeaveApplication leaveApplication){
+        try{
+            adminService.rejectLeaveApplication(leaveApplication);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Leave application rejected successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to rejected leave application.");
+        }
     }
 }

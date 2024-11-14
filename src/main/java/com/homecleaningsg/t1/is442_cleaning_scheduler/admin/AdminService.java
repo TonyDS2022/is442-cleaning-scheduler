@@ -1,5 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +13,14 @@ import java.util.List;
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final WorkerService workerService;
 
     @Autowired
-    public AdminService(AdminRepository adminRepository) {
+    public AdminService(AdminRepository adminRepository,
+                        WorkerService workerService) {
+
         this.adminRepository = adminRepository;
+        this.workerService = workerService;
     }
 
     public List<Admin> getAllAdmins() {
@@ -43,6 +50,21 @@ public class AdminService {
         admin.setActive(false);
         admin.setDeactivatedAt(LocalDate.now());
         return adminRepository.save(admin);
+    }
+
+
+    public LeaveApplication approveLeaveApplication(LeaveApplication leaveApplication){
+        // admin approves leave
+        leaveApplication.setApplicationStatus(LeaveApplication.ApplicationStatus.APPROVED);
+        // worker leave balance automatically updated
+        return leaveApplication;
+    }
+
+    public LeaveApplication rejectLeaveApplication(LeaveApplication leaveApplication){
+        // admin rejects leave
+        leaveApplication.setApplicationStatus(LeaveApplication.ApplicationStatus.REJECTED);
+        // worker leave balance automatically updated
+        return leaveApplication;
     }
 
 }

@@ -22,8 +22,8 @@ public class    LeaveApplicationController {
     @Autowired
     private LeaveApplicationService leaveApplicationService;
 
-    // localhost:8080/api/v0.1/leave-applications/1/apply-annual-leave
-    @PostMapping("/{workerId}/apply-annual-leave")
+    // localhost:8080/api/v0.1/leave-applications/1/apply-annual-leave/
+    @PostMapping("/{workerId}/apply-annual-leave/")
     public ResponseEntity<String> applyAnnualLeave(@PathVariable("workerId") Long workerId,
                                                    @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                                    @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
@@ -35,7 +35,8 @@ public class    LeaveApplicationController {
         }
     }
 
-    @PostMapping("/{workerId}/apply-medical-leave")
+    // localhost:8080/api/v0.1/leave-applications/4/apply-medical-leave/
+    @PostMapping("/{workerId}/apply-medical-leave/")
     public ResponseEntity<String> applyMedicalLeave(@PathVariable("workerId") Long workerId,
                                                     @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                                     @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
@@ -47,7 +48,7 @@ public class    LeaveApplicationController {
         }
     }
 
-    @GetMapping("/{adminId}/get-pending-leave-applications")
+    @GetMapping("/{adminId}/get-pending-leave-applications/")
     public List<LeaveApplicationAdminViewDto> getPendingLeaveApplications(@PathVariable("adminId") Long adminId) {
         return leaveApplicationService.getPendingLeaveApplicationsForAdmin(adminId);
     }

@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.worker;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -78,6 +79,19 @@ public class WorkerController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("The worker has been successfully deactivated, and removed from all associated future shifts.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate worker.");
+        }
+    }
+
+    // localhost:8080/api/v0.1/workers/leave-balance/
+    @GetMapping("/leave-balance/")
+    public ResponseEntity<?> getWorkerLeaveBalance(@RequestParam Long workerId,
+                                      @RequestParam LeaveApplication.LeaveType leaveType,
+                                      @RequestParam int year) {
+        try{
+            long leaveBalance = workerService.getWorkerLeaveBalance(workerId, leaveType, year);
+            return ResponseEntity.ok(leaveBalance);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }
