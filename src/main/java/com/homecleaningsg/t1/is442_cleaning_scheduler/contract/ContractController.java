@@ -20,8 +20,9 @@ public class ContractController {
     }
 
     @GetMapping
-    public List<Contract> getContract() {
-        return contractService.getContract();
+    public List<ContractListViewDto> getContract() {
+        List<Contract> contracts = contractService.getContract();
+        return contracts.stream().map(ContractListViewDto::new).toList();
     }
 
     // add contract
