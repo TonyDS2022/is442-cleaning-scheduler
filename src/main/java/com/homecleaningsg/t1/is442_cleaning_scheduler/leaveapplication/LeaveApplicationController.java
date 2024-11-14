@@ -22,6 +22,7 @@ public class    LeaveApplicationController {
     @Autowired
     private LeaveApplicationService leaveApplicationService;
 
+    // localhost:8080/api/v0.1/leave-applications/1/apply-annual-leave
     @PostMapping("/{workerId}/apply-annual-leave")
     public ResponseEntity<String> applyAnnualLeave(@PathVariable("workerId") Long workerId,
                                                    @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,

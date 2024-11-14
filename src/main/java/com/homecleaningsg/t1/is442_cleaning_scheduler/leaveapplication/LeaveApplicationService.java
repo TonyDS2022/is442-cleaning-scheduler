@@ -39,6 +39,13 @@ public class LeaveApplicationService {
                     endDate
             );
             leaveApplicationRepository.save(leaveApplication);
+            // Retrieve worker's existing shifts during the leave period
+            List<Shift> shifts = getShiftsAffectedByLeaveApplication(leaveApplication);
+            for (Shift shift: shifts) {
+                shift.setWorkerHasPendingLeave(true);
+                shiftRepository.save(shift);
+                // getPlanningStage in cleaningSession associated with shift will set cleaningsession.PlanningStage to EMBER when it is displayed
+            }
         } else {
             throw new IllegalArgumentException("Insufficient annual leave balance.");
         }
@@ -61,6 +68,13 @@ public class LeaveApplicationService {
                     endDate
             );
             leaveApplicationRepository.save(leaveApplication);
+            // Retrieve worker's existing shifts during the leave period
+            List<Shift> shifts = getShiftsAffectedByLeaveApplication(leaveApplication);
+            for (Shift shift: shifts) {
+                shift.setWorkerHasPendingLeave(true);
+                shiftRepository.save(shift);
+                // getPlanningStage in cleaningSession associated with shift will set cleaningsession.PlanningStage to EMBER when it is displayed
+            }
         } else {
             throw new IllegalArgumentException("Insufficient medical leave balance.");
         }

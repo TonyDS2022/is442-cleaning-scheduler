@@ -71,6 +71,7 @@ public class CleaningSessionController {
         return cleaningSessionService.getCalendarView();
     }
 
+    // localhost:8080/api/v0.1/cleaningSession/calendar-card/57
     @GetMapping("/calendar-card/{cleaningSessionId}")
     public CleaningSessionCalendarCardViewDto getCalendarCardView(
             @PathVariable Long cleaningSessionId) {
