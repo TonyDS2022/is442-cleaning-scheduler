@@ -37,7 +37,7 @@ public class ShiftController {
     }
 
     @GetMapping("/{shiftId}")
-    public Optional<ShiftWithWorkerDetailsDto> getShiftById(@PathVariable("shiftId") Long shiftId) {
+    public ShiftWithWorkerDetailAndTripDto getShiftById(@PathVariable("shiftId") Long shiftId) {
         return shiftService.getShiftById(shiftId);
     }
 

@@ -3,6 +3,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
@@ -58,13 +59,38 @@ public class ShiftService {
         return shiftWithWorkerDetailsDtos;
     }
 
-    public Optional<ShiftWithWorkerDetailsDto> getShiftById(Long shiftId) {
-        Optional<Shift> shift = shiftRepository.findById(shiftId);
-        if (shift.isEmpty()) {
-            return Optional.empty();
-        }
-        ShiftWithWorkerDetailsDto shiftWithWorkerDetailsDto = new ShiftWithWorkerDetailsDto(shift.get());
-        return Optional.of(shiftWithWorkerDetailsDto);
+    public ShiftWithWorkerDetailAndTripDto getShiftById(Long shiftId) {
+        // Retrieve shift and validate existence
+        Shift shift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+
+        // Determine worker details
+        Worker worker = shift.getWorker();
+        Location workerLastLocation = getWorkerLastLocation(shift, worker);
+        boolean hasPendingLeave = hasWorkerPendingLeave(worker, shift);
+
+        // Create the DTO
+        return new ShiftWithWorkerDetailAndTripDto(shift, workerLastLocation, hasPendingLeave);
+    }
+
+    // Helper method to get the last location of the worker before this shift
+    private Location getWorkerLastLocation(Shift shift, Worker worker) {
+        if (worker == null) return null;
+
+        Shift lastShift = getLastShiftOnSameDayByWorkerBeforeShift(shift);
+        return (lastShift != null)
+                ? lastShift.getClientSite().getLocation()
+                : worker.getHomeLocation();
+    }
+
+    // Helper method to check if the worker has pending leave during the session date range
+    private boolean hasWorkerPendingLeave(Worker worker, Shift shift) {
+        return worker != null && leaveApplicationRepository.existsByWorkerAndStatusAndDateRangeOverlapping(
+                worker.getWorkerId(),
+                LeaveApplication.ApplicationStatus.PENDING,
+                shift.getSessionStartDate(),
+                shift.getSessionEndDate()
+        );
     }
 
     public void addShift(Shift shift) {
@@ -378,6 +404,14 @@ public class ShiftService {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
         return getAvailableWorkersForShift(shift);
+    }
+
+    public Shift getLastShiftOnSameDayByWorkerBeforeShift(Shift shift) {
+        Worker worker = shift.getWorker();
+        if (worker == null) {
+            return null;
+        }
+        return shiftRepository.findLastShiftOnDateByWorkerWorkerIdAndSessionEndTimeBefore(worker.getWorkerId(), shift.getSessionStartDate(), shift.getSessionStartTime());
     }
 
     public List<AvailableWorkerDto> getAvailableWorkersForShift(Shift shift) {
