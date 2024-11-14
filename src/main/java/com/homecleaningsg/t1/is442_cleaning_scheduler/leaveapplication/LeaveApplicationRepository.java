@@ -117,8 +117,8 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
             "SELECT l " +
                     "FROM LeaveApplication l " +
                     "WHERE l.admin.adminId = :adminId " +
-                    "AND (l.applicationStatus = 'PENDING') " +
-                    "AND (l.leaveStartDate <= :rightBound AND l.leaveEndDate >= :leftBound)"
+                    "AND (l.applicationStatus = 'PENDING') "
+//                    "AND (l.leaveStartDate <= :rightBound AND l.leaveEndDate >= :leftBound)"
     )
     List<LeaveApplication> findPendingLeaveApplicationsByAdminId(Long adminId);
 
