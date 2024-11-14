@@ -297,8 +297,8 @@ public class SampleDataInitializer implements ApplicationRunner {
                 String email = values[3].trim();
                 String phone = values[4].trim();
                 String bio = values[5].trim();
-                LocalTime startWorkingHours = LocalTime.parse(values[6].trim());
-                LocalTime endWorkingHours = LocalTime.parse(values[7].trim());
+                LocalTime startWorkingHours = LocalTime.parse("08:00");
+                LocalTime endWorkingHours = LocalTime.parse("22:00");
                 String streetAddress = values[8].trim();
                 String postalCode = values[9].trim();
                 String unitNumber = values[10].trim();
