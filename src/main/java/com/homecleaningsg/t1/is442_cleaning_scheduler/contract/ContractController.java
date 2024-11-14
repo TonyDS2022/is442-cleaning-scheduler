@@ -2,6 +2,7 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +21,16 @@ public class ContractController {
     }
 
     @GetMapping
-    public List<ContractListViewDto> getContract() {
-        List<Contract> contracts = contractService.getContract();
-        return contracts.stream().map(ContractListViewDto::new).toList();
+    public ResponseEntity<?> getContract() {
+        try {
+            List<Contract> contracts = contractService.getContract();
+            List<ContractListViewDto> contractDtos = contracts.stream()
+                    .map(ContractListViewDto::new)
+                    .toList();
+            return ResponseEntity.ok(contractDtos);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // add contract
@@ -74,8 +82,13 @@ public class ContractController {
     }
 
     @GetMapping("/{contractId}")
-    public Contract getContractById(@PathVariable("contractId") Long contractId) {
-        return contractService.getContractById(contractId);
+    public HttpEntity<?> getContractById(@PathVariable("contractId") Long contractId) {
+        try {
+            Contract contract = contractService.getContractById(contractId);
+            return ResponseEntity.ok(contract);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // localhost:8080/api/v0.1/contract/add-contract
