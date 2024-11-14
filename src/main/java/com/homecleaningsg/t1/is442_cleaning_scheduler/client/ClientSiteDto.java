@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class ClientSiteDto {
+    private Long clientSiteId;
     private String streetAddress;
     private String postalCode;
     private String unitNumber;
@@ -13,6 +14,7 @@ public class ClientSiteDto {
     private ClientSite.PropertyType propertyType;
 
     public ClientSiteDto(ClientSite clientSite) {
+        this.clientSiteId = clientSite.getClientSiteId();
         this.streetAddress = clientSite.getStreetAddress();
         this.postalCode = clientSite.getPostalCode();
         this.unitNumber = clientSite.getUnitNumber();
