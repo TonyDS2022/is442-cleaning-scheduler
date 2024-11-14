@@ -302,7 +302,13 @@ public class SampleDataInitializer implements ApplicationRunner {
                 String postalCode = values[9].trim();
                 String unitNumber = values[10].trim();
                 Long adminId = Long.parseLong(values[11].trim());
+                LocalDate joinDate = LocalDate.parse(values[12].trim());
+                LocalDate deactivatedAt = values[13].trim().isEmpty() ? null : LocalDate.parse(values[13].trim());
                 Worker worker = new Worker(name, username, password, email, phone, bio, startWorkingHours, endWorkingHours);
+                worker.setJoinDate(joinDate);
+                if(deactivatedAt != null){
+                    worker.setDeactivatedAt(deactivatedAt);
+                }
                 Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new IllegalStateException("Admin with ID " + adminId + " not found"));
                 worker.setSupervisor(admin);
                 workerService.addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
