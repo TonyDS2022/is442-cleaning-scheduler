@@ -331,7 +331,9 @@ public class SampleDataInitializer implements ApplicationRunner {
                 LocalDate joinDate = LocalDate.parse(values[2].trim(), formatter);
                 boolean isActive = values[3].trim().equals("t");
                 LocalDate deactivatedAt = values[4].trim().isEmpty() ? null : LocalDate.parse(values[4].trim(), formatter);
-                Client client = new Client(name, phone, isActive, joinDate);
+                Client client = new Client(name, phone);
+                client.setActive(isActive);
+                client.setJoinDate(joinDate);
                 clientRepository.save(client);
                 if (!isActive) {
                     client.setDeactivatedAt(deactivatedAt);

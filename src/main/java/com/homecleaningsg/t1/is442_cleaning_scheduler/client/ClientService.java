@@ -138,6 +138,7 @@ public class ClientService {
         addClientSiteToClient(client, streetAddress, postalCode, unitNumber);
     }
 
+    // using this endpoint
     public void addClientSiteToClient(
             Client client,
             String streetAddress,
@@ -159,15 +160,24 @@ public class ClientService {
     public Client getOrCreateClient(String name, String phone) {
         Client client = clientRepository.findByNameAndPhone(name, phone);
         if (client == null) {
-            client = new Client(name, phone, true, LocalDate.now());
+            client = new Client(name, phone);
+            client.setActive(true);
+            client.setJoinDate(LocalDate.now());
             clientRepository.save(client);
         }
         return client;
     }
 
-    public Client getOrCreateClient(String name, String phone, String homeAddress, String postalCode, String unitNumber) {
+    // main endpoint for addClient
+    public Client getOrCreateClient(String name,
+                                    String phone,
+                                    String streetAddress,
+                                    String postalCode,
+                                    String unitNumber,
+                                    Long numberOfRooms,
+                                    ClientSite.PropertyType propertyType) {
         Client client = getOrCreateClient(name, phone);
-        addClientSiteToClient(client, homeAddress, postalCode, unitNumber);
+        addClientSiteToClient(client, streetAddress, postalCode, unitNumber, numberOfRooms, propertyType);
         return client;
     }
 

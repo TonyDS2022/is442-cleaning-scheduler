@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +29,18 @@ public class ClientController {
         return clientService.getClientByName(name);
     }
 
-
+    // localhost:8080/api/v0.1/client/add-client/
     @PostMapping("/add-client/")
-    public ResponseEntity<String> addClient(@RequestBody Client client) {
+    public ResponseEntity<String> addClient(@RequestParam String name,
+                                            @RequestParam String phone,
+                                            @RequestParam String homeAddress,
+                                            @RequestParam String postalCode,
+                                            @RequestParam String unitNumber,
+                                            @RequestParam Long numberOfRooms,
+                                            @RequestParam ClientSite.PropertyType propertyType
+                                            ) {
         try {
-            clientService.addClient(client);
+            clientService.getOrCreateClient(name, phone, homeAddress, postalCode, unitNumber, numberOfRooms, propertyType);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client added successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add client.");
