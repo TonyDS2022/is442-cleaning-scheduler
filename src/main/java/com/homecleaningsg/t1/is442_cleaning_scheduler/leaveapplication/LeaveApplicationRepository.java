@@ -91,6 +91,20 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
     );
 
     @Query(
+            "SELECT COUNT(l) > 0 " +
+                    "FROM LeaveApplication l " +
+                    "WHERE l.worker.workerId = :workerId " +
+                    "AND l.applicationStatus = :status " +
+                    "AND (l.leaveStartDate <= :endDate AND l.leaveEndDate >= :startDate)"
+    )
+    boolean existsByWorkerAndStatusAndDateRangeOverlapping(
+            Long workerId,
+            LeaveApplication.ApplicationStatus status,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+    @Query(
             "SELECT CASE WHEN COUNT(l) > 0 THEN TRUE ELSE FALSE END " +
                     "FROM LeaveApplication l " +
                     "WHERE l.worker.workerId = :workerId " +

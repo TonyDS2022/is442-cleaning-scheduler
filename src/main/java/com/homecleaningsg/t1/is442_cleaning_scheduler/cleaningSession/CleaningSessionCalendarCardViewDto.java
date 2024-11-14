@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class CleaningSessionCalendarCardViewDto {
@@ -18,14 +19,19 @@ public class CleaningSessionCalendarCardViewDto {
         private Long workerId;
         private String workerName;
         private String workerPhone;
+        private boolean workerHasPendingLeave;
 
-        public ShiftDto(Shift shift) {
+        public ShiftDto(Shift shift, Map<Long, Boolean> workerLeaveStatusMap) {
             this.shiftId = shift.getShiftId();
             Worker worker = shift.getWorker();
             if (worker != null) {
                 this.workerId = worker.getWorkerId();
                 this.workerName = worker.getName();
                 this.workerPhone = worker.getPhone();
+                // Check the leave status from the map
+                this.workerHasPendingLeave = workerLeaveStatusMap.getOrDefault(worker.getWorkerId(), false);
+            } else {
+                this.workerHasPendingLeave = false; // Default to false if there's no worker assigned
             }
         }
     }
@@ -43,7 +49,7 @@ public class CleaningSessionCalendarCardViewDto {
     private CleaningSession.PlanningStage planningStage;
     private CleaningSession.SessionStatus sessionStatus;
 
-    public CleaningSessionCalendarCardViewDto(CleaningSession cleaningSession) {
+    public CleaningSessionCalendarCardViewDto(CleaningSession cleaningSession, Map<Long, Boolean> workerLeaveStatusMap) {
         this.clientName = cleaningSession.getClientSite().getClient().getName();
         this.clientPhone = cleaningSession.getClientSite().getClient().getPhone();
         this.clientAddress = cleaningSession.getClientSite().getLocation().getAddress();
@@ -53,11 +59,12 @@ public class CleaningSessionCalendarCardViewDto {
         this.sessionEndDate = cleaningSession.getSessionEndDate();
         this.sessionStartTime = cleaningSession.getSessionStartTime();
         this.sessionEndTime = cleaningSession.getSessionEndTime();
-        this.sessionStartDate = cleaningSession.getSessionStartDate();
         this.planningStage = cleaningSession.getPlanningStage();
         this.sessionStatus = cleaningSession.getSessionStatus();
+
+        // Populate ShiftDto list with leave status
         for (Shift shift : cleaningSession.getShifts()) {
-            this.shifts.add(new ShiftDto(shift));
+            this.shifts.add(new ShiftDto(shift, workerLeaveStatusMap));
         }
     }
 }

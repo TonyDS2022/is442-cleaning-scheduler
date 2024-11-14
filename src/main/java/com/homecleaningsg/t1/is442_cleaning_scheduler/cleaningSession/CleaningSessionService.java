@@ -1,6 +1,8 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.AvailableWorkerDto;
@@ -18,10 +20,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CleaningSessionService {
@@ -33,6 +33,7 @@ public class CleaningSessionService {
     private final LeaveApplicationService leaveApplicationService;
     private final ShiftService shiftService;
     private final WorkerService workerService;
+    private final LeaveApplicationRepository leaveApplicationRepository;
 
     @Autowired
     public CleaningSessionService(
@@ -42,7 +43,7 @@ public class CleaningSessionService {
             TripRepository tripRepository,
             LeaveApplicationService leaveApplicationService,
             ShiftService shiftService,
-            WorkerService workerService) {
+            WorkerService workerService, LeaveApplicationRepository leaveApplicationRepository) {
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
@@ -50,6 +51,7 @@ public class CleaningSessionService {
         this.leaveApplicationService = leaveApplicationService;
         this.shiftService = shiftService;
         this.workerService = workerService;
+        this.leaveApplicationRepository = leaveApplicationRepository;
     }
 
     public List<CleaningSession> getAllCleaningSessions() {
@@ -295,6 +297,25 @@ public class CleaningSessionService {
     public CleaningSessionCalendarCardViewDto getCalendarCardView(Long cleaningSessionId) {
         CleaningSession cleaningSession = cleaningSessionRepository.findById(cleaningSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Cleaning session not found"));
-        return new CleaningSessionCalendarCardViewDto(cleaningSession);
+        LocalDate sessionStartDate = cleaningSession.getSessionStartDate();
+        LocalDate sessionEndDate = cleaningSession.getSessionEndDate();
+
+        List<Long> workerIds = cleaningSession.getShifts().stream()
+                .map(shift -> shift.getWorker() != null ? shift.getWorker().getWorkerId() : null)
+                .filter(Objects::nonNull) // Filter out null worker IDs to avoid null pointer exceptions
+                .toList();
+
+        Map<Long, Boolean> workerLeaveStatusMap = workerIds.stream()
+                .collect(Collectors.toMap(
+                        workerId -> workerId,
+                        workerId -> leaveApplicationRepository.existsByWorkerAndStatusAndDateRangeOverlapping(
+                                workerId,
+                                LeaveApplication.ApplicationStatus.PENDING,
+                                sessionStartDate,
+                                sessionEndDate
+                        )
+                ));
+
+        return new CleaningSessionCalendarCardViewDto(cleaningSession, workerLeaveStatusMap);
     }
 }
