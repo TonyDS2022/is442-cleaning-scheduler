@@ -102,20 +102,20 @@ public class AdminController {
     }
 
     // localhost:8080/api/v0.1/admins/approve-leave-application/
-    @PutMapping("/approve-leave-application/")
-    public ResponseEntity<String> approveLeaveApplication(@RequestBody LeaveApplication leaveApplication){
+    @PutMapping("/approve-leave-application/{leaveApplicationId}")
+    public ResponseEntity<String> approveLeaveApplication(@PathVariable Long leaveApplicationId){
         try{
-            adminService.approveLeaveApplication(leaveApplication);
+            adminService.approveLeaveApplication(leaveApplicationId);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Leave application approved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to approved leave application.");
         }
     }
 
-    @PutMapping("/reject-leave-application/")
-    public ResponseEntity<String> rejectLeaveApplication(@RequestBody LeaveApplication leaveApplication){
+    @PutMapping("/reject-leave-application/{leaveApplicationId}")
+    public ResponseEntity<String> rejectLeaveApplication(@PathVariable Long leaveApplicationId){
         try{
-            adminService.rejectLeaveApplication(leaveApplication);
+            adminService.rejectLeaveApplication(leaveApplicationId);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Leave application rejected successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to rejected leave application.");
