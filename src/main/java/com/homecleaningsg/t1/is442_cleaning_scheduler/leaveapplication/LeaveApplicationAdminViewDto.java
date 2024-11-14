@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 public class LeaveApplicationAdminViewDto {
 
+    Long leaveApplicationId;
     String workerName;
     String workerEmail;
     String workerPhoneNumber;
@@ -23,6 +24,7 @@ public class LeaveApplicationAdminViewDto {
 
     // Constructor that takes affectedShifts as a parameter
     public LeaveApplicationAdminViewDto(LeaveApplication leaveApplication, List<AffectedShiftDto> affectedShifts) {
+        this.leaveApplicationId = leaveApplication.getLeaveApplicationId();
         this.workerName = leaveApplication.getWorker().getName();
         this.workerEmail = leaveApplication.getWorker().getEmail();
         this.workerPhoneNumber = leaveApplication.getWorker().getPhone();

@@ -496,6 +496,7 @@ public class SampleDataInitializer implements ApplicationRunner {
 
                 // Create and configure LeaveApplications
                 LeaveApplication leaveApplication = new LeaveApplication(worker, leaveType, leaveStartDate, leaveEndDate);
+                leaveApplication.setAdmin(admin);
                 leaveApplication.setLeaveSubmittedDate(leaveSubmittedDate);
                 leaveApplication.setLeaveSubmittedTime(leaveSubmittedTime);
                 leaveApplication.setApplicationStatus(applicationStatus);
