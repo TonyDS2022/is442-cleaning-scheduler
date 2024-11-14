@@ -8,14 +8,14 @@ import lombok.Getter;
 public class ClientSiteDto {
     private String streetAddress;
     private String postalCode;
-    private String uniNumber;
+    private String unitNumber;
     private Long numberOfRooms;
     private ClientSite.PropertyType propertyType;
 
     public ClientSiteDto(ClientSite clientSite) {
         this.streetAddress = clientSite.getStreetAddress();
         this.postalCode = clientSite.getPostalCode();
-        this.uniNumber = clientSite.getUnitNumber();
+        this.unitNumber = clientSite.getUnitNumber();
         this.numberOfRooms = clientSite.getNumberOfRooms();
         this.propertyType = clientSite.getPropertyType();
     }
