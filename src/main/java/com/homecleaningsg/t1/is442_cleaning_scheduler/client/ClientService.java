@@ -9,6 +9,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -111,34 +112,21 @@ public class ClientService {
         contractRepository.save(contract);
     }
 
-    public void addClientSiteToClient(
-            Client client,
-            String streetAddress,
-            String postalCode,
-            String unitNumber
-    ) {
-        Location clientLocation = locationService.getOrCreateLocation(postalCode, streetAddress);
-        ClientSite clientSite = new ClientSite(client, streetAddress, postalCode, unitNumber, clientLocation);
-        // check if client already has the same client site
-        if (client.getClientSites().stream().noneMatch(site -> site.isSameSite(clientSite))) {
-            client.addClientSite(clientSite);
-            clientSiteRepository.save(clientSite);
-            clientRepository.save(client);
-        }
-    }
-
+    @Transactional
     public void addClientSiteToClient(
             Long clientId,
             String streetAddress,
             String postalCode,
-            String unitNumber
+            String unitNumber,
+            Long numberOfRooms,
+            ClientSite.PropertyType propertyType
     ) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Client not found"));
-        addClientSiteToClient(client, streetAddress, postalCode, unitNumber);
+        addClientSiteToClient(client, streetAddress, postalCode, unitNumber, numberOfRooms, propertyType);
     }
 
-    // using this endpoint
+    @Transactional
     public void addClientSiteToClient(
             Client client,
             String streetAddress,
@@ -149,12 +137,8 @@ public class ClientService {
     ) {
         Location clientLocation = locationService.getOrCreateLocation(postalCode, streetAddress);
         ClientSite clientSite = new ClientSite(client, streetAddress, postalCode, unitNumber, clientLocation, numberOfRooms, propertyType);
-        // check if client already has the same client site
-        if (client.getClientSites().stream().noneMatch(site -> site.isSameSite(clientSite))) {
-            client.addClientSite(clientSite);
-            clientSiteRepository.save(clientSite);
-            clientRepository.save(client);
-        }
+        client.addClientSite(clientSite);
+        clientSiteRepository.save(clientSite);
     }
 
     public Client getOrCreateClient(String name, String phone) {

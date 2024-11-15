@@ -52,14 +52,18 @@ public class ClientController {
             @PathVariable("clientId") Long clientId,
             @RequestParam String streetAddress,
             @RequestParam String postalCode,
-            @RequestParam String unitNumber
+            @RequestParam String unitNumber,
+            @RequestParam Long numberOfRooms,
+            @RequestParam ClientSite.PropertyType propertyType
             ) {
         try {
             clientService.addClientSiteToClient(
                     clientId,
                     streetAddress,
                     postalCode,
-                    unitNumber
+                    unitNumber,
+                    numberOfRooms,
+                    propertyType
             );
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client site added successfully.");
         } catch (IllegalArgumentException e) {
