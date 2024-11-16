@@ -41,7 +41,7 @@ public class ClientController {
                                             ) {
         try {
             clientService.getOrCreateClient(name, phone, homeAddress, postalCode, unitNumber, numberOfRooms, propertyType);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client added successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Client added successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add client.");
         }
@@ -65,7 +65,7 @@ public class ClientController {
                     numberOfRooms,
                     propertyType
             );
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client site added successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Client site added successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add client site.");
         }
@@ -76,7 +76,7 @@ public class ClientController {
             @PathVariable("clientId") Long clientId, @RequestBody Client updatedClient) {
         try {
             clientService.updateClient(clientId, updatedClient);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client updated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Client updated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update client details.");
         }
@@ -87,7 +87,7 @@ public class ClientController {
     public ResponseEntity<String> deactivateClient(@PathVariable("clientId") Long clientId) {
         try {
             clientService.deactivateClient(clientId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client has been deactivated successfully, along with all associated future contracts, cleaning sessions and shifts.");
+            return ResponseEntity.status(HttpStatus.OK).body("Client has been deactivated successfully, along with all associated future contracts, cleaning sessions and shifts.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate client.");
         }

@@ -43,7 +43,7 @@ public class AdminController {
     public ResponseEntity<String> addAdmin(@RequestBody Admin admin) {
         try {
             adminService.addAdmin(admin);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin added successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Admin added successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add admin.");
         }
@@ -54,7 +54,7 @@ public class AdminController {
             @PathVariable("adminId") Long adminId, @RequestBody Admin updatedAdmin) {
         try {
             adminService.updateAdmin(adminId, updatedAdmin);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin updated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Admin updated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update admin details.");
         }
@@ -65,7 +65,7 @@ public class AdminController {
     public ResponseEntity<String> deactivateAdmin(@PathVariable("adminId") Long adminId) {
         try {
             adminService.deactivateAdmin(adminId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin deactivated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Admin deactivated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate admin.");
         }
@@ -106,7 +106,7 @@ public class AdminController {
     public ResponseEntity<String> approveLeaveApplication(@PathVariable Long leaveApplicationId){
         try{
             adminService.approveLeaveApplication(leaveApplicationId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Leave application approved successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Leave application approved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to approved leave application.");
         }
@@ -116,7 +116,7 @@ public class AdminController {
     public ResponseEntity<String> rejectLeaveApplication(@PathVariable Long leaveApplicationId){
         try{
             adminService.rejectLeaveApplication(leaveApplicationId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Leave application rejected successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Leave application rejected successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to rejected leave application.");
         }

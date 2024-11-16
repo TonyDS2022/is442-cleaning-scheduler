@@ -30,7 +30,7 @@ public class    LeaveApplicationController {
                                                    @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         try {
             leaveApplicationService.applyAnnualLeave(workerId, startDate, endDate);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Annual leave applied successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Annual leave applied successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -43,7 +43,7 @@ public class    LeaveApplicationController {
                                                     @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         try {
             leaveApplicationService.applyMedicalLeave(workerId, startDate, endDate);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Medical leave applied successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Medical leave applied successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
