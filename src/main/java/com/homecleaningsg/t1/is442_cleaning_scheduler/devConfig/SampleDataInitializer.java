@@ -495,7 +495,11 @@ public class SampleDataInitializer implements ApplicationRunner {
                         .orElseThrow(() -> new IllegalStateException("Admin with ID " + adminId + " not found"));
 
                 // Create and configure LeaveApplications
-                LeaveApplication leaveApplication = new LeaveApplication(worker, leaveType, leaveStartDate, leaveEndDate);
+                LeaveApplication leaveApplication = new LeaveApplication();
+                leaveApplication.setLeaveType(leaveType);
+                leaveApplication.setLeaveStartDate(leaveStartDate);
+                leaveApplication.setLeaveEndDate(leaveEndDate);
+                leaveApplication.setWorker(worker);
                 leaveApplication.setAdmin(admin);
                 leaveApplication.setLeaveSubmittedDate(leaveSubmittedDate);
                 leaveApplication.setLeaveSubmittedTime(leaveSubmittedTime);

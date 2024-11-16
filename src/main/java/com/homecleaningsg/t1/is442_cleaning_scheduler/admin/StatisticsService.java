@@ -6,6 +6,8 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractReportDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.WorkerHoursDto;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
@@ -29,6 +31,7 @@ public class StatisticsService {
     private final CleaningSessionService cleaningSessionService;
     private final ContractService contractService;
     private final WorkerService workerService;
+    private final LeaveApplicationService leaveApplicationService;
 
     @Autowired
     public StatisticsService(WorkerRepository workerRepository,
@@ -36,13 +39,15 @@ public class StatisticsService {
                              ClientService clientService,
                              CleaningSessionService cleaningSessionService,
                              ContractService contractService,
-                             WorkerService workerService){
+                             WorkerService workerService,
+                             LeaveApplicationService leaveApplicationService){
         this.workerRepository = workerRepository;
         this.shiftService = shiftService;
         this.clientService = clientService;
         this.cleaningSessionService = cleaningSessionService;
         this.contractService = contractService;
         this.workerService = workerService;
+        this.leaveApplicationService = leaveApplicationService;
     }
 
     private YearlyStatisticsDto getYearlyStatistics(int year){
@@ -54,12 +59,21 @@ public class StatisticsService {
             workerYearlyHours.add(workerHours);
         }
 
+        List<LeaveBalanceDto> workerYearlyLeaveBalance = new ArrayList<>();
+        for(Worker worker: workers){
+            Long workerId = worker.getWorkerId();
+            Long workerAnnualLeaveBalance = workerService.getWorkerLeaveBalance(workerId, LeaveApplication.LeaveType.ANNUAL, year);
+            Long workerMedicalLeaveBalance = workerService.getWorkerLeaveBalance(workerId, LeaveApplication.LeaveType.MEDICAL, year);
+            LeaveBalanceDto workerLeaveBalance = new LeaveBalanceDto(workerId, workerAnnualLeaveBalance, workerMedicalLeaveBalance);
+            workerYearlyLeaveBalance.add(workerLeaveBalance);
+        }
+
         ClientReportDto clientYearlyReport = clientService.getYearlyClientReport(year);
         SessionReportDto sessionYearlyReport = cleaningSessionService.getYearlySessionReport(year);
         ContractReportDto contractYearlyReport = contractService.getYearlyContractReport(year);
         WorkerReportDto workerYearlyReport = workerService.getYearlyWorkerReport(year);
 
-        return new YearlyStatisticsDto(year, workerYearlyHours, clientYearlyReport, sessionYearlyReport, contractYearlyReport, workerYearlyReport);
+        return new YearlyStatisticsDto(year, workerYearlyHours, workerYearlyLeaveBalance, clientYearlyReport, sessionYearlyReport, contractYearlyReport, workerYearlyReport);
     }
 
     private MonthlyStatisticsDto getMonthlyStatistics(int year, int month){
@@ -70,13 +84,19 @@ public class StatisticsService {
             WorkerHoursDto workerHours = shiftService.getMonthlyHoursOfWorker(workerId, year, month);
             workerMonthlyHours.add(workerHours);
         }
+        List<LeaveTakenDto> workerMonthlyLeaveTaken = new ArrayList<>();
+        for(Worker worker: workers){
+            Long workerId = worker.getWorkerId();
+            LeaveTakenDto workerLeaveTaken = leaveApplicationService.getMonthlyLeaveTakenOfWorker(workerId, year, month);
+            workerMonthlyLeaveTaken.add(workerLeaveTaken);
+        }
 
         ClientReportDto clientMonthlyReport = clientService.getMonthlyClientReport(year, month);
         SessionReportDto sessionMonthlyReport = cleaningSessionService.getMonthlySessionReport(year, month);
         ContractReportDto contractMonthlyReport = contractService.getMonthlyContractReport(year, month);
         WorkerReportDto workerMonthlyReport = workerService.getMonthlyWorkerReport(year, month);
 
-        return new MonthlyStatisticsDto(year, month, workerMonthlyHours, clientMonthlyReport, sessionMonthlyReport, contractMonthlyReport, workerMonthlyReport);
+        return new MonthlyStatisticsDto(year, month, workerMonthlyHours, workerMonthlyLeaveTaken, clientMonthlyReport, sessionMonthlyReport, contractMonthlyReport, workerMonthlyReport);
     }
 
     private WeeklyStatisticsDto getWeeklyStatistics(LocalDate startOfWeek, LocalDate endOfWeek){

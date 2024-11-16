@@ -66,10 +66,6 @@ public class Worker {
     @JsonBackReference("admin-worker")
     private Admin supervisor;
 
-    @OneToMany(mappedBy = "leaveApplicationId", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("worker-leaveApplication") // prevent infinite recursion when serializing
-    private List<LeaveApplication> leaveApplications = new ArrayList<>();
-
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "location_id")
     private Location homeLocation;
@@ -83,6 +79,10 @@ public class Worker {
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("worker-shift")
     private List<Shift> shifts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("worker-leaveApplication")
+    private List<LeaveApplication> leaveApplications = new ArrayList<>();
 
     @NonNull
     private boolean isActive = true;

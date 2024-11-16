@@ -23,6 +23,11 @@ public class    LeaveApplicationController {
 
     private final LeaveApplicationService leaveApplicationService;
 
+    @GetMapping
+    public List<LeaveApplicationDto> getAllLeaveApplications(){
+        return leaveApplicationService.getAllLeaveApplication();
+    }
+
     // localhost:8080/api/v0.1/leave-applications/1/apply-annual-leave/
     @PostMapping("/{workerId}/apply-annual-leave/")
     public ResponseEntity<String> applyAnnualLeave(@PathVariable("workerId") Long workerId,
@@ -52,5 +57,14 @@ public class    LeaveApplicationController {
     @GetMapping("/{adminId}/get-pending-leave-applications/")
     public List<LeaveApplicationAdminViewDto> getPendingLeaveApplications(@PathVariable("adminId") Long adminId) {
         return leaveApplicationService.getPendingLeaveApplicationsForAdmin(adminId);
+    }
+
+    // localhost:8080/api/v0.1/leave-applications/get-leave-by-worker-month
+    @GetMapping("/get-leave-by-worker-month")
+    public Long getWorkerTotalLeaveTakenInMonth(@RequestParam("workerId") Long workerId,
+                                                @RequestParam("year") int year,
+                                                @RequestParam("month") int month,
+                                                @RequestParam("leaveType")LeaveApplication.LeaveType leaveType){
+        return leaveApplicationService.getWorkerTotalLeaveTakenInMonth(workerId, year, month, leaveType);
     }
 }

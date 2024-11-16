@@ -37,9 +37,9 @@ public class LeaveApplication {
 
     @NonNull
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JsonBackReference("worker-leaveApplication")
     private Worker worker;
 
+    @NonNull
     @ManyToOne(cascade = CascadeType.DETACH)
     private Admin admin;
 

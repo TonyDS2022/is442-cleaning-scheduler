@@ -90,6 +90,26 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
             LeaveApplication.ApplicationStatus applicationStatus
     );
 
+    @Query("SELECT l " +
+            "FROM LeaveApplication l " +
+            "WHERE " + "l.worker.workerId = :workerId " +
+            "AND " +
+                "(" +
+                    "(EXTRACT(MONTH FROM l.leaveStartDate) <= :month AND EXTRACT(YEAR FROM l.leaveStartDate) = :year) " +
+                    "AND " +
+                    "(EXTRACT(MONTH FROM l.leaveEndDate) >= :month AND EXTRACT(YEAR FROM l.leaveEndDate) = :year)" +
+                ")" +
+            "AND l.leaveType = :leaveType " +
+            "AND l.applicationStatus != :applicationStatus"
+    )
+    List<LeaveApplication> findByWorkerIdAndMonth(
+            Long workerId,
+            int year,
+            int month,
+            LeaveApplication.LeaveType leaveType,
+            LeaveApplication.ApplicationStatus applicationStatus
+    );
+
     @Query(
             "SELECT COUNT(l) > 0 " +
                     "FROM LeaveApplication l " +
