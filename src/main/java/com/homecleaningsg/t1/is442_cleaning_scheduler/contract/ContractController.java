@@ -105,7 +105,7 @@ public class ContractController {
             ) {
         try {
             contractService.addContract(clientId, clientSiteId, contractStartDate, contractEndDate, sessionStartTime, frequency);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Contract added successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Contract added successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add contract.");
         }
@@ -117,7 +117,7 @@ public class ContractController {
             @PathVariable("contractId") Long contractId, @RequestBody Contract updatedContract) {
         try {
             contractService.updateContract(contractId, updatedContract);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Contract updated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Contract updated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update contract details.");
         }
@@ -128,7 +128,7 @@ public class ContractController {
     public ResponseEntity<String> deactivateContract(@PathVariable("contractId") Long contractId) {
         try {
             contractService.deactivateContract(contractId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The contract has been successfully deactivated, all associated future cleaning sessions and shifts will be cancelled.");
+            return ResponseEntity.status(HttpStatus.OK).body("The contract has been successfully deactivated, all associated future cleaning sessions and shifts will be cancelled.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate contract.");
         }

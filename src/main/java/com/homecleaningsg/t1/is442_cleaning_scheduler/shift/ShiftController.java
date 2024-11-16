@@ -45,7 +45,7 @@ public class ShiftController {
     public ResponseEntity<String> addShift(@RequestBody Shift shift) {
         try{
             shiftService.addShift(shift);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift added successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Shift added successfully.");
         } catch(IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add shift.");
         }
@@ -59,7 +59,7 @@ public class ShiftController {
     ) {
         try{
             shiftService.updateShift(shiftId, updates);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift updated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Shift updated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -72,7 +72,7 @@ public class ShiftController {
     ) {
         try{
             shiftService.unassignWorkerFromShift(shiftId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Worker unassigned from shift successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Worker unassigned from shift successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -85,7 +85,7 @@ public class ShiftController {
     ) {
         try{
             shiftService.startShift(shiftId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift started successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Shift started successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to start shift.");
         }
@@ -98,7 +98,7 @@ public class ShiftController {
     ) {
         try{
             shiftService.endShift(shiftId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Shift ended successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Shift ended successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to end shift. "  + e.getMessage());
         }
@@ -109,7 +109,7 @@ public class ShiftController {
     public ResponseEntity<String> cancelShift(@PathVariable("shiftId") Long shiftId) {
         try{
             shiftService.cancelShift(shiftId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("The shift has been successfully cancelled, and associated workers removed from shift.");
+            return ResponseEntity.status(HttpStatus.OK).body("The shift has been successfully cancelled, and associated workers removed from shift.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to cancel shift.");
         }

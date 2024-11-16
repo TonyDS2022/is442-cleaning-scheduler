@@ -32,7 +32,7 @@ public class CleaningSessionController {
     public ResponseEntity<String> addCleaningSession(@RequestBody CleaningSession cleaningSession) {
         try {
             CleaningSession createdSession = cleaningSessionService.addCleaningSession(cleaningSession);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session added successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Cleaning session added successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add cleaning session.");
         }
@@ -43,7 +43,7 @@ public class CleaningSessionController {
             @PathVariable("cleaningSessionId") Long cleaningSessionId, @RequestBody CleaningSessionUpdateDto updatedSessionDto) {
         try {
             CleaningSession updatedCleaningSession = cleaningSessionService.updateCleaningSession(cleaningSessionId, updatedSessionDto);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session updated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Cleaning session updated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update cleaning session details.");
         }
@@ -54,7 +54,7 @@ public class CleaningSessionController {
     public ResponseEntity<String> cancelCleaningSession(@PathVariable("cleaningSessionId") Long cleaningSessionId) {
         try {
             cleaningSessionService.cancelCleaningSession(cleaningSessionId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cleaning session cancelled successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Cleaning session cancelled successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to cancel cleaning session.");
         }
