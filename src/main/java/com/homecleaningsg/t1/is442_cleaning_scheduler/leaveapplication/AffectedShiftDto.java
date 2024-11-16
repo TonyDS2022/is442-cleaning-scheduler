@@ -1,10 +1,15 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+
+@Getter
+@Setter
 public class AffectedShiftDto {
     Long shiftId;
     LocalDate shiftStartDate;
