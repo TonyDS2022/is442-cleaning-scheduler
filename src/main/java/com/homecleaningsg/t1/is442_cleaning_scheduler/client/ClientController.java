@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.client;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,13 @@ public class ClientController {
     }
 
     @GetMapping("/{name}")
-    public Client getClientByName(@PathVariable("name") String name) {
-        return clientService.getClientByName(name);
+    public ResponseEntity<?> getClientByName(@PathVariable("name") String name) {
+        try {
+            Client client = clientService.getClientByName(name);
+            return ResponseEntity.status(HttpStatus.OK).body(client);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // localhost:8080/api/v0.1/client/add-client/
@@ -37,7 +43,7 @@ public class ClientController {
             clientService.getOrCreateClient(name, phone, homeAddress, postalCode, unitNumber, numberOfRooms, propertyType);
             return ResponseEntity.status(HttpStatus.OK).body("Client added successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add client.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -61,7 +67,7 @@ public class ClientController {
             );
             return ResponseEntity.status(HttpStatus.OK).body("Client site added successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add client site.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add client site." + e.getMessage());
         }
     }
 
@@ -72,7 +78,7 @@ public class ClientController {
             clientService.updateClient(clientId, updatedClient);
             return ResponseEntity.status(HttpStatus.OK).body("Client updated successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update client details.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update client details." + e.getMessage());
         }
     }
 
@@ -83,13 +89,19 @@ public class ClientController {
             clientService.deactivateClient(clientId);
             return ResponseEntity.status(HttpStatus.OK).body("Client has been deactivated successfully, along with all associated future contracts, cleaning sessions and shifts.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate client.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate client." + e.getMessage());
         }
     }
 
     // localhost:8080/api/v0.1/client/get-clients-with-client-sites/
     @GetMapping("/get-clients-with-client-sites")
-    public List<ClientWithClientSiteDto> getListOfClientsWithClientSites() {
-        return clientService.getListOfClientsWithClientSites();
+    public ResponseEntity<?> getListOfClientsWithClientSites() {
+        try{
+            List<ClientWithClientSiteDto> responseObj = clientService.getListOfClientsWithClientSites();
+            return ResponseEntity.status(HttpStatus.OK).body(responseObj);
+        }
+        catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
