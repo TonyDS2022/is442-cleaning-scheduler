@@ -28,6 +28,11 @@ public class AdminController {
         this.statisticsService = statisticsService;
     }
 
+    @GetMapping
+    public List<Admin> getAllAdmin(){
+        return adminService.getAllAdmin();
+    }
+
     @GetMapping("/{username}")
     public Admin getAdminByUsername(@PathVariable("username") String username) {
         return adminService.getAdminByUsername(username);

@@ -43,7 +43,9 @@ public class AdminService {
         this.workerRepository = workerRepository;
         this.cleaningSessionRepository = cleaningSessionRepository;
     }
-
+    public List<Admin> getAllAdmin(){
+        return adminRepository.findAll();
+    }
     public Admin getAdminByUsername(String username) {
         return adminRepository.findByUsername(username).orElse(null);
     }
