@@ -20,6 +20,7 @@ public class LeaveApplicationAdminViewDto {
     String workerPhoneNumber;
     LocalDate leaveStartDate;
     LocalDate leaveEndDate;
+    LeaveApplication.ApplicationStatus applicationStatus;
     List<AffectedShiftDto> affectedShifts;
 
     // Constructor that takes affectedShifts as a parameter
@@ -30,6 +31,7 @@ public class LeaveApplicationAdminViewDto {
         this.workerPhoneNumber = leaveApplication.getWorker().getPhone();
         this.leaveStartDate = leaveApplication.getLeaveStartDate();
         this.leaveEndDate = leaveApplication.getLeaveEndDate();
+        this.applicationStatus = leaveApplication.getApplicationStatus();
         this.affectedShifts = affectedShifts;  // Simply set the passed list
     }
 }
