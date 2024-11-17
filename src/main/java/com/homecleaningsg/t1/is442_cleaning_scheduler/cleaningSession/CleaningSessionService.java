@@ -51,6 +51,11 @@ public class CleaningSessionService {
         this.leaveApplicationRepository = leaveApplicationRepository;
     }
 
+    public CleaningSession getCleaningSessionById(Long cleaningSessionId){
+        return cleaningSessionRepository.findById(cleaningSessionId).orElseThrow(
+                () -> new IllegalArgumentException("Session not found."));
+    }
+
     public CleaningSession addCleaningSession(CleaningSession cleaningSession){
         return cleaningSessionRepository.save(cleaningSession);
     }
