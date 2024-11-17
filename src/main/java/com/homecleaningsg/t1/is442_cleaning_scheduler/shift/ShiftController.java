@@ -2,6 +2,12 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -32,9 +38,40 @@ public class ShiftController {
     }
 
     @GetMapping("/{shiftId}")
+    @Operation(
+            summary = "Retrieve shift details by ID",
+            description = "Fetches the details of a specific shift, including worker details and trip information, using the shift ID.",
+            parameters = {
+                    @Parameter(
+                            name = "shiftId",
+                            description = "The ID of the shift to retrieve",
+                            required = true,
+                            example = "123"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the shift details.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ShiftWithWorkerDetailAndTripDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the shift due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Invalid shift ID provided.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getShiftById(@PathVariable("shiftId") Long shiftId) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(shiftService.getShiftById(shiftId));
+            ShiftWithWorkerDetailAndTripDto shift = shiftService.getShiftById(shiftId);
+            return ResponseEntity.status(HttpStatus.OK).body(shift);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -105,6 +142,36 @@ public class ShiftController {
     }
 
     @GetMapping("/worker/{workerId}")
+    @Operation(
+            summary = "Retrieve shifts by worker ID",
+            description = "Fetches a list of shifts assigned to a worker, including worker details and trip information, using the worker ID.",
+            parameters = {
+                    @Parameter(
+                            name = "workerId",
+                            description = "The ID of the worker to retrieve shifts for",
+                            required = true,
+                            example = "123"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the shifts assigned to the worker.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ShiftWithWorkerDetailAndTripDto.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the shifts due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Invalid worker ID provided.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getShiftsByWorkerId(@PathVariable("workerId") Long workerId) {
         try {
             List<ShiftWithWorkerDetailsDto> shifts = shiftService.getShiftsDtosByWorkerId(workerId);
@@ -115,6 +182,48 @@ public class ShiftController {
     }
 
     @GetMapping("/worker/{workerId}/month")
+    @Operation(
+            summary = "Retrieve shifts by month and worker ID",
+            description = "Fetches a list of shifts assigned to a worker in a specific month, including worker details and trip information, using the worker ID.",
+            parameters = {
+                    @Parameter(
+                            name = "workerId",
+                            description = "The ID of the worker to retrieve shifts for",
+                            required = true,
+                            example = "123"
+                    ),
+                    @Parameter(
+                            name = "month",
+                            description = "The month to retrieve shifts for",
+                            required = true,
+                            example = "1"
+                    ),
+                    @Parameter(
+                            name = "year",
+                            description = "The year to retrieve shifts for",
+                            required = true,
+                            example = "2022"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the shifts assigned to the worker in the specified month.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ShiftWithWorkerDetailsDto.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the shifts due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Invalid worker ID provided.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getShiftsByMonthAndWorker(@PathVariable("workerId") Long workerId,
                                                        @RequestParam int month,
                                                        @RequestParam int year) {
@@ -127,6 +236,48 @@ public class ShiftController {
     }
 
     @GetMapping("/worker/{workerId}/week")
+    @Operation(
+            summary = "Retrieve shifts by week and worker ID",
+            description = "Fetches a list of shifts assigned to a worker in a specific week, including worker details and trip information, using the worker ID.",
+            parameters = {
+                    @Parameter(
+                            name = "workerId",
+                            description = "The ID of the worker to retrieve shifts for",
+                            required = true,
+                            example = "123"
+                    ),
+                    @Parameter(
+                            name = "week",
+                            description = "The week to retrieve shifts for",
+                            required = true,
+                            example = "1"
+                    ),
+                    @Parameter(
+                            name = "year",
+                            description = "The year to retrieve shifts for",
+                            required = true,
+                            example = "2022"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the shifts assigned to the worker in the specified week.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ShiftWithWorkerDetailsDto.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the shifts due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Invalid worker ID provided.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getShiftsByWeekAndWorker(@PathVariable("workerId") Long workerId,
                                                       @RequestParam int week,
                                                       @RequestParam int year) {
@@ -139,6 +290,42 @@ public class ShiftController {
     }
 
     @GetMapping("/worker/{workerId}/day")
+    @Operation(
+            summary = "Retrieve shifts by day and worker ID",
+            description = "Fetches a list of shifts assigned to a worker on a specific day, including worker details and trip information, using the worker ID.",
+            parameters = {
+                    @Parameter(
+                            name = "workerId",
+                            description = "The ID of the worker to retrieve shifts for",
+                            required = true,
+                            example = "123"
+                    ),
+                    @Parameter(
+                            name = "date",
+                            description = "The date to retrieve shifts for",
+                            required = true,
+                            example = "2022-01-01"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the shifts assigned to the worker on the specified day.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ShiftWithWorkerDetailsDto.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the shifts due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Invalid worker ID provided.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getShiftsByDayAndWorker(@PathVariable("workerId") Long workerId,
                                                      @RequestParam LocalDate date) {
         try {
@@ -150,6 +337,48 @@ public class ShiftController {
     }
 
     @GetMapping("/worker/{workerId}/dayLastShiftBeforeTime")
+    @Operation(
+            summary = "Retrieve the last shift by day and worker ID before a specific time",
+            description = "Fetches the last shift assigned to a worker on a specific day before a specific time, including worker details and trip information, using the worker ID.",
+            parameters = {
+                    @Parameter(
+                            name = "workerId",
+                            description = "The ID of the worker to retrieve shifts for",
+                            required = true,
+                            example = "123"
+                    ),
+                    @Parameter(
+                            name = "date",
+                            description = "The date to retrieve shifts for",
+                            required = true,
+                            example = "2022-01-01"
+                    ),
+                    @Parameter(
+                            name = "time",
+                            description = "The time to retrieve shifts before",
+                            required = true,
+                            example = "12:00"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the last shift assigned to the worker on the specified day before the specified time.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ShiftWithWorkerDetailsDto.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the shifts due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Invalid worker ID provided.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getLastShiftByDayAndWorkerBeforeTime(@PathVariable("workerId") Long workerId,
                                                                   @RequestParam LocalDate date,
                                                                   @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
@@ -172,6 +401,36 @@ public class ShiftController {
     }
 
     @GetMapping("/{shiftId}/available-workers")
+    @Operation(
+            summary = "Retrieve available workers for a shift",
+            description = "Fetches a list of workers who are available for a specific shift, based on their leave applications and existing shift assignments. The list includes worker details and trip information and is returned in ascending order of tripDurationSeconds. If a worker did not have a preceding shift, they are deemed to be travelling from their home location. Otherwise, they are deemed to be travelling from their preceding shift client location.",
+            parameters = {
+                    @Parameter(
+                            name = "shiftId",
+                            description = "The ID of the shift to retrieve available workers for",
+                            required = true,
+                            example = "123"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the available workers for the shift.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = AvailableWorkerDto.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the available workers due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Invalid shift ID provided.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getAvailableWorkers(@PathVariable("shiftId") Long shiftId) {
         try {
             List<AvailableWorkerDto> availableWorkers = shiftService.getAvailableWorkersForShift(shiftId);
@@ -187,6 +446,36 @@ public class ShiftController {
     // that have matching workerid
     // and whos leave have a start and end date that overlaps with the cleaning session
     @GetMapping("/worker/{workerId}/shifts-with-pending-leave")
+    @Operation(
+            summary = "Retrieve shifts with pending leave for a worker",
+            description = "Fetches a list of shifts assigned to a worker, along with a boolean flag indicating whether the worker has pending or approved leave applications that overlap with the shift dates.",
+            parameters = {
+                    @Parameter(
+                            name = "workerId",
+                            description = "The ID of the worker to retrieve shifts for",
+                            required = true,
+                            example = "123"
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the shifts assigned to the worker, along with the pending leave status.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = WorkerPendingLeaveDto.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the shifts due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Invalid worker ID provided.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getShiftsWithPendingLeave(@PathVariable("workerId") Long workerId) {
         try {
             List<Shift> shifts = shiftService.getShiftsByWorkerId(workerId);
