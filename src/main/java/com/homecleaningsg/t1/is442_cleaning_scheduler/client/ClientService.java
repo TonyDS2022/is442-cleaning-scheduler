@@ -37,6 +37,10 @@ public class ClientService {
         this.clientSiteRepository = clientSiteRepository;
     }
 
+    public List<Client> getAllClient(){
+        return clientRepository.findAll();
+    }
+
     public Client getClientByName(String name){
         return clientRepository.findByName(name);
     }
