@@ -1,6 +1,5 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
-import com.google.common.util.concurrent.ClosingFuture;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
@@ -70,25 +69,6 @@ public class ContractService {
     // Create, Update, Delete Contract
     public Contract createContract(Contract contract) {
         return contractRepository.save(contract);
-    }
-
-    // public Contract updateContract(Long id, Contract contract) {
-    //     Contract existingContract = contractRepository.findById(id)
-    //             .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
-    //     existingContract.setClientId(contract.getClientId());
-    //     existingContract.setContractStart(contract.getContractStart());
-    //     existingContract.setContractEnd(contract.getContractEnd());
-    //     existingContract.setContractComment(contract.getContractComment());
-    //     existingContract.setOngoing(contract.isOngoing());
-    //     existingContract.setPrice(contract.getPrice());
-    //     existingContract.setWorkersBudgeted(contract.getWorkersBudgeted());
-    //     existingContract.setRooms(contract.getRooms());
-    //     existingContract.setFrequency(contract.getFrequency());
-    //     existingContract.setSessionDurationMinutes(contract.getSessionDurationMinutes());
-    //     return contractRepository.save(existingContract);
-    // }
-    public void deleteContract(Long id) {
-        contractRepository.deleteById(id);
     }
 
     private LocalDate getNextDateByFrequency(LocalDate currentDate, Contract.Frequency frequency) {

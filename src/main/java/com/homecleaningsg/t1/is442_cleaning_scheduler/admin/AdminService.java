@@ -44,10 +44,6 @@ public class AdminService {
         this.cleaningSessionRepository = cleaningSessionRepository;
     }
 
-    public List<Admin> getAllAdmins() {
-        return adminRepository.findAll();
-    }
-
     public Admin getAdminByUsername(String username) {
         return adminRepository.findByUsername(username).orElse(null);
     }

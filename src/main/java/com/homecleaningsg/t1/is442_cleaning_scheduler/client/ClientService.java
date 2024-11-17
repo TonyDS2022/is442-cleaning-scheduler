@@ -37,21 +37,8 @@ public class ClientService {
         this.clientSiteRepository = clientSiteRepository;
     }
 
-    public List<Client> getAllClients(){
-        return clientRepository.findAll();
-    }
-
-    public Optional<Client> getClientById(Long clientId){
-        return clientRepository.findById(clientId);
-    }
-
     public Client getClientByName(String name){
         return clientRepository.findByName(name);
-    }
-
-    public void addClient(Client client){
-        client.setJoinDate(LocalDate.now());
-        clientRepository.save(client);
     }
 
     public Client updateClient(Long clientId, Client updatedClient) {
@@ -97,19 +84,6 @@ public class ClientService {
         Long terminatedClients = clientRepository.countTerminatedClientsByYear(year);
 
         return new ClientReportDto(newClients, existingClients, terminatedClients);
-    }
-
-    public void addContractToClient(Long clientId, Contract contract){
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
-        contract.setClient(client);
-        contractRepository.save(contract);
-    }
-
-    public void addContractToClient(Client client, Contract contract){
-        contract.setClient(client);
-        clientRepository.save(client);
-        contractRepository.save(contract);
     }
 
     @Transactional

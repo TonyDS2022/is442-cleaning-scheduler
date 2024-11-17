@@ -41,12 +41,6 @@ public class ContractController {
         return new ResponseEntity<>(createdContract, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteContract(@PathVariable Long id) {
-        contractService.deleteContract(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
     @GetMapping("/{contractId}")
     public HttpEntity<?> getContractById(@PathVariable("contractId") Long contractId) {
         try {

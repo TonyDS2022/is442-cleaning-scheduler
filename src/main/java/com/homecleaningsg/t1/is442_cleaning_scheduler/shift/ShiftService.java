@@ -44,21 +44,6 @@ public class ShiftService {
     @Value("${shift.auto-assign-worker}")
     private boolean autoAssignWorker;
 
-    public List<ShiftWithWorkerDetailsDto> getAllShifts() {
-
-        List<Shift> shifts = shiftRepository.findAll();
-
-        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
-
-        for (Shift shift : shifts) {
-            Worker worker = shift.getWorker();
-            ShiftWithWorkerDetailsDto shiftWithWorkerDetailsDto = new ShiftWithWorkerDetailsDto(shift);
-            shiftWithWorkerDetailsDtos.add(shiftWithWorkerDetailsDto);
-        }
-
-        return shiftWithWorkerDetailsDtos;
-    }
-
     public ShiftWithWorkerDetailAndTripDto getShiftById(Long shiftId) {
         // Retrieve shift and validate existence
         Shift shift = shiftRepository.findById(shiftId)
@@ -262,13 +247,6 @@ public class ShiftService {
             shift.setCancelledAt(LocalDate.now());
             shiftRepository.save(shift);
         }
-    }
-
-    public void deleteShift(Long shiftId) {
-        Shift shift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
-        shiftRepository.deleteById(shiftId);
-        // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
     // get shifts by month, week, day, worker
