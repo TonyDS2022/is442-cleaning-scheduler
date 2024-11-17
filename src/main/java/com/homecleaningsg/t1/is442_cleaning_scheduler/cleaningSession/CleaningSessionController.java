@@ -51,15 +51,24 @@ public class CleaningSessionController {
     }
 
     @GetMapping("/calendar-view")
-    public List<CleaningSessionCalendarViewDto> getCalendarView() {
-        return cleaningSessionService.getCalendarView();
+    public ResponseEntity<?> getCalendarView() {
+        try {
+            List<CleaningSessionCalendarViewDto> calendarView = cleaningSessionService.getCalendarView();
+            return ResponseEntity.status(HttpStatus.OK).body(calendarView);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to retrieve calendar view.");
+        }
     }
 
     // localhost:8080/api/v0.1/cleaningSession/calendar-card/57
     @GetMapping("/calendar-card/{cleaningSessionId}")
-    public CleaningSessionCalendarCardViewDto getCalendarCardView(
-            @PathVariable Long cleaningSessionId) {
-        return cleaningSessionService.getCalendarCardView(cleaningSessionId);
+    public ResponseEntity<?> getCalendarCard(@PathVariable("cleaningSessionId") Long cleaningSessionId) {
+        try {
+            CleaningSessionCalendarCardViewDto calendarCard = cleaningSessionService.getCalendarCardView(cleaningSessionId);
+            return ResponseEntity.status(HttpStatus.OK).body(calendarCard);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to retrieve calendar card.");
+        }
     }
 
 }
