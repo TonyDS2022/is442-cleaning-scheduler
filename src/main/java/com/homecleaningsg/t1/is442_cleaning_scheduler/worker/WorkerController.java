@@ -20,19 +20,33 @@ public class WorkerController {
     }
 
     @GetMapping
-    public List<Worker> getAllWorkers() {
-        return workerService.getAllWorkers();
+    public ResponseEntity<?> getAllWorkers() {
+        try {
+            List<Worker> workers = workerService.getAllWorkers();
+            return ResponseEntity.ok(workers);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
-
     @GetMapping("/{username}")
-    public Worker getWorkerByUsername(@PathVariable("username") String username) {
-        return workerService.getWorkerByUsername(username);
+    public ResponseEntity<?> getWorkerByUsername(@PathVariable("username") String username) {
+        try {
+            Worker worker = workerService.getWorkerByUsername(username);
+            return ResponseEntity.ok(worker);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
     @GetMapping("/{workerId}/getResidentialAddressOfWorker")
-    public Location getResidentialAddressOfWorker(@PathVariable Long workerId) {
-        return workerService.getResidentialAddressOfWorker(workerId);
+    public ResponseEntity<?> getResidentialAddressOfWorker(@PathVariable Long workerId) {
+        try {
+            Location location = workerService.getResidentialAddressOfWorker(workerId);
+            return ResponseEntity.ok(location);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
     @PostMapping("/{workerId}/addResidentialAddressToWorker/")

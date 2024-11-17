@@ -32,8 +32,12 @@ public class ShiftController {
     }
 
     @GetMapping("/{shiftId}")
-    public ShiftWithWorkerDetailAndTripDto getShiftById(@PathVariable("shiftId") Long shiftId) {
-        return shiftService.getShiftById(shiftId);
+    public ResponseEntity<?> getShiftById(@PathVariable("shiftId") Long shiftId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(shiftService.getShiftById(shiftId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // localhost:8080/api/v0.1/shift/update-shift/1
@@ -101,35 +105,60 @@ public class ShiftController {
     }
 
     @GetMapping("/worker/{workerId}")
-    public List<ShiftWithWorkerDetailsDto> getShiftsByWorkerId(@PathVariable("workerId") Long workerId) {
-        return shiftService.getShiftsDtosByWorkerId(workerId);
+    public ResponseEntity<?> getShiftsByWorkerId(@PathVariable("workerId") Long workerId) {
+        try {
+            List<ShiftWithWorkerDetailsDto> shifts = shiftService.getShiftsDtosByWorkerId(workerId);
+            return ResponseEntity.ok(shifts);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
-    // get shifts by worker and month / week / day
     @GetMapping("/worker/{workerId}/month")
-    public List<ShiftWithWorkerDetailsDto> getShiftsByMonthAndWorker(@PathVariable("workerId") Long workerId, @RequestParam int month, @RequestParam int year) {
-        return shiftService.getShiftsByMonthAndWorker(month, year, workerId);
+    public ResponseEntity<?> getShiftsByMonthAndWorker(@PathVariable("workerId") Long workerId,
+                                                       @RequestParam int month,
+                                                       @RequestParam int year) {
+        try {
+            List<ShiftWithWorkerDetailsDto> shifts = shiftService.getShiftsByMonthAndWorker(month, year, workerId);
+            return ResponseEntity.ok(shifts);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
-    // http://localhost:8080/api/v0.1/shift/worker/1/week=40&year=2024
     @GetMapping("/worker/{workerId}/week")
-    public List<ShiftWithWorkerDetailsDto> getShiftsByWeekAndWorker(@PathVariable("workerId") Long workerId, @RequestParam int week, @RequestParam int year) {
-        return shiftService.getShiftsByWeekAndWorker(week, year, workerId);
+    public ResponseEntity<?> getShiftsByWeekAndWorker(@PathVariable("workerId") Long workerId,
+                                                      @RequestParam int week,
+                                                      @RequestParam int year) {
+        try {
+            List<ShiftWithWorkerDetailsDto> shifts = shiftService.getShiftsByWeekAndWorker(week, year, workerId);
+            return ResponseEntity.ok(shifts);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
-    // http://localhost:8080/api/v0.1/shift/worker/1/day?date=2024-10-05
     @GetMapping("/worker/{workerId}/day")
-    public List<ShiftWithWorkerDetailsDto> getShiftsByDayAndWorker(@PathVariable("workerId") Long workerId, @RequestParam LocalDate date) {
-        return shiftService.getShiftsByDayAndWorker(date, workerId);
+    public ResponseEntity<?> getShiftsByDayAndWorker(@PathVariable("workerId") Long workerId,
+                                                     @RequestParam LocalDate date) {
+        try {
+            List<ShiftWithWorkerDetailsDto> shifts = shiftService.getShiftsByDayAndWorker(date, workerId);
+            return ResponseEntity.ok(shifts);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
-    // http://localhost:8080/api/v0.1/shift/worker/1/dayLastShiftBeforeTime?date=2024-10-05&time=15:00
     @GetMapping("/worker/{workerId}/dayLastShiftBeforeTime")
-    public List<ShiftWithWorkerDetailsDto> getLastShiftByDayAndWorkerBeforeTime(@PathVariable("workerId") Long workerId,
-                                                                      @RequestParam LocalDate date,
-                                                                      @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
-
-        return shiftService.getLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
+    public ResponseEntity<?> getLastShiftByDayAndWorkerBeforeTime(@PathVariable("workerId") Long workerId,
+                                                                  @RequestParam LocalDate date,
+                                                                  @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
+        try {
+            List<ShiftWithWorkerDetailsDto> shifts = shiftService.getLastShiftByDayAndWorkerBeforeTime(workerId, date, time);
+            return ResponseEntity.ok(shifts);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
     @PostMapping("/{shiftId}/assign-worker/{workerId}")
@@ -143,8 +172,13 @@ public class ShiftController {
     }
 
     @GetMapping("/{shiftId}/available-workers")
-    public List<AvailableWorkerDto> getAvailableWorkers(@PathVariable("shiftId") Long shiftId) {
-        return shiftService.getAvailableWorkersForShift(shiftId);
+    public ResponseEntity<?> getAvailableWorkers(@PathVariable("shiftId") Long shiftId) {
+        try {
+            List<AvailableWorkerDto> availableWorkers = shiftService.getAvailableWorkersForShift(shiftId);
+            return ResponseEntity.ok(availableWorkers);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 
     // DTO for getting dynamic workerhaspendingleave status
@@ -153,11 +187,22 @@ public class ShiftController {
     // that have matching workerid
     // and whos leave have a start and end date that overlaps with the cleaning session
     @GetMapping("/worker/{workerId}/shifts-with-pending-leave")
-    public List<WorkerPendingLeaveDto> getShiftsWithPendingLeave(@PathVariable("workerId") Long workerId) {
-        List<Shift> shifts = shiftService.getShiftsByWorkerId(workerId);
-        return shifts.stream().map(shift -> {
-            boolean hasPendingLeave = workerService.workerHasPendingOrApprovedLeaveBetween(workerId, shift.getSessionStartDate(), shift.getSessionEndDate());
-            return new WorkerPendingLeaveDto(shift, hasPendingLeave);
-        }).collect(Collectors.toList());
+    public ResponseEntity<?> getShiftsWithPendingLeave(@PathVariable("workerId") Long workerId) {
+        try {
+            List<Shift> shifts = shiftService.getShiftsByWorkerId(workerId);
+            List<WorkerPendingLeaveDto> result = shifts.stream()
+                    .map(shift -> {
+                        boolean hasPendingLeave = workerService.workerHasPendingOrApprovedLeaveBetween(
+                                workerId,
+                                shift.getSessionStartDate(),
+                                shift.getSessionEndDate()
+                        );
+                        return new WorkerPendingLeaveDto(shift, hasPendingLeave);
+                    })
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
     }
 }

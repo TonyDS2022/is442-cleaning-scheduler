@@ -24,14 +24,22 @@ public class LeaveApplicationController {
     private final LeaveApplicationService leaveApplicationService;
 
     @GetMapping
-    public List<LeaveApplicationDto> getAllLeaveApplications(){
-        return leaveApplicationService.getAllLeaveApplication();
+    public ResponseEntity<?> getAllLeaveApplications(){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(leaveApplicationService.getAllLeaveApplication());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // localhost:8080/api/v0.1/leave-application/4
     @GetMapping("/{workerId}")
-    public List<LeaveApplicationDto> getAllLeaveApplicationsByWorkerId(@PathVariable("workerId") Long workerId){
-        return leaveApplicationService.getAllLeaveApplicationsByWorkerId(workerId);
+    public ResponseEntity<?> getAllLeaveApplicationsByWorkerId(@PathVariable("workerId") Long workerId){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(leaveApplicationService.getAllLeaveApplicationsByWorkerId(workerId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // localhost:8080/api/v0.1/leave-applications/1/apply-annual-leave/
@@ -61,17 +69,25 @@ public class LeaveApplicationController {
     }
 
     @GetMapping("/{adminId}/get-pending-leave-applications/")
-    public List<LeaveApplicationAdminViewDto> getPendingLeaveApplications(@PathVariable("adminId") Long adminId) {
-        return leaveApplicationService.getPendingLeaveApplicationsForAdmin(adminId);
+    public ResponseEntity<?> getPendingLeaveApplications(@PathVariable("adminId") Long adminId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(leaveApplicationService.getPendingLeaveApplicationsForAdmin(adminId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // localhost:8080/api/v0.1/leave-applications/get-leave-by-worker-month
     @GetMapping("/get-leave-by-worker-month")
-    public Long getWorkerTotalLeaveTakenInMonth(@RequestParam("workerId") Long workerId,
+    public ResponseEntity<?> getWorkerTotalLeaveTakenInMonth(@RequestParam("workerId") Long workerId,
                                                 @RequestParam("year") int year,
                                                 @RequestParam("month") int month,
                                                 @RequestParam("leaveType")LeaveApplication.LeaveType leaveType){
-        return leaveApplicationService.getWorkerTotalLeaveTakenInMonth(workerId, year, month, leaveType);
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(leaveApplicationService.getWorkerTotalLeaveTakenInMonth(workerId, year, month, leaveType));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // To-do: "/worker/{workerId}/pending-with-approved"
