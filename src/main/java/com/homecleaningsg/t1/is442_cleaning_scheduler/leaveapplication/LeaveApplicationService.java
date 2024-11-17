@@ -51,6 +51,23 @@ public class LeaveApplicationService {
         return leaveApplicationDtos;
     }
 
+    public LeaveApplicationDto getLeaveApplicationById(Long leaveApplicationId){
+        LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveApplicationId).orElseThrow(
+                () -> new IllegalArgumentException("Leave application not found.")
+        );
+
+        return new LeaveApplicationDto(
+                leaveApplication.getWorker().getWorkerId(),
+                leaveApplication.getWorker().getName(),
+                leaveApplication.getAdmin().getAdminId(),
+                leaveApplication.getAdmin().getUsername(),
+                leaveApplication.getLeaveType(),
+                leaveApplication.getLeaveStartDate(),
+                leaveApplication.getLeaveEndDate(),
+                leaveApplication.getApplicationStatus(),
+                leaveApplication.getLeaveSubmittedDate(),
+                leaveApplication.getLeaveSubmittedTime());
+    }
 
     public List<LeaveApplicationDto> getAllLeaveApplicationsByWorkerId(Long workerId){
         List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAllByWorkerId(workerId);
