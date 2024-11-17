@@ -18,8 +18,6 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveAppl
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.Subzone;
