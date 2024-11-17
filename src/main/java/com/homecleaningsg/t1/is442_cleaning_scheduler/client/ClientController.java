@@ -19,6 +19,11 @@ public class ClientController {
         this.clientService = clientService;
     }
 
+    @GetMapping
+    public List<Client> getAllClient(){
+        return clientService.getAllClient();
+    }
+
     @GetMapping("/{name}")
     public ResponseEntity<?> getClientByName(@PathVariable("name") String name) {
         try {
