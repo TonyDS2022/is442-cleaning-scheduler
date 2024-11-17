@@ -1,5 +1,9 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +55,28 @@ public class CleaningSessionController {
     }
 
     @GetMapping("/calendar-view")
+    @Operation(
+            summary = "Retrieve the calendar view of cleaning sessions",
+            description = "Fetches a list of cleaning sessions in a calendar view format.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved the calendar view.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = CleaningSessionCalendarViewDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request - Unable to retrieve the calendar view due to invalid input or other errors.",
+                            content = @Content(
+                                    mediaType = "text/plain",
+                                    schema = @Schema(type = "string", example = "Unable to retrieve calendar view.")
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> getCalendarView() {
         try {
             List<CleaningSessionCalendarViewDto> calendarView = cleaningSessionService.getCalendarView();
