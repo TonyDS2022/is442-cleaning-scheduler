@@ -31,24 +31,9 @@ public class ShiftController {
         this.workerService = workerService;
     }
 
-    @GetMapping
-    public List<ShiftWithWorkerDetailsDto> getAllShifts() {
-        return shiftService.getAllShifts();
-    }
-
     @GetMapping("/{shiftId}")
     public ShiftWithWorkerDetailAndTripDto getShiftById(@PathVariable("shiftId") Long shiftId) {
         return shiftService.getShiftById(shiftId);
-    }
-
-    @PostMapping("/add-shift/")
-    public ResponseEntity<String> addShift(@RequestBody Shift shift) {
-        try{
-            shiftService.addShift(shift);
-            return ResponseEntity.status(HttpStatus.OK).body("Shift added successfully.");
-        } catch(IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add shift.");
-        }
     }
 
     // localhost:8080/api/v0.1/shift/update-shift/1
@@ -157,27 +142,6 @@ public class ShiftController {
         }
     }
 
-    // http://localhost:8080/api/v0.1/shift/worker/1/last-known-location?date=2024-10-05&time=15:00
-//    @GetMapping("/worker/{workerId}/last-known-location")
-//    public Location getWorkerLastKnownLocation(@PathVariable("workerId") Long workerId,
-//                                               @RequestParam LocalDate date,
-//                                               @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime time) {
-//
-//        return shiftWorkerService.getWorkerLastKnownLocation(workerId, date, time);
-//    }
-
-    // http://localhost:8080/api/v0.1/shift/worker/5/is-worker-on-leave?shiftStartDate=2024-10-05&shiftStartTime=15:00&shiftEndDate=2024-10-05&shiftEndTime=18:00
-    @GetMapping("/worker/{workerId}/is-worker-on-leave")
-    public ResponseEntity<Boolean> isWorkerOnLeave(
-            @PathVariable Long workerId,
-            @RequestParam LocalDate shiftStartDate,
-            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime shiftStartTime,
-            @RequestParam LocalDate shiftEndDate,
-            @RequestParam @DateTimeFormat(pattern = "HH:mm") LocalTime shiftEndTime) {
-        boolean isOnLeave = workerService.workerHasPendingOrApprovedLeaveBetween(workerId, shiftStartDate, shiftEndDate);
-        return ResponseEntity.ok(isOnLeave);
-    }
-
     @GetMapping("/{shiftId}/available-workers")
     public List<AvailableWorkerDto> getAvailableWorkers(@PathVariable("shiftId") Long shiftId) {
         return shiftService.getAvailableWorkersForShift(shiftId);
@@ -195,12 +159,5 @@ public class ShiftController {
             boolean hasPendingLeave = workerService.workerHasPendingOrApprovedLeaveBetween(workerId, shift.getSessionStartDate(), shift.getSessionEndDate());
             return new WorkerPendingLeaveDto(shift, hasPendingLeave);
         }).collect(Collectors.toList());
-    }
-
-    private boolean isOverlapping(LocalDate leaveStart, LocalDate leaveEnd, Shift shift) {
-        LocalDate shiftStartDate = shift.getSessionStartDate();
-        LocalDate shiftEndDate = shift.getSessionEndDate();
-        return (leaveStart.isBefore(shiftEndDate) || leaveStart.isEqual(shiftEndDate)) &&
-                (leaveEnd.isAfter(shiftStartDate) || leaveEnd.isEqual(shiftStartDate));
     }
 }

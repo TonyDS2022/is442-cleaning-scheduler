@@ -67,4 +67,7 @@ public class    LeaveApplicationController {
                                                 @RequestParam("leaveType")LeaveApplication.LeaveType leaveType){
         return leaveApplicationService.getWorkerTotalLeaveTakenInMonth(workerId, year, month, leaveType);
     }
+
+    // To-do: "/worker/{workerId}/pending-with-approved"
+    // To-do: "/worker/{workerId}/history"
 }

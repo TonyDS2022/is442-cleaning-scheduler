@@ -28,12 +28,6 @@ public class AdminController {
         this.statisticsService = statisticsService;
     }
 
-    @GetMapping
-    public List<Admin> getAllAdmins() {
-        return adminService.getAllAdmins();
-    }
-
-
     @GetMapping("/{username}")
     public Admin getAdminByUsername(@PathVariable("username") String username) {
         return adminService.getAdminByUsername(username);
@@ -101,7 +95,7 @@ public class AdminController {
                 .body(csvData);
     }
 
-    // localhost:8080/api/v0.1/admins/approve-leave-application/
+    // localhost:8080/api/v0.1/admins/approve-leave-application/ to-do: adminId should also be passed
     @PutMapping("/approve-leave-application/{leaveApplicationId}")
     public ResponseEntity<String> approveLeaveApplication(@PathVariable Long leaveApplicationId){
         try{
@@ -112,6 +106,7 @@ public class AdminController {
         }
     }
 
+    // localhost:8080/api/v0.1/admins/reject-leave-application/ to-do: adminId should also be passed
     @PutMapping("/reject-leave-application/{leaveApplicationId}")
     public ResponseEntity<String> rejectLeaveApplication(@PathVariable Long leaveApplicationId){
         try{

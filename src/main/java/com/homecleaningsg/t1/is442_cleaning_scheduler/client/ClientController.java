@@ -18,12 +18,6 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @GetMapping
-    public List<Client> getAllClient() {
-        return clientService.getAllClients();
-    }
-
-
     @GetMapping("/{name}")
     public Client getClientByName(@PathVariable("name") String name) {
         return clientService.getClientByName(name);

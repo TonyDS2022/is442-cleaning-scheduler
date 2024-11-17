@@ -18,16 +18,6 @@ public class CleaningSessionController {
         this.cleaningSessionService = cleaningSessionService;
     }
 
-    @GetMapping
-    public List<CleaningSession> getAllCleaningSessions() {
-        return cleaningSessionService.getAllCleaningSessions();
-    }
-
-    @GetMapping("/{contractId}")
-    public List<CleaningSession> getCleaningSessionsByContractId(@PathVariable Long contractId) {
-        return cleaningSessionService.getCleaningSessionsByContractId(contractId);
-    }
-
     @PostMapping("/create-cleaning-session/")
     public ResponseEntity<String> addCleaningSession(@RequestBody CleaningSession cleaningSession) {
         try {
