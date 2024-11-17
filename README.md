@@ -1,23 +1,6 @@
 # Getting Started
 
-### Reference Documentation
-For further reference, please consider the following sections:
-
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.3.3/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.3.3/maven-plugin/build-image.html)
-* [Spring Web](https://spring.io/projects/spring-framework)
-* [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
-
-### Guides
-The following guides illustrate how to use some features concretely:
-
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-
-### Requirements
+### Pre-requisites
 - [Liberica Standard JDK 21.0.4+9](https://bell-sw.com/pages/downloads/#jdk-21-lts)
 - [Maven](https://maven.apache.org/index.html)
   - Windows:
@@ -35,24 +18,42 @@ The following guides illustrate how to use some features concretely:
       ```bash
         brew install maven
       ```
-- (optional, recommended) [Intellij IDEA Ultimate](https://www.jetbrains.com/community/education/#students/)
 - PostgreSQL
   - Windows:
     - Download and run the [PostgreSQL installer from EDB](https://www.enterprisedb.com/software-downloads-postgres)
   - MacOS:
     - Download and install [Postgres App](https://postgresapp.com/)
     - Follow the instructions on the Postgres App website to initialize a new local server
-
-  After you have successfully initialized a PostgreSQL server on your local environment, connect to it by running `psql` on your shell, and run the following:
+  
+  After you have successfully initialized a PostgreSQL server on your local environment, connect to it by running `psql` on your shell, and sequentially run the following:
   ```psql
     CREATE DATABASE is442_proj;
     GRANT ALL PRIVILEGES ON DATABASE "is442_proj" TO current_user;
     GRANT ALL PRIVILEGES ON DATABASE "is442_proj" TO postgres;
     CREATE EXTENSION postgis;
   ```
+ - (optional) Obtain a Google Maps Platform API token from the [Google Cloud Console](https://console.cloud.google.com/). While we have provided some sample data in `src/main/resources`, if you wish to experiment with Location data that are not pre-cached, you will require a valid API token.
+ - Set up your `.env` file in `src/main/resources` with the following:
+  ```properties
+  DB_USERNAME=<your postgres username>
+  DB_PASSWORD=<your postgres password>
+  GOOGLE_OD_API_KEY=<your google api token, leave blank if you don't have one>
+  ```
+  Replace `<YOUR_GOOGLE_MAPS_API_KEY>` with your Google Maps Platform API token.
 
-### Push policy and CI Actions
-Please test compile the application with `mvn test` before pushing to the repository.
+### Companion front-end application
+A Companion front-end application is housed in a different repository with its own README.md file. The repository can be found [here](https://github.com/mageshkarthiga/oop-cleaning-scheduler).
+
+### Application Configuration
+Configuration parameters are stored in `src/main/resources/*.properties` files. To run a fresh build of the application and persist data across sessions, comment out the following lines in `application.properties`:
+```properties
+spring.profiles.active=dev
+```
+And set `spring.jpa.hibernate.ddl-auto` to `create`:
+```properties
+spring.jpa.hibernate.ddl-auto=update
+```
+Other business logic configurations can be found in `src/main/resources/shift.properties` and `src/main/resources/leave-policy.properties`.
 
 ### Running the application
 To run the application, execute the following command in the root directory of the project:
@@ -61,4 +62,6 @@ To run the application, execute the following command in the root directory of t
 ```
 
 #### Documentation with Swagger
+The accessible endpoints are documented using Swagger.
+
 To access the Swagger documentation, navigate to `http://localhost:8080/swagger-ui.html` in your browser.
