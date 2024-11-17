@@ -12,12 +12,12 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSiteRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.Contract;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractRepository;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.contract.ContractService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.medicalrecord.MedicalRecordService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.Shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.shift.ShiftRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.subzone.Subzone;
@@ -53,6 +53,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Component
 @Profile("dev")
@@ -67,14 +68,13 @@ public class SampleDataInitializer implements ApplicationRunner {
     private final SubzoneRepository subzoneRepository;
     private final LeaveApplicationRepository leaveApplicationRepository;
     private final LocationRepository locationRepository;
-    private final MedicalRecordRepository medicalRecordRepository;
     private final WorkerRepository workerRepository;
     private final ClientService clientService;
     private final LocationService locationService;
-    private final MedicalRecordService medicalRecordService;
     private final TripService tripService;
     private final WorkerService workerService;
     private final TripRepository tripRepository;
+    private final ContractService contractService;
 
     public SampleDataInitializer(
             AdminRepository adminRepository,
@@ -86,13 +86,11 @@ public class SampleDataInitializer implements ApplicationRunner {
             SubzoneRepository subzoneRepository,
             LeaveApplicationRepository leaveApplicationRepository,
             LocationRepository locationRepository,
-            MedicalRecordRepository medicalRecordRepository,
             WorkerRepository workerRepository,
             ClientService clientService,
             LocationService locationService,
-            MedicalRecordService medicalRecordService,
             TripService tripService,
-            WorkerService workerService, TripRepository tripRepository) {
+            WorkerService workerService, TripRepository tripRepository, ContractService contractService) {
         this.adminRepository = adminRepository;
         this.contractRepository = contractRepository;
         this.clientSiteRepository = clientSiteRepository;
@@ -102,19 +100,18 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.subzoneRepository = subzoneRepository;
         this.leaveApplicationRepository = leaveApplicationRepository;
         this.locationRepository = locationRepository;
-        this.medicalRecordRepository = medicalRecordRepository;
         this.workerRepository = workerRepository;
         this.clientService = clientService;
         this.locationService = locationService;
-        this.medicalRecordService = medicalRecordService;
         this.tripService = tripService;
         this.workerService = workerService;
         this.tripRepository = tripRepository;
+        this.contractService = contractService;
     }
 
     @Override
     @Transactional
-    public void run(ApplicationArguments args) throws Exception {
+    public synchronized void run(ApplicationArguments args) throws Exception {
         // Add sample data here
         initializeSubzones();
         initializeLocation();
@@ -126,7 +123,7 @@ public class SampleDataInitializer implements ApplicationRunner {
         initializeCleaningSessions();
         initializeShifts();
 //        initializeMedicalRecords();
-//        initializeLeaveApplications();
+        initializeLeaveApplications();
     }
 
     @Transactional
@@ -292,13 +289,19 @@ public class SampleDataInitializer implements ApplicationRunner {
                 String email = values[3].trim();
                 String phone = values[4].trim();
                 String bio = values[5].trim();
-                LocalTime startWorkingHours = LocalTime.parse(values[6].trim());
-                LocalTime endWorkingHours = LocalTime.parse(values[7].trim());
+                LocalTime startWorkingHours = LocalTime.parse("08:00");
+                LocalTime endWorkingHours = LocalTime.parse("22:00");
                 String streetAddress = values[8].trim();
                 String postalCode = values[9].trim();
                 String unitNumber = values[10].trim();
                 Long adminId = Long.parseLong(values[11].trim());
+                LocalDate joinDate = LocalDate.parse(values[12].trim());
+                LocalDate deactivatedAt = values[13].trim().isEmpty() ? null : LocalDate.parse(values[13].trim());
                 Worker worker = new Worker(name, username, password, email, phone, bio, startWorkingHours, endWorkingHours);
+                worker.setJoinDate(joinDate);
+                if(deactivatedAt != null){
+                    worker.setDeactivatedAt(deactivatedAt);
+                }
                 Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new IllegalStateException("Admin with ID " + adminId + " not found"));
                 worker.setSupervisor(admin);
                 workerService.addResidentialAddressToWorker(worker, streetAddress, postalCode, unitNumber);
@@ -321,7 +324,9 @@ public class SampleDataInitializer implements ApplicationRunner {
                 LocalDate joinDate = LocalDate.parse(values[2].trim(), formatter);
                 boolean isActive = values[3].trim().equals("t");
                 LocalDate deactivatedAt = values[4].trim().isEmpty() ? null : LocalDate.parse(values[4].trim(), formatter);
-                Client client = new Client(name, phone, isActive, joinDate);
+                Client client = new Client(name, phone);
+                client.setActive(isActive);
+                client.setJoinDate(joinDate);
                 clientRepository.save(client);
                 if (!isActive) {
                     client.setDeactivatedAt(deactivatedAt);
@@ -340,150 +345,165 @@ public class SampleDataInitializer implements ApplicationRunner {
 
     @Transactional
     public void initializeContracts() {
-        Client client1 = this.clientRepository.findById(1L)
-                .orElseThrow(() -> new IllegalStateException("Client with ID 1 not found"));
-        Client client2 = this.clientRepository.findById(2L)
-                .orElseThrow(() -> new IllegalStateException("Client with ID 2 not found"));
-
-        Contract contract1 = new Contract();
-        contract1.setContractStart(LocalDate.of(2024, 11, 3));
-        contract1.setContractEnd(LocalDate.of(2024, 12, 3));
-        contract1.setContractComment("Contract 1");
-        contract1.setPrice(60.0f);
-        contract1.setWorkersBudgeted(1);
-        contract1.setRooms(1);
-        contract1.setFrequency(Contract.Frequency.WEEKLY);
-        contract1.setSessionStartTime(LocalTime.of(9,0));
-        contract1.setSessionEndTime(LocalTime.of(12,0));
-        contract1.setCreationDate(LocalDate.of(2024, 11, 3));
-
-        Contract contract2 = new Contract();
-        contract2.setContractStart(LocalDate.of(2024, 9, 3));
-        contract2.setContractEnd(LocalDate.of(2024, 10, 3));
-        contract2.setContractComment("Contract 2");
-        contract2.setPrice(250.0f);
-        contract2.setWorkersBudgeted(3);
-        contract2.setRooms(2);
-        contract2.setFrequency(Contract.Frequency.BIWEEKLY);
-        contract2.setSessionStartTime(LocalTime.of(9,0));
-        contract2.setSessionEndTime(LocalTime.of(12,0));
-        contract2.setCreationDate(LocalDate.of(2024, 9, 1));
-
-        client1.addContract(contract1);
-        contract1.setClientSite(client1.getClientSites().get(0));
-        client2.addContract(contract2);
-        contract2.setClientSite(client2.getClientSites().get(0));
-
-        System.out.println("Contract 1 Rate: " + contract1.getRate());
-        System.out.println("Contract 2 Rate: " + contract2.getRate());
-
-        this.clientRepository.saveAll(List.of(client1, client2));
-        this.contractRepository.saveAll(List.of(contract1, contract2));
+        List<Integer> validHour = List.of(8, 13, 18);
+        Random random = new Random(24601);
+        List<Client> clients = clientRepository.findAll();
+        for (Client client: clients) {
+            if (!client.isActive()) {
+                continue;
+            }
+            if (client.getClientSites().get(0).getPropertyType() == ClientSite.PropertyType.LANDED) {
+                continue;
+            }
+            Long numberOfRooms = client.getClientSites().get(0).getNumberOfRooms();
+            ClientSite.PropertyType propertyType = client.getClientSites().get(0).getPropertyType();
+            LocalTime startTime = LocalTime.of(validHour.get(random.nextInt(validHour.size())), 0);
+            LocalTime endTime = startTime.plusHours(contractService.getNumberOfHours(numberOfRooms, propertyType));
+            Contract contract = new Contract(
+                    client.getClientSites().get(0),
+                    client,
+                    client.getJoinDate(),
+                    client.getJoinDate().plusMonths(3),
+                    startTime,
+                    endTime,
+                    "This is a sample contract",
+                    276.0f,
+                    1,
+                    numberOfRooms.intValue(),
+                    "WEEKLY"
+            );
+            contractService.addContract(contract);
+        }
     }
 
     @Transactional
     public void initializeCleaningSessions() {
-        Contract contract = this.contractRepository.findById(1L).orElseThrow(() -> new IllegalStateException("Contract not found"));
+    // read from resource/cleaningSession.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/cleaningSessions_table.csv"))) {
 
-        // Create CleaningSession instances
-        CleaningSession session1 = new CleaningSession(
-                contract,
-                LocalDate.of(2024,10,5),
-                LocalTime.of(9,0),
-                LocalDate.of(2024,10,5),
-                LocalTime.of(12,0),
-                "Session 1",
-                2
-        );
-        session1.setSessionStatus(CleaningSession.SessionStatus.WORKING);
-        session1.setSessionRating(CleaningSession.Rating.AVERAGE);
-        session1.setSessionFeedback("Feedback 1");
-        session1.setPlanningStage(CleaningSession.PlanningStage.GREEN);
+            String[] values;
+            reader.readNext();  // Skip header row
+            while ((values = reader.readNext()) != null) {
+                Long contractId = Long.parseLong(values[0].trim());
+                LocalDate sessionDate = LocalDate.parse(values[1].trim());
+                LocalTime startTime = LocalTime.parse(values[2].trim());
+                LocalDate endDate = LocalDate.parse(values[3].trim());
+                LocalTime endTime = LocalTime.parse(values[4].trim());
+                String sessionName = values[5].trim();
+                int numberOfCleaners = Integer.parseInt(values[6].trim());
+                CleaningSession.SessionStatus sessionStatus = CleaningSession.SessionStatus.valueOf(values[7].trim());
+                LocalDate cancelledAt = values[8].trim().isEmpty() ? null : LocalDate.parse(values[8].trim());
 
-        CleaningSession session2 = new CleaningSession(
-                contract,
-                LocalDate.of(2024,10,12),
-                LocalTime.of(14,0),
-                LocalDate.of(2024,10,12),
-                LocalTime.of(17,0),
-                "Session 2",
-                1
-        );
-        session2.setSessionStatus(CleaningSession.SessionStatus.NOT_STARTED);
-        session2.setSessionRating(CleaningSession.Rating.GOOD);
-        session2.setSessionFeedback("Feedback 2");
+                Contract contract = contractRepository.findById(contractId)
+                        .orElseThrow(() -> new IllegalStateException("Contract with ID " + contractId + " not found"));
 
-        CleaningSession session3 = new CleaningSession(
-                contract,
-                LocalDate.of(2024,11,3),
-                LocalTime.of(9,0),
-                LocalDate.of(2024,11,3),
-                LocalTime.of(12,0),
-                "Session 3",
-                3
-        );
-        session3.setSessionStatus(CleaningSession.SessionStatus.CANCELLED);
-        session3.setCancelledAt(LocalDate.of(2024,11,1));
+                // Create and configure CleaningSession
+                CleaningSession cleaningSession = new CleaningSession(
+                        contract,
+                        sessionDate,
+                        startTime,
+                        endDate,
+                        endTime,
+                        sessionName,
+                        numberOfCleaners
+                );
 
-        this.cleaningSessionRepository.saveAll(List.of(session1, session2, session3));
+                cleaningSession.setSessionStatus(sessionStatus);
+
+                if (cancelledAt != null) {
+                    cleaningSession.setCancelledAt(cancelledAt);
+                }
+
+                // Save the CleaningSession instance
+                cleaningSessionRepository.save(cleaningSession);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Transactional
     public void initializeShifts() {
-        CleaningSession session1 = cleaningSessionRepository.findById(1L).orElseThrow(() -> new IllegalStateException("CleaningSession 1 not found"));
-        CleaningSession session2 = cleaningSessionRepository.findById(2L).orElseThrow(() -> new IllegalStateException("CleaningSession 2 not found"));
-        CleaningSession session3 = cleaningSessionRepository.findById(3L).orElseThrow(() -> new IllegalStateException("CleaningSession 3 not found"));
+        // read from resource/shifts.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/shifts_table.csv"))) {
+            String[] values;
+            reader.readNext();  // Skip header row
+            while ((values = reader.readNext()) != null) {
+                Long sessionId = Long.parseLong(values[0].trim());
+                Long workerId = Long.parseLong(values[1].trim());
+                LocalDate actualStartDate = LocalDate.parse(values[2].trim());
+                LocalTime actualStartTime = LocalTime.parse(values[3].trim());
+                LocalDate actualEndDate = LocalDate.parse(values[4].trim());
+                LocalTime actualEndTime = LocalTime.parse(values[5].trim());
+                Long shiftDurationHours = Long.parseLong(values[6].trim());
 
-        Worker worker1 = workerRepository.findById(4L).orElseThrow(() -> new IllegalStateException("Worker 1 not found"));
-        Worker worker2 = workerRepository.findById(5L).orElseThrow(() -> new IllegalStateException("Worker 6 not found"));
-        Worker worker3 = workerRepository.findById(6L).orElseThrow(() -> new IllegalStateException("Worker 7 not found"));
+                // Fetch the Worker and Session based on workerId and sessionId
+                Worker worker = workerRepository.findById(workerId)
+                        .orElseThrow(() -> new IllegalStateException("Worker with ID " + workerId + " not found"));
 
-        // These two shifts are part of the same cleaning session,
-        // meaning they share the same start and end times (auto assigned in Shift.java)
-        // A shift represents a worker's involvement in the cleaning session,
-        // and is used to denote the cleaning session for each worker.
+                CleaningSession cleaningSession = cleaningSessionRepository.findById(sessionId)
+                        .orElseThrow(() -> new IllegalStateException("Session with ID " + sessionId + " not found"));
 
-        Shift shift1 = new Shift(session1);
-        shift1.setWorker(worker1);
-        // this is the actual time that the worker arrive to the shift
-        shift1.setActualStartDate(LocalDate.of(2024, 10, 5));
-        shift1.setActualStartTime(LocalTime.of(9, 0));
-        shift1.setActualEndDate(LocalDate.of(2024, 10, 5));
-        shift1.setActualEndTime(LocalTime.of(12, 0));
+                // Create and configure Shift
+                Shift shift = new Shift(cleaningSession);
+                shift.setWorker(worker);
+                shift.setActualStartDate(actualStartDate);
+                shift.setActualStartTime(actualStartTime);
+                shift.setActualEndDate(actualEndDate);
+                shift.setActualEndTime(actualEndTime);
+                shift.setShiftDurationHours(shiftDurationHours);
 
-        Shift shift2 = new Shift(session1);
-        shift2.setWorker(worker2);
-        // this is the actual time that the worker arrive to the shift - worker6 is one hour late
-        shift2.setActualStartDate(LocalDate.of(2024, 10, 5));
-        shift2.setActualStartTime(LocalTime.of(10, 0));
-        shift2.setActualEndDate(LocalDate.of(2024, 10, 5));
-        shift2.setActualEndTime(LocalTime.of(12, 0));
+                // Save the Shift instance
+                shiftRepository.save(shift);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
-        Shift shift3 = new Shift(session2);
-        shift3.setWorker(worker3);
-        shift3.setActualStartDate(LocalDate.of(2024, 10, 12));
-        shift3.setActualStartTime(LocalTime.of(14, 0));
-        shift3.setActualEndDate(LocalDate.of(2024, 10, 12));
-        shift3.setActualEndTime(LocalTime.of(17, 0));
+    @Transactional
+    public void initializeLeaveApplications() {
+        // read from resource/leaveApplications_table.csv
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/resources/leaveApplications_table.csv"))) {
+            String[] values;
+            reader.readNext();  // Skip header row
+            while ((values = reader.readNext()) != null) {
+                Long workerId = Long.parseLong(values[0].trim());
+                Long adminId = Long.parseLong(values[1].trim());
+                LeaveApplication.LeaveType leaveType = LeaveApplication.LeaveType.valueOf(values[2].trim());
+                LocalDate leaveStartDate = LocalDate.parse(values[3].trim());
+                LocalDate leaveEndDate = LocalDate.parse(values[4].trim());
+                LocalDate leaveSubmittedDate = LocalDate.parse(values[5].trim());
+                LocalTime leaveSubmittedTime = LocalTime.parse(values[6].trim());
+                LeaveApplication.ApplicationStatus applicationStatus = LeaveApplication.ApplicationStatus.valueOf(values[7].trim());
 
-        Shift shift4 = new Shift(session2);
-        shift4.setWorker(worker1);
-        shift4.setActualStartDate(LocalDate.of(2024, 10, 12));
-        shift4.setActualStartTime(LocalTime.of(14, 5));
-        shift4.setActualEndDate(LocalDate.of(2024, 10, 12));
-        shift4.setActualEndTime(LocalTime.of(17, 5));
+                // Fetch the Worker and Admin based on workerId and adminId
+                Worker worker = workerRepository.findById(workerId)
+                        .orElseThrow(() -> new IllegalStateException("Worker with ID " + workerId + " not found"));
 
-        // assign to session on 11-06-2024 to test leaveApplication clash
-        Shift shift5 = new Shift(session3);
-        shift5.setWorker(worker1);
+                Admin admin = adminRepository.findById(adminId)
+                        .orElseThrow(() -> new IllegalStateException("Admin with ID " + adminId + " not found"));
 
-        shiftRepository.saveAll(new ArrayList<>(List.of(shift1, shift2, shift3, shift4, shift5)));
+                // Create and configure LeaveApplications
+                LeaveApplication leaveApplication = new LeaveApplication();
+                leaveApplication.setLeaveType(leaveType);
+                leaveApplication.setLeaveStartDate(leaveStartDate);
+                leaveApplication.setLeaveEndDate(leaveEndDate);
+                leaveApplication.setWorker(worker);
+                leaveApplication.setAdmin(admin);
+                leaveApplication.setLeaveSubmittedDate(leaveSubmittedDate);
+                leaveApplication.setLeaveSubmittedTime(leaveSubmittedTime);
+                leaveApplication.setApplicationStatus(applicationStatus);
 
-        session1.setShifts(new ArrayList<>(List.of(shift1, shift2)));
-        session2.setShifts(new ArrayList<>(List.of(shift3, shift4)));
-        session3.setShifts(new ArrayList<>(List.of(shift5)));
-        cleaningSessionRepository.saveAll(new ArrayList<>(List.of(session1, session2, session3)));
+                // Save the Shift instance
+                leaveApplicationRepository.save(leaveApplication);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

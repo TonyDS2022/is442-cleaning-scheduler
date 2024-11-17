@@ -3,13 +3,14 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
-import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.TripRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,7 +23,6 @@ public class ShiftService {
 
     private final ShiftRepository shiftRepository;
     private final WorkerRepository workerRepository;
-    private final LeaveApplicationService leaveApplicationService;
     private final CleaningSessionRepository cleaningSessionRepository;
     private final LeaveApplicationRepository leaveApplicationRepository;
     private final TripRepository tripRepository;
@@ -30,44 +30,64 @@ public class ShiftService {
     @Autowired
     public ShiftService(ShiftRepository shiftRepository,
                         WorkerRepository workerRepository,
-                        LeaveApplicationService leaveApplicationService,
                         CleaningSessionRepository cleaningSessionRepository,
                         LeaveApplicationRepository leaveApplicationRepository,
                         TripRepository tripRepository
     ) {
         this.shiftRepository = shiftRepository;
         this.workerRepository = workerRepository;
-        this.leaveApplicationService = leaveApplicationService;
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.leaveApplicationRepository = leaveApplicationRepository;
         this.tripRepository = tripRepository;
     }
 
-    public List<ShiftWithWorkerDetailsDto> getAllShifts() {
+    @Value("${shift.auto-assign-worker}")
+    private boolean autoAssignWorker;
 
-        List<Shift> shifts = shiftRepository.findAll();
+    public ShiftWithWorkerDetailAndTripDto getShiftById(Long shiftId) {
+        // Retrieve shift and validate existence
+        Shift shift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
 
-        List<ShiftWithWorkerDetailsDto> shiftWithWorkerDetailsDtos = new ArrayList<>();
+        // Determine worker details
+        Worker worker = shift.getWorker();
+        Location workerLastLocation = getWorkerLastLocation(shift, worker);
+        boolean hasPendingLeave = hasWorkerPendingLeave(worker, shift);
 
-        for (Shift shift : shifts) {
-            Worker worker = shift.getWorker();
-            ShiftWithWorkerDetailsDto shiftWithWorkerDetailsDto = new ShiftWithWorkerDetailsDto(shift);
-            shiftWithWorkerDetailsDtos.add(shiftWithWorkerDetailsDto);
-        }
-
-        return shiftWithWorkerDetailsDtos;
+        // Create the DTO
+        return new ShiftWithWorkerDetailAndTripDto(shift, workerLastLocation, hasPendingLeave);
     }
 
-    public Optional<ShiftWithWorkerDetailsDto> getShiftById(Long shiftId) {
-        Optional<Shift> shift = shiftRepository.findById(shiftId);
-        if (shift.isEmpty()) {
-            return Optional.empty();
-        }
-        ShiftWithWorkerDetailsDto shiftWithWorkerDetailsDto = new ShiftWithWorkerDetailsDto(shift.get());
-        return Optional.of(shiftWithWorkerDetailsDto);
+    // Helper method to get the last location of the worker before this shift
+    private Location getWorkerLastLocation(Shift shift, Worker worker) {
+        if (worker == null) return null;
+
+        Shift lastShift = getLastShiftOnSameDayByWorkerBeforeShift(shift);
+        return (lastShift != null)
+                ? lastShift.getClientSite().getLocation()
+                : worker.getHomeLocation();
+    }
+
+    // Helper method to check if the worker has pending leave during the session date range
+    private boolean hasWorkerPendingLeave(Worker worker, Shift shift) {
+        return worker != null && leaveApplicationRepository.existsByWorkerAndStatusAndDateRangeOverlapping(
+                worker.getWorkerId(),
+                LeaveApplication.ApplicationStatus.PENDING,
+                shift.getSessionStartDate(),
+                shift.getSessionEndDate()
+        );
     }
 
     public void addShift(Shift shift) {
+        // attempt to assign worker
+        if (autoAssignWorker) {
+            List<AvailableWorkerDto> availableWorkers = getAvailableWorkersForShift(shift);
+            if (!availableWorkers.isEmpty()) {
+                Worker worker = workerRepository.findById(availableWorkers.get(0).getWorkerId())
+                        .orElseThrow(() -> new IllegalArgumentException("Worker not found"));
+                setWorker(shift, worker);
+            }
+        }
         shiftRepository.save(shift);
         // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
@@ -123,6 +143,7 @@ public class ShiftService {
         if (shift.getWorkingStatus() != Shift.WorkingStatus.NOT_STARTED) {
             throw new IllegalArgumentException("Past shifts cannot be unassigned.");
         }
+        shift.setWorker(null);
         shiftRepository.save(shift);
     }
 
@@ -170,7 +191,7 @@ public class ShiftService {
         else{
             shift.setWorkingStatus(Shift.WorkingStatus.WORKING);
             shift.setActualStartDate(LocalDate.now());
-            shift.setActualStartTime(LocalTime.now());
+            shift.setActualStartTime(LocalTime.now().withNano(0));
             shiftRepository.save(shift);
         }
         CleaningSession cleaningSession = shift.getCleaningSession();
@@ -196,7 +217,7 @@ public class ShiftService {
         else{
             shift.setWorkingStatus(Shift.WorkingStatus.FINISHED);
             shift.setActualEndDate(LocalDate.now());
-            shift.setActualEndTime(LocalTime.now());
+            shift.setActualEndTime(LocalTime.now().withNano(0));
             shiftRepository.save(shift);
         }
         CleaningSession cleaningSession = shift.getCleaningSession();
@@ -226,13 +247,6 @@ public class ShiftService {
             shift.setCancelledAt(LocalDate.now());
             shiftRepository.save(shift);
         }
-    }
-
-    public void deleteShift(Long shiftId) {
-        Shift shift = shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
-        shiftRepository.deleteById(shiftId);
-        // updateCleaningSessionPlanningStage(shift.getCleaningSession());
     }
 
     // get shifts by month, week, day, worker
@@ -285,12 +299,16 @@ public class ShiftService {
         return shiftRepository.findByWorkerWorkerId(workerId);
     }
 
-    public void setWorker(Long shiftId, Long workerId){
+    public void setWorker(Long shiftId, Long workerId) {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new IllegalArgumentException("Worker not found"));
 
+        setWorker(shift, worker);
+    }
+
+    public void setWorker(Shift shift, Worker worker) {
         if (shift.getWorker() != null && shift.getWorker().equals(worker)) {
             throw new IllegalStateException("Worker is already assigned to this shift.");
         }
@@ -363,13 +381,24 @@ public class ShiftService {
     public List<AvailableWorkerDto> getAvailableWorkersForShift(Long shiftId) {
         Shift shift = shiftRepository.findById(shiftId)
                 .orElseThrow(() -> new IllegalArgumentException("Shift not found"));
+        return getAvailableWorkersForShift(shift);
+    }
 
+    public Shift getLastShiftOnSameDayByWorkerBeforeShift(Shift shift) {
+        Worker worker = shift.getWorker();
+        if (worker == null) {
+            return null;
+        }
+        return shiftRepository.findLastShiftOnDateByWorkerWorkerIdAndSessionEndTimeBefore(worker.getWorkerId(), shift.getSessionStartDate(), shift.getSessionStartTime());
+    }
+
+    public List<AvailableWorkerDto> getAvailableWorkersForShift(Shift shift) {
         LocalTime shiftStartTime = shift.getSessionStartTime();
         LocalTime shiftEndTime = shift.getSessionEndTime();
 
-        List<Worker> allWorkersInWorkingHours = workerRepository.findByStartWorkingHoursAfterAndEndWorkingHoursBefore(shiftStartTime, shiftEndTime);
-//        List<Worker> workersWithPendingLeave = /* #TODO: get workers with pending leave applications */
-//        List<Worker> workersWithApprovedLeave = /* #TODO: get workers with approved leave applications */
+        List<Worker> allWorkersInWorkingHours = workerRepository.findByStartWorkingHoursBeforeEndWorkingHoursAfter(shiftStartTime, shiftEndTime);
+
+        List<Worker> workersWithPendingOrApprovedLeave = leaveApplicationRepository.findWorkersByLeaveOverlappingWith(shift.getSessionStartDate(), shift.getSessionEndDate());
 
         List<Worker> workerOnShiftsWithStartTimeOverlaps = shiftRepository.findBySessionStartTimeBetween(shiftStartTime, shiftEndTime)
                 .stream()
@@ -385,8 +414,7 @@ public class ShiftService {
 
         List<Worker> availableWorkers = allWorkersInWorkingHours.stream()
                 .filter(worker -> !workerOnShift.contains(worker))
-//                .filter(worker -> !workersWithPendingLeave.contains(worker)) /* #TODO: uncomment when implemented */
-//                .filter(worker -> !workersWithApprovedLeave.contains(worker)) /* #TODO: uncomment when implemented */
+                .filter(worker -> !workersWithPendingOrApprovedLeave.contains(worker))
                 .toList();
 
         Map<Worker, Shift> lastShiftByWorkerBeforeShift = new HashMap<>();
@@ -410,7 +438,7 @@ public class ShiftService {
             workerTrip.put(worker, trip);
         }
 
-        return availableWorkers.stream()
+        List<AvailableWorkerDto> results = availableWorkers.stream()
                 .map(worker -> new AvailableWorkerDto(
                         worker.getWorkerId(),
                         worker.getName(),
@@ -419,5 +447,11 @@ public class ShiftService {
                         workerTrip.get(worker).getTripDurationSeconds(),
                         workerTrip.get(worker).getTripDistanceMeters())
                 ).toList();
+
+        // Sort by ascending trip duration
+        List<AvailableWorkerDto> mutableResults = new ArrayList<>(results);
+        mutableResults.sort(Comparator.comparing(AvailableWorkerDto::getTripDurationSeconds));
+
+        return mutableResults;
     }
 }

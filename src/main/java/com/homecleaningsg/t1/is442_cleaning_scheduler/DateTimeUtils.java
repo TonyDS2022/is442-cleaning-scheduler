@@ -27,7 +27,7 @@ public class DateTimeUtils {
     }
 
     public static boolean isWorkingDay(LocalDate date) {
-        return date.getDayOfWeek().getValue() < 6;
+        return true;
     }
 
 }

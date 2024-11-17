@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -89,6 +90,40 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
             LeaveApplication.ApplicationStatus applicationStatus
     );
 
+    @Query("SELECT l " +
+            "FROM LeaveApplication l " +
+            "WHERE " + "l.worker.workerId = :workerId " +
+            "AND " +
+                "(" +
+                    "(EXTRACT(MONTH FROM l.leaveStartDate) <= :month AND EXTRACT(YEAR FROM l.leaveStartDate) = :year) " +
+                    "AND " +
+                    "(EXTRACT(MONTH FROM l.leaveEndDate) >= :month AND EXTRACT(YEAR FROM l.leaveEndDate) = :year)" +
+                ")" +
+            "AND l.leaveType = :leaveType " +
+            "AND l.applicationStatus != :applicationStatus"
+    )
+    List<LeaveApplication> findByWorkerIdAndMonth(
+            Long workerId,
+            int year,
+            int month,
+            LeaveApplication.LeaveType leaveType,
+            LeaveApplication.ApplicationStatus applicationStatus
+    );
+
+    @Query(
+            "SELECT COUNT(l) > 0 " +
+                    "FROM LeaveApplication l " +
+                    "WHERE l.worker.workerId = :workerId " +
+                    "AND l.applicationStatus = :status " +
+                    "AND (l.leaveStartDate <= :endDate AND l.leaveEndDate >= :startDate)"
+    )
+    boolean existsByWorkerAndStatusAndDateRangeOverlapping(
+            Long workerId,
+            LeaveApplication.ApplicationStatus status,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
     @Query(
             "SELECT CASE WHEN COUNT(l) > 0 THEN TRUE ELSE FALSE END " +
                     "FROM LeaveApplication l " +
@@ -102,8 +137,28 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
             "SELECT l " +
                     "FROM LeaveApplication l " +
                     "WHERE l.admin.adminId = :adminId " +
-                    "AND (l.applicationStatus = 'PENDING') " +
-                    "AND (l.leaveStartDate <= :rightBound AND l.leaveEndDate >= :leftBound)"
+                    "AND (l.applicationStatus = 'PENDING') "
+//                    "AND (l.leaveStartDate <= :rightBound AND l.leaveEndDate >= :leftBound)"
     )
     List<LeaveApplication> findPendingLeaveApplicationsByAdminId(Long adminId);
+
+    @Query(
+            "SELECT l.worker " +
+                    "FROM LeaveApplication l " +
+                    "WHERE (l.applicationStatus = 'PENDING' OR l.applicationStatus = 'APPROVED') " +
+                    "AND (l.leaveStartDate <= :leaveEndDate AND l.leaveEndDate >= :leaveStartDate)"
+    )
+    List<Worker> findWorkersByLeaveOverlappingWith(
+            @Param("leaveStartDate") LocalDate leaveStartDate,
+            @Param("leaveEndDate") LocalDate leaveEndDate
+    );
+
+    @Query(
+            "SELECT l " +
+                    "FROM LeaveApplication l " +
+                    "WHERE l.worker.workerId = :workerId "
+    )
+    List<LeaveApplication> findAllByWorkerId(
+            @Param("workerId") Long workerId
+    );
 }

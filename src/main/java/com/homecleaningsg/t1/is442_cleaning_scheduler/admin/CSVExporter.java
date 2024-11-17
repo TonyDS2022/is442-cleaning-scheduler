@@ -65,6 +65,21 @@ public class CSVExporter {
 
             writer.writeNext(new String[]{""});
 
+            // Yearly Worker Leave Balance (Grouped by Worker ID)
+            writer.writeNext(new String[]{"Yearly Worker Leave Balance"});
+            writer.writeNext(new String[]{"Year", "WorkerId", "Annual Leave Balance", "Medical Leave Balance"});
+
+            for (LeaveBalanceDto workerLeaveBalance : yearlyData.getWorkerYearlyLeaveBalance()) {
+                writer.writeNext(new String[]{
+                        String.valueOf(yearlyData.getYear()),
+                        String.valueOf(workerLeaveBalance.getWorkerId()),
+                        String.valueOf(workerLeaveBalance.getAnnualLeaveBalance()),
+                        String.valueOf(workerLeaveBalance.getMedicalLeaveBalance())
+                });
+            }
+
+            writer.writeNext(new String[]{""});
+
             // Monthly Data
             writer.writeNext(new String[]{"Monthly Data"});
             writer.writeNext(new String[]{
@@ -114,6 +129,24 @@ public class CSVExporter {
                             String.valueOf(workerHours.getWorkerId()),
                             String.valueOf(workerHours.getTotalHours()),
                             String.valueOf(workerHours.getOverTimeHours())
+                    });
+                }
+            }
+
+            writer.writeNext(new String[]{""});
+
+            // Monthly Worker Leaves Taken (Grouped by Worker ID)
+            writer.writeNext(new String[]{"Monthly Worker Leave Taken"});
+            writer.writeNext(new String[]{"Year", "Month", "WorkerId", "Annual Leave Taken", "Medical Leave Taken"});
+
+            for (MonthlyStatisticsDto monthlyStat : monthlyData) {
+                for (LeaveTakenDto workerLeaveTaken : monthlyStat.getWorkerMonthlyLeaveTaken()) {
+                    writer.writeNext(new String[]{
+                            String.valueOf(monthlyStat.getYear()),
+                            String.valueOf(monthlyStat.getMonth()),
+                            String.valueOf(workerLeaveTaken.getWorkerId()),
+                            String.valueOf(workerLeaveTaken.getAnnualLeaveTaken()),
+                            String.valueOf(workerLeaveTaken.getMedicalLeaveTaken())
                     });
                 }
             }

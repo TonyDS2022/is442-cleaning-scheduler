@@ -83,7 +83,7 @@ public class Shift {
     private LocalTime actualEndTime;
 
     @Column(name = "shiftDurationHours")
-    private Long shiftDurationHours = 0L; // automatically evaluated by onUpdate()
+    private Long shiftDurationHours; // automatically evaluated by onUpdate()
 
     @NonNull
     @Enumerated(EnumType.STRING)
@@ -129,11 +129,17 @@ public class Shift {
     private void onUpdate() {
         this.lastModified = new Timestamp(System.currentTimeMillis());
         if (actualStartDate != null && actualStartTime != null && actualEndDate != null && actualEndTime != null) {
-            LocalDateTime startDateTime = LocalDateTime.of(actualStartDate, actualStartTime);
-            LocalDateTime endDateTime = LocalDateTime.of(actualEndDate, actualEndTime);
-            this.shiftDurationHours = Duration.between(startDateTime, endDateTime).toHours();
+            // Ensure start date/time is before end date/time
+            if (actualStartDate.isAfter(actualEndDate) ||
+                    (actualStartDate.isEqual(actualEndDate) && actualStartTime.isAfter(actualEndTime))) {
+                throw new IllegalArgumentException("Shift start date/time cannot be after end date/time.");
+            }
+
+            long durationHours = Duration.between(actualStartTime, actualEndTime).toHours();
+            this.shiftDurationHours = Math.max(durationHours , 0L);
         } else {
             this.shiftDurationHours = 0L;
         }
     }
+
 }

@@ -73,7 +73,7 @@ public class LocationService {
         newLocation.setSubzone(subzoneRepository);
         tripService.buildTrips(newLocation);
         // update Trip Duration by calling Google Distance Matrix API
-        //tripService.updateTripDistanceDurationAsync().subscribe();
+        tripService.updateTripDistanceDurationAsync().subscribe();
         // sleep for 1 second to avoid Google Distance Matrix API rate limit
         try {
             Thread.sleep(1000);

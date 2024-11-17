@@ -17,6 +17,7 @@ import java.util.List;
 public class YearlyStatisticsDto {
     private int year;
     private List<WorkerHoursDto> workerYearlyHours; //list of hours per worker
+    private List<LeaveBalanceDto> workerYearlyLeaveBalance; //list of leave balance per worker
     private ClientReportDto clientYearlyReport;
     private SessionReportDto sessionYearlyReport;
     private ContractReportDto contractYearlyReport;

@@ -60,16 +60,12 @@ public class Client {
 
     public Client(
             String name,
-            String phone,
-            boolean isActive,
-            LocalDate joinDate
+            String phone
     ) {
         this.name = name;
         this.phone = phone;
-        this.isActive = isActive;
         this.contracts = new ArrayList<>();
         this.clientSites = new ArrayList<>();
-        this.joinDate = joinDate;
     }
 
     @PrePersist

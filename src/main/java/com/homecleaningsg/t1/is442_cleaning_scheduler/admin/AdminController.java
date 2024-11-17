@@ -2,6 +2,8 @@ package com.homecleaningsg.t1.is442_cleaning_scheduler.admin;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionUpdateDto;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplication;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.AbstractDocument;
 import java.util.List;
 
 
@@ -26,10 +29,9 @@ public class AdminController {
     }
 
     @GetMapping
-    public List<Admin> getAllAdmins() {
-        return adminService.getAllAdmins();
+    public List<Admin> getAllAdmin(){
+        return adminService.getAllAdmin();
     }
-
 
     @GetMapping("/{username}")
     public Admin getAdminByUsername(@PathVariable("username") String username) {
@@ -40,7 +42,7 @@ public class AdminController {
     public ResponseEntity<String> addAdmin(@RequestBody Admin admin) {
         try {
             adminService.addAdmin(admin);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin added successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Admin added successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add admin.");
         }
@@ -51,7 +53,7 @@ public class AdminController {
             @PathVariable("adminId") Long adminId, @RequestBody Admin updatedAdmin) {
         try {
             adminService.updateAdmin(adminId, updatedAdmin);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin updated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Admin updated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update admin details.");
         }
@@ -62,7 +64,7 @@ public class AdminController {
     public ResponseEntity<String> deactivateAdmin(@PathVariable("adminId") Long adminId) {
         try {
             adminService.deactivateAdmin(adminId);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Admin deactivated successfully.");
+            return ResponseEntity.status(HttpStatus.OK).body("Admin deactivated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to deactivate admin.");
         }
@@ -96,5 +98,27 @@ public class AdminController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(csvData);
+    }
+
+    // localhost:8080/api/v0.1/admins/approve-leave-application/ to-do: adminId should also be passed
+    @PutMapping("/approve-leave-application/{leaveApplicationId}")
+    public ResponseEntity<String> approveLeaveApplication(@PathVariable Long leaveApplicationId){
+        try{
+            adminService.approveLeaveApplication(leaveApplicationId);
+            return ResponseEntity.status(HttpStatus.OK).body("Leave application approved successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to approved leave application.");
+        }
+    }
+
+    // localhost:8080/api/v0.1/admins/reject-leave-application/ to-do: adminId should also be passed
+    @PutMapping("/reject-leave-application/{leaveApplicationId}")
+    public ResponseEntity<String> rejectLeaveApplication(@PathVariable Long leaveApplicationId){
+        try{
+            adminService.rejectLeaveApplication(leaveApplicationId);
+            return ResponseEntity.status(HttpStatus.OK).body("Leave application rejected successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to rejected leave application.");
+        }
     }
 }

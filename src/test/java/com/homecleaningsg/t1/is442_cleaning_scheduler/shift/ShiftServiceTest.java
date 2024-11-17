@@ -1,6 +1,7 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
 import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.leaveapplication.LeaveApplicationService;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.trip.Trip;
@@ -35,6 +36,8 @@ public class ShiftServiceTest {
     private WorkerService workerService;
     @Mock
     private TripRepository tripRepository;
+    @Mock
+    private LeaveApplicationRepository leaveApplicationRepository;
 
     @InjectMocks
     private ShiftService shiftService;
@@ -88,7 +91,7 @@ public class ShiftServiceTest {
 
         // Mock repository behavior
         when(shiftRepository.findById(shiftId)).thenReturn(Optional.of(testShift));
-        when(workerRepository.findByStartWorkingHoursAfterAndEndWorkingHoursBefore(any(LocalTime.class), any(LocalTime.class)))
+        when(workerRepository.findByStartWorkingHoursBeforeEndWorkingHoursAfter(any(LocalTime.class), any(LocalTime.class)))
                 .thenReturn(allWorkers);
         when(shiftRepository.findBySessionStartTimeBetween(any(LocalTime.class), any(LocalTime.class)))
                 .thenReturn(Collections.emptyList());  // No overlapping shifts with start time

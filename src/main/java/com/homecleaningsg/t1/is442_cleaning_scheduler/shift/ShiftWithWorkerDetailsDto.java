@@ -1,5 +1,6 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.shift;
 
+import com.homecleaningsg.t1.is442_cleaning_scheduler.worker.Worker;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +33,7 @@ public class ShiftWithWorkerDetailsDto {
     private LocalTime actualEndTime;
     private String workingStatus;
     private boolean workerHasPendingLeave;
+    private Long shiftDurationHours;
 
     public ShiftWithWorkerDetailsDto(Shift shift) {
         this.shiftId = shift.getShiftId();
@@ -40,10 +42,13 @@ public class ShiftWithWorkerDetailsDto {
         this.clientAddress = shift.getCleaningSession().getClientSite().getStreetAddress();
         this.latitude = shift.getCleaningSession().getClientSite().getLocation().getLatitude();
         this.longitude = shift.getCleaningSession().getClientSite().getLocation().getLongitude();
-        this.workerName = shift.getWorker().getName();
-        this.workerPhone = shift.getWorker().getPhone();
-        this.workerEmail = shift.getWorker().getEmail();
-        this.workerBio = shift.getWorker().getBio();
+        Worker worker = shift.getWorker();
+        if (worker != null) {
+            this.workerName = worker.getName();
+            this.workerPhone = worker.getPhone();
+            this.workerEmail = worker.getEmail();
+            this.workerBio = worker.getBio();
+        }
         this.sessionDescription = shift.getSessionDescription();
         this.sessionStartDate = shift.getSessionStartDate();
         this.sessionStartTime = shift.getSessionStartTime();
@@ -55,5 +60,6 @@ public class ShiftWithWorkerDetailsDto {
         this.actualEndTime = shift.getActualEndTime();
         this.workingStatus = shift.getWorkingStatus().name();
         this.workerHasPendingLeave = shift.isWorkerHasPendingLeave();
+        this.shiftDurationHours = shift.getShiftDurationHours();
     }
 }

@@ -18,6 +18,7 @@ public class MonthlyStatisticsDto {
     private int year;
     private int month;
     private List<WorkerHoursDto> workerMonthlyHours; //list of hours per worker
+    private List<LeaveTakenDto> workerMonthlyLeaveTaken; //list of leave taken per worker
     private ClientReportDto clientMonthlyReport;
     private SessionReportDto sessionMonthlyReport;
     private ContractReportDto contractMonthlyReport;

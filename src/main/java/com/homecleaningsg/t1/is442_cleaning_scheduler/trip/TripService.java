@@ -25,27 +25,6 @@ public class TripService {
         this.odMatrixService = odMatrixService;
     }
 
-    public List<Trip> getTrips() {
-        updateTripEuclideanDistances();
-        updateTripDistanceDurationAsync().block();
-        return tripRepository.findAll();
-    }
-
-    @Transactional
-    public synchronized void buildTrips() {
-        List<Location> locations = locationRepository.findAll();
-        for (Location origin : locations) {
-            for (Location destination : locations) {
-                if (!origin.equals(destination)) {
-                    Trip trip = new Trip();
-                    trip.setOrigin(origin);
-                    trip.setDestination(destination);
-                    tripRepository.save(trip);
-                }
-            }
-        }
-    }
-
     @Transactional
     public synchronized void buildTrips(Location tripNode) {
         List<Location> otherLocations = locationRepository.findAll();
@@ -61,14 +40,6 @@ public class TripService {
             }
         }
         tripRepository.saveAll(newTrips);
-    }
-
-    public void updateTripEuclideanDistances() {
-        List<Trip> unlabeledTrips = tripRepository.findAllByEuclideanDistanceKmEquals(0.0);
-        for (Trip trip : unlabeledTrips) {
-            trip.setEuclideanDistanceKm();
-            tripRepository.save(trip);
-        }
     }
 
     public Mono<Void> updateTripDistanceDurationAsync() {

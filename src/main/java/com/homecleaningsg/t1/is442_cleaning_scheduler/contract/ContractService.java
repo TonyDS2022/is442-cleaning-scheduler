@@ -1,9 +1,10 @@
 package com.homecleaningsg.t1.is442_cleaning_scheduler.contract;
 
-import com.google.common.util.concurrent.ClosingFuture;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSession;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.cleaningSession.CleaningSessionService;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.Client;
+import com.homecleaningsg.t1.is442_cleaning_scheduler.client.ClientRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSite;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.clientSite.ClientSiteRepository;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +28,17 @@ public class ContractService {
     private final ContractRepository contractRepository;
     private final CleaningSessionRepository cleaningSessionRepository;
     private final CleaningSessionService cleaningSessionService;
+    private final ClientRepository clientRepository;
     private final ClientSiteRepository clientSiteRepository;
     private final LocationRepository locationRepository;
     private final ShiftService shiftService;
 
     @Autowired
-    public ContractService(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, CleaningSessionService cleaningSessionService, ClientSiteRepository clientSiteRepository, LocationRepository locationRepository, ShiftService shiftService) {
+    public ContractService(ContractRepository contractRepository, CleaningSessionRepository cleaningSessionRepository, CleaningSessionService cleaningSessionService, ClientRepository clientRepository, ClientSiteRepository clientSiteRepository, LocationRepository locationRepository, ShiftService shiftService) {
         this.contractRepository = contractRepository;
         this.cleaningSessionRepository = cleaningSessionRepository;
         this.cleaningSessionService = cleaningSessionService;
+        this.clientRepository = clientRepository;
         this.clientSiteRepository = clientSiteRepository;
         this.locationRepository = locationRepository;
         this.shiftService = shiftService;
@@ -43,21 +47,7 @@ public class ContractService {
     // updates contractStatus automatically when all contracts are retrieved
     // based on current date and contractStart and contractEnd dates
     public List<Contract> getContract() {
-        List<Contract> contracts = contractRepository.findAll();
-
-        for (Contract contract : contracts) {
-            if (contract.getContractEnd().isBefore(LocalDate.now()) &&
-                    contract.getContractStatus() != Contract.ContractStatus.COMPLETED) {
-                contract.setContractStatus(Contract.ContractStatus.COMPLETED);
-                contractRepository.save(contract);
-            } else if (contract.getContractStart().isBefore(LocalDate.now()) &&
-                    contract.getContractStatus() == Contract.ContractStatus.NOT_STARTED) {
-                contract.setContractStatus(Contract.ContractStatus.IN_PROGRESS);
-                contractRepository.save(contract);
-            }
-        }
-
-        return contracts;
+        return contractRepository.findAll();
     }
 
     public Optional<Float> getRateByContractId(Long contractId) {
@@ -81,25 +71,6 @@ public class ContractService {
         return contractRepository.save(contract);
     }
 
-    // public Contract updateContract(Long id, Contract contract) {
-    //     Contract existingContract = contractRepository.findById(id)
-    //             .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
-    //     existingContract.setClientId(contract.getClientId());
-    //     existingContract.setContractStart(contract.getContractStart());
-    //     existingContract.setContractEnd(contract.getContractEnd());
-    //     existingContract.setContractComment(contract.getContractComment());
-    //     existingContract.setOngoing(contract.isOngoing());
-    //     existingContract.setPrice(contract.getPrice());
-    //     existingContract.setWorkersBudgeted(contract.getWorkersBudgeted());
-    //     existingContract.setRooms(contract.getRooms());
-    //     existingContract.setFrequency(contract.getFrequency());
-    //     existingContract.setSessionDurationMinutes(contract.getSessionDurationMinutes());
-    //     return contractRepository.save(existingContract);
-    // }
-    public void deleteContract(Long id) {
-        contractRepository.deleteById(id);
-    }
-
     private LocalDate getNextDateByFrequency(LocalDate currentDate, Contract.Frequency frequency) {
         return switch (frequency) {
             case DAILY -> currentDate.plusDays(1);
@@ -113,7 +84,40 @@ public class ContractService {
         };
     }
 
-    public Contract addContract(Contract contract){
+    public void addContract(
+            Long clientId,
+            Long clientSiteId,
+            LocalDate contractStartDate,
+            LocalDate contractEndDate,
+            LocalTime sessionStartTime,
+            String frequency
+    ) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+        ClientSite clientSite = clientSiteRepository.findById(clientSiteId)
+                .orElseThrow(() -> new IllegalArgumentException("Client site not found"));
+        if (clientSite.getClient() != client) {
+            throw new IllegalArgumentException("Client site does not belong to client");
+        }
+        Long numberOfHours = getNumberOfHours(clientSite.getNumberOfRooms(), clientSite.getPropertyType());
+        LocalTime sessionEndTime = sessionStartTime.plusHours(numberOfHours);
+        Contract contract = new Contract(
+                clientSite,
+                client,
+                contractStartDate,
+                contractEndDate,
+                sessionStartTime,
+                sessionEndTime,
+                "Contract for " + clientSite.getStreetAddress(),
+                0f,
+                1,
+                clientSite.getNumberOfRooms().intValue(),
+                frequency
+        );
+        addContract(contract);
+    }
+
+    public void addContract(Contract contract){
         locationRepository.save(contract.getClientSite().getLocation());
         clientSiteRepository.save(contract.getClientSite());
         contractRepository.save(contract);
@@ -153,7 +157,6 @@ public class ContractService {
                 shiftService.addShift(newShift);
             }
         }
-        return contract;
     }
 
     public Contract updateContract(Long contractId, Contract updatedContract){
@@ -199,5 +202,14 @@ public class ContractService {
         Long completedContracts = contractRepository.countCompletedContractsByYear(year);
 
         return new ContractReportDto(newContracts, existingOngoingContracts, completedContracts);
+    }
+
+    public Long getNumberOfHours(Long numberOfRooms, ClientSite.PropertyType propertyType) {
+        if (propertyType == ClientSite.PropertyType.HDB) {
+            return numberOfRooms;
+        } else if (propertyType == ClientSite.PropertyType.CONDOMINIUM) {
+            return numberOfRooms + 1;
+        }
+        throw new IllegalArgumentException("Invalid property type or number of rooms");
     }
 }

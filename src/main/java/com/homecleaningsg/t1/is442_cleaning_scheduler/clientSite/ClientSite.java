@@ -97,8 +97,8 @@ public class ClientSite {
         this.propertyType = propertyType;
     }
 
-    public boolean isSameSite(ClientSite clientSite) {
-        return this.streetAddress.equals(clientSite.getStreetAddress()) && this.postalCode.equals(clientSite.getPostalCode()) && this.unitNumber.equals(clientSite.getUnitNumber());
+    public boolean isSameSite(ClientSite other) {
+        return this.streetAddress.equals(other.getStreetAddress()) && this.postalCode.equals(other.getPostalCode()) && this.unitNumber.equals(other.getUnitNumber());
     }
 }
 

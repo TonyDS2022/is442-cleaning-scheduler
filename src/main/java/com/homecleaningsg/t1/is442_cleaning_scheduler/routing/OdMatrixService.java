@@ -34,24 +34,4 @@ public class OdMatrixService {
                 .retrieve()
                 .bodyToMono(OdMatrixResponse.class);
     }
-
-    public Mono<OdMatrixResponse.Distance> getDistance(String origin, String destination) {
-        return getOdMatrix(List.of(origin), List.of(destination))
-                .flatMap(response -> {
-                    if (!response.getRows().isEmpty() && !response.getRows().get(0).getElements().isEmpty()) {
-                        return Mono.just(response.getRows().get(0).getElements().get(0).getDistance());
-                    }
-                    return Mono.empty();
-                });
-    }
-
-    public Mono<OdMatrixResponse.Duration> getDuration(String origin, String destination) {
-        return getOdMatrix(List.of(origin), List.of(destination))
-                .flatMap(response -> {
-                    if (!response.getRows().isEmpty() && !response.getRows().get(0).getElements().isEmpty()) {
-                        return Mono.just(response.getRows().get(0).getElements().get(0).getDuration());
-                    }
-                    return Mono.empty();
-                });
-    }
 }

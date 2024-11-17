@@ -9,6 +9,7 @@ import com.homecleaningsg.t1.is442_cleaning_scheduler.location.Location;
 import com.homecleaningsg.t1.is442_cleaning_scheduler.location.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -36,21 +37,12 @@ public class ClientService {
         this.clientSiteRepository = clientSiteRepository;
     }
 
-    public List<Client> getAllClients(){
+    public List<Client> getAllClient(){
         return clientRepository.findAll();
-    }
-
-    public Optional<Client> getClientById(Long clientId){
-        return clientRepository.findById(clientId);
     }
 
     public Client getClientByName(String name){
         return clientRepository.findByName(name);
-    }
-
-    public void addClient(Client client){
-        client.setJoinDate(LocalDate.now());
-        clientRepository.save(client);
     }
 
     public Client updateClient(Long clientId, Client updatedClient) {
@@ -98,46 +90,21 @@ public class ClientService {
         return new ClientReportDto(newClients, existingClients, terminatedClients);
     }
 
-    public void addContractToClient(Long clientId, Contract contract){
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
-        contract.setClient(client);
-        contractRepository.save(contract);
-    }
-
-    public void addContractToClient(Client client, Contract contract){
-        contract.setClient(client);
-        clientRepository.save(client);
-        contractRepository.save(contract);
-    }
-
-    public void addClientSiteToClient(
-            Client client,
-            String streetAddress,
-            String postalCode,
-            String unitNumber
-    ) {
-        Location clientLocation = locationService.getOrCreateLocation(postalCode, streetAddress);
-        ClientSite clientSite = new ClientSite(client, streetAddress, postalCode, unitNumber, clientLocation);
-        // check if client already has the same client site
-        if (client.getClientSites().stream().noneMatch(site -> site.isSameSite(clientSite))) {
-            client.addClientSite(clientSite);
-            clientSiteRepository.save(clientSite);
-            clientRepository.save(client);
-        }
-    }
-
+    @Transactional
     public void addClientSiteToClient(
             Long clientId,
             String streetAddress,
             String postalCode,
-            String unitNumber
+            String unitNumber,
+            Long numberOfRooms,
+            ClientSite.PropertyType propertyType
     ) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Client not found"));
-        addClientSiteToClient(client, streetAddress, postalCode, unitNumber);
+        addClientSiteToClient(client, streetAddress, postalCode, unitNumber, numberOfRooms, propertyType);
     }
 
+    @Transactional
     public void addClientSiteToClient(
             Client client,
             String streetAddress,
@@ -148,26 +115,31 @@ public class ClientService {
     ) {
         Location clientLocation = locationService.getOrCreateLocation(postalCode, streetAddress);
         ClientSite clientSite = new ClientSite(client, streetAddress, postalCode, unitNumber, clientLocation, numberOfRooms, propertyType);
-        // check if client already has the same client site
-        if (client.getClientSites().stream().noneMatch(site -> site.isSameSite(clientSite))) {
-            client.addClientSite(clientSite);
-            clientSiteRepository.save(clientSite);
-            clientRepository.save(client);
-        }
+        client.addClientSite(clientSite);
+        clientSiteRepository.save(clientSite);
     }
 
     public Client getOrCreateClient(String name, String phone) {
         Client client = clientRepository.findByNameAndPhone(name, phone);
         if (client == null) {
-            client = new Client(name, phone, true, LocalDate.now());
+            client = new Client(name, phone);
+            client.setActive(true);
+            client.setJoinDate(LocalDate.now());
             clientRepository.save(client);
         }
         return client;
     }
 
-    public Client getOrCreateClient(String name, String phone, String homeAddress, String postalCode, String unitNumber) {
+    // main endpoint for addClient
+    public Client getOrCreateClient(String name,
+                                    String phone,
+                                    String streetAddress,
+                                    String postalCode,
+                                    String unitNumber,
+                                    Long numberOfRooms,
+                                    ClientSite.PropertyType propertyType) {
         Client client = getOrCreateClient(name, phone);
-        addClientSiteToClient(client, homeAddress, postalCode, unitNumber);
+        addClientSiteToClient(client, streetAddress, postalCode, unitNumber, numberOfRooms, propertyType);
         return client;
     }
 
