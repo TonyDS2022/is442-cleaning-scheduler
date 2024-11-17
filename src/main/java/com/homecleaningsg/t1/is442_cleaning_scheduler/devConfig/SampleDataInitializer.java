@@ -70,11 +70,9 @@ public class SampleDataInitializer implements ApplicationRunner {
     private final SubzoneRepository subzoneRepository;
     private final LeaveApplicationRepository leaveApplicationRepository;
     private final LocationRepository locationRepository;
-    private final MedicalRecordRepository medicalRecordRepository;
     private final WorkerRepository workerRepository;
     private final ClientService clientService;
     private final LocationService locationService;
-    private final MedicalRecordService medicalRecordService;
     private final TripService tripService;
     private final WorkerService workerService;
     private final TripRepository tripRepository;
@@ -90,11 +88,9 @@ public class SampleDataInitializer implements ApplicationRunner {
             SubzoneRepository subzoneRepository,
             LeaveApplicationRepository leaveApplicationRepository,
             LocationRepository locationRepository,
-            MedicalRecordRepository medicalRecordRepository,
             WorkerRepository workerRepository,
             ClientService clientService,
             LocationService locationService,
-            MedicalRecordService medicalRecordService,
             TripService tripService,
             WorkerService workerService, TripRepository tripRepository, ContractService contractService) {
         this.adminRepository = adminRepository;
@@ -106,11 +102,9 @@ public class SampleDataInitializer implements ApplicationRunner {
         this.subzoneRepository = subzoneRepository;
         this.leaveApplicationRepository = leaveApplicationRepository;
         this.locationRepository = locationRepository;
-        this.medicalRecordRepository = medicalRecordRepository;
         this.workerRepository = workerRepository;
         this.clientService = clientService;
         this.locationService = locationService;
-        this.medicalRecordService = medicalRecordService;
         this.tripService = tripService;
         this.workerService = workerService;
         this.tripRepository = tripRepository;
