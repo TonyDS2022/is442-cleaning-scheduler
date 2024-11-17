@@ -51,6 +51,28 @@ public class LeaveApplicationService {
         return leaveApplicationDtos;
     }
 
+
+    public List<LeaveApplicationDto> getAllLeaveApplicationsByWorkerId(Long workerId){
+        List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAllByWorkerId(workerId);
+        List<LeaveApplicationDto> leaveApplicationDtos = new ArrayList<>();
+        for (LeaveApplication leaveApplication: leaveApplications) {
+            LeaveApplicationDto leaveApplicationDto = new LeaveApplicationDto(
+                    leaveApplication.getWorker().getWorkerId(),
+                    leaveApplication.getWorker().getName(),
+                    leaveApplication.getAdmin().getAdminId(),
+                    leaveApplication.getAdmin().getUsername(),
+                    leaveApplication.getLeaveType(),
+                    leaveApplication.getLeaveStartDate(),
+                    leaveApplication.getLeaveEndDate(),
+                    leaveApplication.getApplicationStatus(),
+                    leaveApplication.getLeaveSubmittedDate(),
+                    leaveApplication.getLeaveSubmittedTime());
+            leaveApplicationDtos.add(leaveApplicationDto);
+        }
+        return leaveApplicationDtos;
+    }
+
+
     public void applyAnnualLeave(
             Long workerId,
             LocalDate startDate,

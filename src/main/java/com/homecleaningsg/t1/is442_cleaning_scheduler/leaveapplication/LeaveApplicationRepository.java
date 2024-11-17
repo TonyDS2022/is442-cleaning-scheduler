@@ -152,4 +152,13 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
             @Param("leaveStartDate") LocalDate leaveStartDate,
             @Param("leaveEndDate") LocalDate leaveEndDate
     );
+
+    @Query(
+            "SELECT l " +
+                    "FROM LeaveApplication l " +
+                    "WHERE l.worker.workerId = :workerId "
+    )
+    List<LeaveApplication> findAllByWorkerId(
+            @Param("workerId") Long workerId
+    );
 }

@@ -19,13 +19,19 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v0.1/leave-applications")
-public class    LeaveApplicationController {
+public class LeaveApplicationController {
 
     private final LeaveApplicationService leaveApplicationService;
 
     @GetMapping
     public List<LeaveApplicationDto> getAllLeaveApplications(){
         return leaveApplicationService.getAllLeaveApplication();
+    }
+
+    // localhost:8080/api/v0.1/leave-application/4
+    @GetMapping("/{workerId}")
+    public List<LeaveApplicationDto> getAllLeaveApplicationsByWorkerId(@PathVariable("workerId") Long workerId){
+        return leaveApplicationService.getAllLeaveApplicationsByWorkerId(workerId);
     }
 
     // localhost:8080/api/v0.1/leave-applications/1/apply-annual-leave/
