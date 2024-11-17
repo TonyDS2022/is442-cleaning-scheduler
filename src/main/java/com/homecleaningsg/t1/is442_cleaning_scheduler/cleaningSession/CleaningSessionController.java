@@ -22,13 +22,23 @@ public class CleaningSessionController {
         this.cleaningSessionService = cleaningSessionService;
     }
 
+    @GetMapping("/{cleaningSessionId}")
+    public ResponseEntity<?> getCleaningSessionById(@PathVariable("cleaningSessionId") Long cleaningSessionId) {
+        try {
+            CleaningSession cleaningSession = cleaningSessionService.getCleaningSessionById(cleaningSessionId);
+            return ResponseEntity.status(HttpStatus.OK).body(cleaningSession);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @PostMapping("/create-cleaning-session/")
     public ResponseEntity<String> addCleaningSession(@RequestBody CleaningSession cleaningSession) {
         try {
             CleaningSession createdSession = cleaningSessionService.addCleaningSession(cleaningSession);
             return ResponseEntity.status(HttpStatus.OK).body("Cleaning session added successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to add cleaning session.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -39,7 +49,7 @@ public class CleaningSessionController {
             CleaningSession updatedCleaningSession = cleaningSessionService.updateCleaningSession(cleaningSessionId, updatedSessionDto);
             return ResponseEntity.status(HttpStatus.OK).body("Cleaning session updated successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to update cleaning session details.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -50,7 +60,7 @@ public class CleaningSessionController {
             cleaningSessionService.cancelCleaningSession(cleaningSessionId);
             return ResponseEntity.status(HttpStatus.OK).body("Cleaning session cancelled successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to cancel cleaning session.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

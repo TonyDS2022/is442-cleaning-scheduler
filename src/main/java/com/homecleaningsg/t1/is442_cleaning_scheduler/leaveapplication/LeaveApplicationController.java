@@ -32,8 +32,13 @@ public class LeaveApplicationController {
         }
     }
 
+    @GetMapping("/{leaveApplicationId}")
+    public LeaveApplicationDto getLeaveApplicationById(@PathVariable("leaveApplicationId") Long leaveApplicationId){
+        return leaveApplicationService.getLeaveApplicationById(leaveApplicationId);
+    }
+
     // localhost:8080/api/v0.1/leave-application/4
-    @GetMapping("/{workerId}")
+    @GetMapping("/worker/{workerId}")
     public ResponseEntity<?> getAllLeaveApplicationsByWorkerId(@PathVariable("workerId") Long workerId){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(leaveApplicationService.getAllLeaveApplicationsByWorkerId(workerId));

@@ -137,7 +137,7 @@ public class ShiftController {
             shiftService.cancelShift(shiftId);
             return ResponseEntity.status(HttpStatus.OK).body("The shift has been successfully cancelled, and associated workers removed from shift.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to cancel shift.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
